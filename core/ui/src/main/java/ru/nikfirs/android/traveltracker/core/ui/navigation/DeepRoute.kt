@@ -1,4 +1,4 @@
-package ru.nikfirs.android.traveltracker.core.ui.model
+package ru.nikfirs.android.traveltracker.core.ui.navigation
 
 import androidx.compose.runtime.Immutable
 

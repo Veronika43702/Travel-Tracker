@@ -6,8 +6,8 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import ru.nikfirs.android.traveltracker.core.ui.model.BottomNavBarRoute
-import ru.nikfirs.android.traveltracker.core.ui.model.DeepRoute
+import ru.nikfirs.android.traveltracker.core.ui.navigation.BottomNavBarRoute
+import ru.nikfirs.android.traveltracker.core.ui.navigation.DeepRoute
 import ru.nikfirs.android.traveltracker.feature.home.homeNavigationGraph
 
 @Composable
