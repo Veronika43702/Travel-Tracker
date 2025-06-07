@@ -1,0 +1,17 @@
+apply from: "$rootDir/build-setups/ext.gradle"
+
+android {
+    compileSdk compile_sdk
+
+    defaultConfig {
+        minSdk min_sdk
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
+    }
+    kotlinOptions {
+        jvmTarget = "21"
+    }
+}

@@ -1,0 +1,37 @@
+apply from: "$rootDir/build-setups/ext.gradle"
+
+android {
+    defaultConfig {
+        applicationId = bundle_name
+        minSdk = min_sdk
+        targetSdk =  target_sdk
+        versionCode = version_code
+        versionName = version_name
+
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
+    buildTypes {
+        named("debug") {
+            debuggable = true
+            minifyEnabled = false
+        }
+
+        named("release") {
+            debuggable = false
+            minifyEnabled = false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    buildFeatures {
+        buildConfig = true
+    }
+}
+
+hilt {
+    enableAggregatingTask = true
+}

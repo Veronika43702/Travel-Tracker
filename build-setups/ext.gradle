@@ -1,0 +1,12 @@
+ext {
+    bundle_name = "ru.nikfirs.android.traveltracker"
+    version_code = 1
+    version_name = "1.0.1"
+
+    apiVersion = 2 // [1 - Prom, 2 - Test]
+    testAndLogEnabled = true
+
+    compile_sdk = 35
+    min_sdk = 26
+    target_sdk = 35
+}

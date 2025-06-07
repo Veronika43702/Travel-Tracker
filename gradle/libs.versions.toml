@@ -1,0 +1,126 @@
+[versions]
+# base
+agp = "8.8.2"
+kotlin = "2.1.21"
+coreKtx = "1.16.0"
+lifecycleRuntimeKtx = "2.9.1"
+ksp-plugin = "2.1.21-2.0.1"
+appcompat = "1.7.1"
+
+# coroutines
+coroutines = "1.10.2"
+
+# storage
+datastore = "1.1.7"
+
+# compose
+navigationCompose = "2.9.0"
+composeBom = "2025.06.00"
+activityCompose = "1.10.1"
+material3 = "1.3.2"
+
+# di
+hilt = "2.56.2"
+hiltNavigationCompose = "1.2.0"
+
+# test
+junit = "4.13.2"
+junitVersion = "1.2.1"
+espressoCore = "3.6.1"
+material = "1.12.0"
+
+[libraries]
+#base
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+
+# coroutines
+coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "coroutines" }
+coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "coroutines" }
+
+# storage
+datastore = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
+
+# compose
+androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
+androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
+androidx-material3 = { module = "androidx.compose.material3:material3",version.ref = "material3" }
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
+androidx-ui = { group = "androidx.compose.ui", name = "ui" }
+androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
+androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
+androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+
+# compose test
+androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
+androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
+
+# test
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
+androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+
+# di
+hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
+hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
+hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+
+# others
+
+[plugins]
+# base
+android-application = { id = "com.android.application", version.ref = "agp" }
+android-library = { id = "com.android.library", version.ref = "agp" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp-plugin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+
+# compose
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+
+# di
+hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
+
+[bundles]
+base = [
+    "androidx-core-ktx",
+    "androidx-activity-compose",
+    "androidx-lifecycle-runtime-ktx",
+]
+
+coroutines = [
+    "coroutines",
+    "coroutines-android",
+]
+
+di = [
+    "hilt-android",
+    "hilt-navigation-compose",
+]
+
+compose = [
+    "androidx-activity-compose",
+    "androidx-navigation-compose",
+    "androidx-material3",
+    "androidx-ui",
+    "androidx-ui-graphics",
+    "androidx-ui-tooling",
+    "androidx-ui-tooling-preview",
+]
+
+debug = [
+    "androidx-ui-test-manifest",
+    "androidx-ui-tooling",
+]
+
+tests = [
+    "junit",
+]
+
+androidTest = [
+    "androidx-junit",
+    "androidx-espresso-core",
+    "androidx-ui-test-junit4",
+]
