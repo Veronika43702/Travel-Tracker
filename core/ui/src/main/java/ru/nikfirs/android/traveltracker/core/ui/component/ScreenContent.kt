@@ -1,5 +1,6 @@
 package ru.nikfirs.android.traveltracker.core.ui.component
 
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -166,12 +167,12 @@ private fun TopBar(
                         expanded = menuExpanded,
                         onDismissRequest = { menuExpanded = false }
                     ) {
-                        actions.filter { it.title.isNotBlank() }.forEach { action ->
+                        actions.filter { !it.title.isNullOrBlank() }.forEach { action ->
                             DropdownMenuItem(
                                 modifier = Modifier
                                     .padding(horizontal = 8.dp)
                                     .clip(MaterialTheme.shapes.extraLarge),
-                                text = { Text(action.title) },
+                                text = { Text(action.title ?: "") },
                                 onClick = {
                                     menuExpanded = false
                                     action.onClick()
@@ -216,6 +217,8 @@ private fun TopBar(
                                     )
                                     .size(iconSize)
                             )
+
+                            null -> {}
                         }
                     }
                 }
@@ -266,6 +269,7 @@ private fun BottomBar(
 }
 
 @Preview
+@Preview(uiMode = UI_MODE_NIGHT_YES)
 @Composable
 private fun ScreenPreview1() {
     AppTheme {
