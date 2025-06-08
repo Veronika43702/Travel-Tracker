@@ -1,6 +1,7 @@
 package ru.nikfirs.android.traveltracker.core.ui.component
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,6 +37,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -106,7 +108,9 @@ private fun TopBar(
         contentAlignment = Alignment.Center,
         modifier = Modifier
             .fillMaxWidth()
-            .height(48.dp)
+            .height(56.dp)
+            .background(MaterialTheme.colorScheme.surface)
+            .shadow(4.dp)
     ) {
         if (navigateBack != null) {
             Box(
@@ -284,6 +288,7 @@ private fun ScreenPreview1() {
 }
 
 @Preview
+@Preview(uiMode = UI_MODE_NIGHT_YES)
 @Composable
 private fun ScreenPreview2() {
     AppTheme {

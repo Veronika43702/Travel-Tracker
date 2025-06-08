@@ -12,6 +12,8 @@ coroutines = "1.10.2"
 
 # storage
 datastore = "1.1.7"
+# database
+room = "2.7.1"
 
 # compose
 navigationCompose = "2.9.0"
@@ -27,7 +29,6 @@ hiltNavigationCompose = "1.2.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
-material = "1.12.0"
 
 [libraries]
 #base
@@ -42,10 +43,16 @@ coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutin
 # storage
 datastore = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 
+# database
+room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
+room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+room-testing = { group = "androidx.room", name = "room-testing", version.ref = "room" }
+
 # compose
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
-androidx-material3 = { module = "androidx.compose.material3:material3",version.ref = "material3" }
+androidx-material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
 androidx-ui = { group = "androidx.compose.ui", name = "ui" }
 androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
@@ -65,7 +72,6 @@ androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-co
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "hilt" }
 hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
-material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 
 # others
 
@@ -100,6 +106,11 @@ di = [
     "hilt-navigation-compose",
 ]
 
+database = [
+    "room-ktx",
+    "room-runtime",
+]
+
 compose = [
     "androidx-activity-compose",
     "androidx-navigation-compose",
@@ -122,5 +133,9 @@ tests = [
 androidTest = [
     "androidx-junit",
     "androidx-espresso-core",
-    "androidx-ui-test-junit4",
+#    "androidx-ui-test-junit4",
+]
+
+databaseTests = [
+    "room-testing",
 ]

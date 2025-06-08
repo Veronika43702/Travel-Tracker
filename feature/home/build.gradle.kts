@@ -3,6 +3,8 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.kotlin.ksp)
+    alias(libs.plugins.hilt)
 }
 
 apply {
@@ -15,8 +17,13 @@ android {
 }
 
 dependencies {
+    implementation(libs.bundles.di)
+    ksp(libs.hilt.compiler)
+
     testImplementation(libs.bundles.tests)
     androidTestImplementation(libs.bundles.androidTest)
 
-    api(project(":core:ui"))
+    implementation(project(":core:ui"))
+    implementation(project(":core:data"))
+    implementation(project(":core:domain"))
 }

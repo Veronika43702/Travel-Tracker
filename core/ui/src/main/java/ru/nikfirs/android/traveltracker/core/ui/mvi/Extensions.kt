@@ -30,7 +30,7 @@ fun ViewModel.launchIO(block: suspend CoroutineScope.() -> Unit): Job {
 }
 
 @Composable
-fun <E : Effect> LaunchedEffectResolver(
+fun <E : MviEffect> LaunchedEffectResolver(
     flow: Flow<E>,
     block: (E) -> Unit,
 ) {

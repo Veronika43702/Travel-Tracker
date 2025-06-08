@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Travel Tracker</string>
+
+    <!-- Bottom Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_calendar">Calendar</string>
+    <string name="nav_statistics">Statistics</string>
+    <string name="nav_settings">Settings</string>
+
+    <!-- Home Screen -->
+    <string name="home_tab_all">All</string>
+    <string name="home_tab_visas">Visas</string>
+    <string name="home_tab_trips">Trips</string>
+    <string name="home_empty_state">No data to display</string>
+    <string name="home_add_first_visa">Add your first visa</string>
+    <string name="home_add_first_trip">Add your first trip</string>
+
+    <!-- Visa Card -->
+    <string name="visa_number_label">Visa number</string>
+    <string name="visa_type_label">Type</string>
+    <string name="visa_valid_until">Valid until %1$s</string>
+    <string name="visa_expired">Expired</string>
+    <string name="visa_expires_in_days">Expires in %1$d days</string>
+    <string name="visa_entries_single">Single entry</string>
+    <string name="visa_entries_double">Double entry</string>
+    <string name="visa_entries_multi">Multiple entry</string>
+
+    <!-- Trip Card -->
+    <string name="trip_duration_days">%1$d days</string>
+    <string name="trip_ongoing">Ongoing trip</string>
+    <string name="trip_planned">Planned</string>
+    <string name="trip_past">Past</string>
+    <string name="trip_dates">%1$s — %2$s</string>
+
+    <!-- Days Counter -->
+    <string name="days_counter_title">Days in EU</string>
+    <string name="days_counter_format">%1$d / %2$d</string>
+    <string name="days_counter_period">In the last 180 days</string>
+    <string name="days_remaining">%1$d days remaining</string>
+    <string name="days_limit_warning">Approaching the limit!</string>
+    <string name="days_limit_exceeded">Limit exceeded!</string>
+
+    <!-- Actions -->
+    <string name="action_add_visa">Add visa</string>
+    <string name="action_add_trip">Add trip</string>
+    <string name="action_edit">Edit</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_save">Save</string>
+
+    <!-- Error Messages -->
+    <string name="error_loading_data">Error loading data</string>
+    <string name="error_saving_data">Error saving data</string>
+    <string name="error_deleting_data">Error deleting data</string>
+    <string name="error_title">Error</string>
+    <string name="error_retry">Retry</string>
+</resources>

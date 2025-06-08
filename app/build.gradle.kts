@@ -29,5 +29,6 @@ dependencies {
     androidTestImplementation(libs.bundles.androidTest)
     androidTestImplementation(platform(libs.androidx.compose.bom))
 
+    implementation(project(":core:ui"))
     implementation(project(":feature:home"))
 }

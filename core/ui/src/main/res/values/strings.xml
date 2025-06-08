@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Travel Tracker</string>
+
+    <!-- Bottom Navigation -->
+    <string name="nav_home">Главная</string>
+    <string name="nav_calendar">Календарь</string>
+    <string name="nav_statistics">Статистика</string>
+    <string name="nav_settings">Настройки</string>
+
+    <!-- Home Screen -->
+    <string name="home_tab_all">Все</string>
+    <string name="home_tab_visas">Визы</string>
+    <string name="home_tab_trips">Поездки</string>
+    <string name="home_empty_state">Нет данных для отображения</string>
+    <string name="home_add_first_visa">Добавьте первую визу</string>
+    <string name="home_add_first_trip">Добавьте первую поездку</string>
+
+    <!-- Visa Card -->
+    <string name="visa_number_label">Номер визы</string>
+    <string name="visa_type_label">Тип</string>
+    <string name="visa_valid_until">Действует до %1$s</string>
+    <string name="visa_expired">Истекла</string>
+    <string name="visa_expires_in_days">Истекает через %1$d дн.</string>
+    <string name="visa_entries_single">Однократная</string>
+    <string name="visa_entries_double">Двукратная</string>
+    <string name="visa_entries_multi">Многократная</string>
+
+    <!-- Trip Card -->
+    <string name="trip_duration_days">%1$d дн.</string>
+    <string name="trip_ongoing">Текущая поездка</string>
+    <string name="trip_planned">Запланировано</string>
+    <string name="trip_past">Прошедшая</string>
+    <string name="trip_dates">%1$s — %2$s</string>
+
+    <!-- Days Counter -->
+    <string name="days_counter_title">Дней в ЕС</string>
+    <string name="days_counter_format">%1$d / %2$d</string>
+    <string name="days_counter_period">За последние 180 дней</string>
+    <string name="days_remaining">Осталось %1$d дней</string>
+    <string name="days_limit_warning">Приближаетесь к лимиту!</string>
+    <string name="days_limit_exceeded">Лимит превышен!</string>
+
+    <!-- Actions -->
+    <string name="action_add_visa">Добавить визу</string>
+    <string name="action_add_trip">Добавить поездку</string>
+    <string name="action_edit">Редактировать</string>
+    <string name="action_delete">Удалить</string>
+    <string name="action_cancel">Отмена</string>
+    <string name="action_save">Сохранить</string>
+
+    <!-- Error Messages -->
+    <string name="error_loading_data">Ошибка загрузки данных</string>
+    <string name="error_saving_data">Ошибка сохранения данных</string>
+    <string name="error_deleting_data">Ошибка удаления данных</string>
+    <string name="error_title">Ошибка</string>
+    <string name="error_retry">Повторить</string>
+
+</resources>

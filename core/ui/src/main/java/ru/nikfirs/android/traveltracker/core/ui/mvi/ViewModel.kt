@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 
-abstract class ViewModel<A : Action, E : Effect, S : State> : ViewModel() {
+abstract class ViewModel<A : MviAction, E : MviEffect, S : MviState> : ViewModel() {
 
     private val initialState: S by lazy { createInitialState() }
     private val initialLanguage: String? = null
