@@ -6,11 +6,12 @@ import java.time.temporal.ChronoUnit
 data class Visa(
     val id: Long = 0,
     val visaNumber: String,
-    val visaType: String = "C",
+    val visaType: VisaCategory = VisaCategory.TYPE_C,
+    val country: String? = null,
     val issueDate: LocalDate,
     val expiryDate: LocalDate,
-    val durationOfStay: Int = 90,
-    val entries: VisaType = VisaType.MULTI,
+    val durationOfStay: Int,
+    val entries: VisaEntries = VisaEntries.MULTI,
     val isActive: Boolean = true,
     val notes: String? = null
 ) {
@@ -19,9 +20,18 @@ data class Visa(
 
     val daysUntilExpiry: Long
         get() = ChronoUnit.DAYS.between(LocalDate.now(), expiryDate)
+
+    val requiresSchengenTracking: Boolean
+        get() = visaType == VisaCategory.TYPE_C
 }
 
-enum class VisaType {
+enum class VisaCategory {
+    TYPE_C,
+    TYPE_D,
+    RESIDENCE_PERMIT,
+}
+
+enum class VisaEntries {
     SINGLE,
     DOUBLE,
     MULTI

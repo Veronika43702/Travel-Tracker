@@ -1,34 +1,17 @@
 package ru.nikfirs.android.traveltracker.feature.home.ui.main
 
-import android.content.res.Configuration
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExtendedFloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -36,13 +19,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import ru.nikfirs.android.traveltracker.core.domain.model.DaysCalculation
-import ru.nikfirs.android.traveltracker.core.domain.model.Trip
-import ru.nikfirs.android.traveltracker.core.domain.model.TripPurpose
-import ru.nikfirs.android.traveltracker.core.domain.model.Visa
-import ru.nikfirs.android.traveltracker.core.domain.model.VisaType
+import kotlinx.coroutines.launch
+import ru.nikfirs.android.traveltracker.core.domain.model.*
 import ru.nikfirs.android.traveltracker.core.ui.R
-import ru.nikfirs.android.traveltracker.core.ui.component.DaysCounter
 import ru.nikfirs.android.traveltracker.core.ui.component.ErrorDialog
 import ru.nikfirs.android.traveltracker.core.ui.component.Screen
 import ru.nikfirs.android.traveltracker.core.ui.mvi.LaunchedEffectResolver
@@ -51,11 +30,12 @@ import ru.nikfirs.android.traveltracker.core.ui.theme.AppTheme
 import ru.nikfirs.android.traveltracker.core.ui.theme.button
 import ru.nikfirs.android.traveltracker.feature.home.domain.model.HomeItem
 import ru.nikfirs.android.traveltracker.feature.home.domain.model.HomeTab
+import ru.nikfirs.android.traveltracker.feature.home.ui.main.HomeContract.Action
+import ru.nikfirs.android.traveltracker.feature.home.ui.main.HomeContract.Effect
+import ru.nikfirs.android.traveltracker.feature.home.ui.main.HomeContract.State
+import ru.nikfirs.android.traveltracker.feature.home.ui.main.components.DaysCounterCard
 import ru.nikfirs.android.traveltracker.feature.home.ui.main.components.TripCard
 import ru.nikfirs.android.traveltracker.feature.home.ui.main.components.VisaCard
-import ru.nikfirs.android.traveltracker.feature.home.ui.main.HomeContract.Action
-import ru.nikfirs.android.traveltracker.feature.home.ui.main.HomeContract.State
-import ru.nikfirs.android.traveltracker.feature.home.ui.main.HomeContract.Effect
 import java.time.LocalDate
 
 @Composable
@@ -68,6 +48,9 @@ fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
 
     LaunchedEffectResolver(flow = viewModel.effect) { effect ->
         when (effect) {
@@ -75,13 +58,49 @@ fun HomeScreen(
             is Effect.NavigateToAddTrip -> navigateToAddTrip()
             is Effect.NavigateToEditVisa -> navigateToEditVisa(effect.visaId)
             is Effect.NavigateToEditTrip -> navigateToEditTrip(effect.tripId)
-            is Effect.ShowError -> {} // Обрабатывается через state
+            is Effect.ShowMessage -> {
+                scope.launch {
+                    snackbarHostState.showSnackbar(
+                        message = effect.message.asString(context)
+                    )
+                }
+            }
         }
     }
 
     Screen(
         bottomNavRouteRoute = BottomNavBarRoute.Home,
         navigateRoute = navigateRoute,
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        floatingActionButton = {
+            if (state.filteredItems.isNotEmpty()) {
+                ExtendedFloatingActionButton(
+                    onClick = {
+                        when (state.selectedTab) {
+                            HomeTab.VISAS -> viewModel.setAction(Action.NavigateToAddVisa)
+                            HomeTab.TRIPS -> viewModel.setAction(Action.NavigateToAddTrip)
+                            HomeTab.ALL -> viewModel.setAction(Action.NavigateToAddTrip)
+                        }
+                    },
+                    modifier = Modifier.padding(16.dp),
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = null
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = when (state.selectedTab) {
+                            HomeTab.VISAS -> stringResource(R.string.action_add_visa)
+                            HomeTab.TRIPS -> stringResource(R.string.action_add_trip)
+                            HomeTab.ALL -> stringResource(R.string.action_add_trip)
+                        }
+                    )
+                }
+            }
+        }
     ) {
         HomeContent(
             state = state,
@@ -104,23 +123,24 @@ private fun HomeContent(
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
+        // Days counter section
         state.daysCalculation?.let { calculation ->
             Box(
                 modifier = Modifier
                     .background(MaterialTheme.colorScheme.background)
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 8.dp)
-
             ) {
-                DaysCounter(
-                    daysUsed = calculation.totalDaysUsed,
-                    maxDays = DaysCalculation.MAX_STAY_DAYS,
-                    showWarning = calculation.isNearLimit,
-                    isOverLimit = calculation.isOverLimit
+                DaysCounterCard(
+                    daysCalculation = calculation,
+                    hasActiveVisa = state.hasActiveSchengenVisa,
+                    currentVisa = state.currentSchengenVisa,
+                    exemptCountries = state.exemptCountries
                 )
             }
         }
 
+        // Tabs
         TabRow(
             selectedTabIndex = state.selectedTab.ordinal,
             modifier = Modifier.fillMaxWidth()
@@ -142,6 +162,7 @@ private fun HomeContent(
             }
         }
 
+        // Content
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -168,63 +189,156 @@ private fun HomeContent(
                 }
 
                 else -> {
-                    LazyColumn(
-                        contentPadding = PaddingValues(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        items(
-                            items = state.filteredItems,
-                            key = { item ->
-                                when (item) {
-                                    is HomeItem.VisaItem -> "visa_${item.visa.id}"
-                                    is HomeItem.TripItem -> "trip_${item.trip.id}"
-                                }
-                            }
-                        ) { item ->
-                            when (item) {
-                                is HomeItem.VisaItem -> VisaCard(
-                                    visa = item.visa,
-                                    onClick = { onAction(Action.NavigateToEditVisa(item.visa)) }
-                                )
-
-                                is HomeItem.TripItem -> TripCard(
-                                    trip = item.trip,
-                                    onClick = { onAction(Action.NavigateToEditTrip(item.trip)) }
-                                )
-                            }
-                        }
+                    when (state.selectedTab) {
+                        HomeTab.ALL -> AllTabContent(state, onAction)
+                        HomeTab.VISAS -> VisasTabContent(state, onAction)
+                        HomeTab.TRIPS -> TripsTabContent(state, onAction)
                     }
                 }
             }
+        }
+    }
+}
 
-            if (state.filteredItems.isNotEmpty()) {
-                ExtendedFloatingActionButton(
-                    onClick = {
-                        when (state.selectedTab) {
-                            HomeTab.VISAS -> onAction(Action.NavigateToAddVisa)
-                            HomeTab.TRIPS -> onAction(Action.NavigateToAddTrip)
-                            HomeTab.ALL -> onAction(Action.NavigateToAddTrip)
-                        }
-                    },
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(16.dp),
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = null
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = when (state.selectedTab) {
-                            HomeTab.VISAS -> stringResource(R.string.action_add_visa)
-                            HomeTab.TRIPS -> stringResource(R.string.action_add_trip)
-                            HomeTab.ALL -> stringResource(R.string.action_add_trip)
-                        }
-                    )
+@Composable
+private fun AllTabContent(
+    state: State,
+    onAction: (Action) -> Unit
+) {
+    LazyColumn(
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        items(
+            items = state.filteredItems,
+            key = { item ->
+                when (item) {
+                    is HomeItem.VisaItem -> "visa_${item.visa.id}"
+                    is HomeItem.TripItem -> "trip_${item.trip.id}"
                 }
+            }
+        ) { item ->
+            when (item) {
+                is HomeItem.VisaItem -> VisaCard(
+                    visa = item.visa,
+                    onClick = { onAction(Action.NavigateToEditVisa(item.visa)) }
+                )
+
+                is HomeItem.TripItem -> TripCard(
+                    trip = item.trip,
+                    isExempt = item.isExempt,
+                    onClick = { onAction(Action.NavigateToEditTrip(item.trip)) }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun VisasTabContent(
+    state: State,
+    onAction: (Action) -> Unit
+) {
+    LazyColumn(
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        items(
+            items = state.activeVisas,
+            key = { "visa_${it.id}" }
+        ) { visa ->
+            VisaCard(
+                visa = visa,
+                onClick = { onAction(Action.NavigateToEditVisa(visa)) }
+            )
+        }
+    }
+}
+
+@Composable
+private fun TripsTabContent(
+    state: State,
+    onAction: (Action) -> Unit
+) {
+    LazyColumn(
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        // Ongoing trips
+        if (state.ongoingTrips.isNotEmpty()) {
+            item {
+                Text(
+                    text = stringResource(R.string.trips_section_ongoing),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+            }
+
+            items(
+                items = state.ongoingTrips,
+                key = { "trip_${it.id}" }
+            ) { trip ->
+                TripCard(
+                    trip = trip,
+                    isExempt = state.exemptCountries.any { country ->
+                        trip.segments.any { it.country == country }
+                    },
+                    onClick = { onAction(Action.NavigateToEditTrip(trip)) }
+                )
+            }
+        }
+
+        // Planned trips
+        if (state.plannedTrips.isNotEmpty()) {
+            item {
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = stringResource(R.string.trips_section_planned),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+            }
+
+            items(
+                items = state.plannedTrips,
+                key = { "trip_${it.id}" }
+            ) { trip ->
+                TripCard(
+                    trip = trip,
+                    isExempt = state.exemptCountries.any { country ->
+                        trip.segments.any { it.country == country }
+                    },
+                    onClick = { onAction(Action.NavigateToEditTrip(trip)) }
+                )
+            }
+        }
+
+        // Past trips (show only last 5)
+        val recentPastTrips = state.pastTrips.take(5)
+        if (recentPastTrips.isNotEmpty()) {
+            item {
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = stringResource(R.string.trips_section_past),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+            }
+
+            items(
+                items = recentPastTrips,
+                key = { "trip_${it.id}" }
+            ) { trip ->
+                TripCard(
+                    trip = trip,
+                    isExempt = state.exemptCountries.any { country ->
+                        trip.segments.any { it.country == country }
+                    },
+                    onClick = { onAction(Action.NavigateToEditTrip(trip)) }
+                )
             }
         }
     }
@@ -257,9 +371,9 @@ private fun EmptyState(
 
         Text(
             text = when (tab) {
-                HomeTab.VISAS -> stringResource(R.string.home_add_first_visa)
-                HomeTab.TRIPS -> stringResource(R.string.home_add_first_trip)
-                HomeTab.ALL -> stringResource(R.string.home_empty_state)
+                HomeTab.VISAS -> stringResource(R.string.home_empty_visas)
+                HomeTab.TRIPS -> stringResource(R.string.home_empty_trips)
+                HomeTab.ALL -> stringResource(R.string.home_empty_all)
             },
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -286,6 +400,7 @@ private fun EmptyState(
 }
 
 @Preview(showBackground = true)
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
 @Composable
 private fun HomeScreenEmptyPreview() {
     AppTheme {
@@ -294,13 +409,14 @@ private fun HomeScreenEmptyPreview() {
                 isLoading = false,
                 selectedTab = HomeTab.ALL
             ),
-            onAction = {}
-        )
+            onAction = {},
+
+            )
     }
 }
 
 @Preview(showBackground = true)
-@Preview(showBackground = true, locale = "EN", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Preview(showBackground = true, locale = "EN")
 @Composable
 private fun HomeScreenWithDataPreview() {
     AppTheme {
@@ -311,78 +427,82 @@ private fun HomeScreenWithDataPreview() {
                     Visa(
                         id = 1,
                         visaNumber = "C123456789",
-                        visaType = "C",
+                        visaType = VisaCategory.TYPE_C,
                         issueDate = LocalDate.now().minusMonths(6),
                         expiryDate = LocalDate.now().plusMonths(6),
-                        entries = VisaType.MULTI
+                        entries = VisaEntries.MULTI,
+                        durationOfStay = 1,
                     ),
                     Visa(
                         id = 2,
-                        visaNumber = "C987654321",
-                        visaType = "C",
-                        issueDate = LocalDate.now().minusYears(1),
-                        expiryDate = LocalDate.now().minusDays(10),
-                        entries = VisaType.SINGLE
+                        visaNumber = "D987654321",
+                        visaType = VisaCategory.TYPE_D,
+                        country = "Germany",
+                        issueDate = LocalDate.now().minusMonths(3),
+                        expiryDate = LocalDate.now().plusMonths(9),
+                        entries = VisaEntries.MULTI,
+                        durationOfStay = 1,
                     )
                 ),
                 trips = listOf(
                     Trip(
-                        id = 5,
-                        startDate = LocalDate.now().plusDays(60),
-                        endDate = LocalDate.now().plusDays(90),
-                        country = "Slovenia",
-                        city = "Ljubljana",
-                        purpose = TripPurpose.EDUCATION,
-                        isPlanned = true
+                        id = 1,
+                        startDate = LocalDate.now().minusDays(5),
+                        endDate = LocalDate.now().plusDays(5),
+                        segments = listOf(
+                            TripSegment(
+                                country = "Germany",
+                                startDate = LocalDate.now().minusDays(5),
+                                endDate = LocalDate.now(),
+                                type = SegmentType.STAY
+                            ),
+                            TripSegment(
+                                country = "Poland",
+                                startDate = LocalDate.now(),
+                                endDate = LocalDate.now().plusDays(5),
+                                type = SegmentType.STAY
+                            )
+                        ),
+                        purpose = TripPurpose.TOURISM,
+                        isPlanned = false
                     ),
                     Trip(
                         id = 2,
                         startDate = LocalDate.now().plusDays(30),
                         endDate = LocalDate.now().plusDays(37),
-                        country = "France",
-                        city = "Paris",
+                        segments = listOf(
+                            TripSegment(
+                                country = "France",
+                                startDate = LocalDate.now().plusDays(30),
+                                endDate = LocalDate.now().plusDays(33),
+                                type = SegmentType.STAY,
+                                cities = listOf("Paris")
+                            ),
+                            TripSegment(
+                                country = "Spain",
+                                startDate = LocalDate.now().plusDays(33),
+                                endDate = LocalDate.now().plusDays(37),
+                                type = SegmentType.STAY,
+                                cities = listOf("Madrid", "Barcelona")
+                            )
+                        ),
                         purpose = TripPurpose.BUSINESS,
                         isPlanned = true
-                    ),
-                    Trip(
-                        id = 1,
-                        startDate = LocalDate.now().minusDays(5),
-                        endDate = LocalDate.now().plusDays(5),
-                        country = "Germany",
-                        city = "Berlin",
-                        purpose = TripPurpose.TOURISM,
-                        isPlanned = false
-                    ),
-                    Trip(
-                        id = 3,
-                        startDate = LocalDate.now().minusDays(15),
-                        endDate = LocalDate.now().minusDays(10),
-                        country = "France",
-                        city = "Paris",
-                        purpose = TripPurpose.FAMILY,
-                        isPlanned = false
-                    ),
-                    Trip(
-                        id = 4,
-                        startDate = LocalDate.now().minusDays(37),
-                        endDate = LocalDate.now().minusDays(30),
-                        country = "France",
-                        city = "Paris",
-                        purpose = TripPurpose.MEDICAL,
-                        isPlanned = false
-                    ),
+                    )
                 ),
                 daysCalculation = DaysCalculation(
                     totalDaysUsed = 45,
                     remainingDays = 45,
-                    periodStart = LocalDate.now().minusDays(180),
+                    periodStart = LocalDate.now().minusDays(179),
                     periodEnd = LocalDate.now(),
                     isNearLimit = false,
-                    isOverLimit = false
+                    isOverLimit = false,
+                    exemptCountries = setOf("Germany")
                 ),
-                selectedTab = HomeTab.TRIPS
+                exemptCountries = setOf("Germany"),
+                selectedTab = HomeTab.ALL
             ),
-            onAction = {}
+            onAction = {},
         )
     }
 }
@@ -398,10 +518,11 @@ private fun HomeScreenNearLimitPreview() {
                     Visa(
                         id = 1,
                         visaNumber = "C123456789",
-                        visaType = "C",
+                        visaType = VisaCategory.TYPE_C,
                         issueDate = LocalDate.now().minusMonths(6),
-                        expiryDate = LocalDate.now().plusMonths(2),
-                        entries = VisaType.MULTI
+                        expiryDate = LocalDate.now().plusDays(25),
+                        entries = VisaEntries.MULTI,
+                        durationOfStay = 1,
                     )
                 ),
                 trips = listOf(
@@ -409,8 +530,15 @@ private fun HomeScreenNearLimitPreview() {
                         id = 1,
                         startDate = LocalDate.now().minusDays(10),
                         endDate = LocalDate.now().minusDays(3),
-                        country = "Spain",
-                        city = "Madrid",
+                        segments = listOf(
+                            TripSegment(
+                                country = "Spain",
+                                startDate = LocalDate.now().minusDays(10),
+                                endDate = LocalDate.now().minusDays(3),
+                                type = SegmentType.STAY,
+                                cities = listOf("Madrid")
+                            )
+                        ),
                         purpose = TripPurpose.TOURISM,
                         isPlanned = false
                     )
@@ -418,14 +546,117 @@ private fun HomeScreenNearLimitPreview() {
                 daysCalculation = DaysCalculation(
                     totalDaysUsed = 78,
                     remainingDays = 12,
-                    periodStart = LocalDate.now().minusDays(180),
+                    periodStart = LocalDate.now().minusDays(179),
                     periodEnd = LocalDate.now(),
                     isNearLimit = true,
                     isOverLimit = false
                 ),
                 selectedTab = HomeTab.ALL
             ),
-            onAction = {}
+            onAction = {},
+
+            )
+    }
+}
+
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
+@Composable
+private fun HomeScreenTripsTabPreview() {
+    AppTheme {
+        HomeContent(
+            state = State(
+                isLoading = false,
+                visas = listOf(
+                    Visa(
+                        id = 1,
+                        visaNumber = "RP123456",
+                        visaType = VisaCategory.RESIDENCE_PERMIT,
+                        country = "Poland",
+                        issueDate = LocalDate.now().minusYears(1),
+                        expiryDate = LocalDate.now().plusYears(1),
+                        entries = VisaEntries.MULTI,
+                        durationOfStay = 1,
+                    )
+                ),
+                trips = listOf(
+                    Trip(
+                        id = 1,
+                        startDate = LocalDate.now().minusDays(90),
+                        endDate = LocalDate.now().minusDays(80),
+                        segments = listOf(
+                            TripSegment(
+                                country = "Italy",
+                                startDate = LocalDate.now().minusDays(90),
+                                endDate = LocalDate.now().minusDays(85),
+                                type = SegmentType.STAY
+                            ),
+                            TripSegment(
+                                country = "France",
+                                startDate = LocalDate.now().minusDays(85),
+                                endDate = LocalDate.now().minusDays(80),
+                                type = SegmentType.STAY
+                            )
+                        ),
+                        purpose = TripPurpose.TOURISM,
+                        isPlanned = false
+                    ),
+                    Trip(
+                        id = 2,
+                        startDate = LocalDate.now().minusDays(60),
+                        endDate = LocalDate.now().minusDays(45),
+                        segments = listOf(
+                            TripSegment(
+                                country = "Poland",
+                                startDate = LocalDate.now().minusDays(60),
+                                endDate = LocalDate.now().minusDays(45),
+                                type = SegmentType.STAY
+                            )
+                        ),
+                        purpose = TripPurpose.FAMILY,
+                        isPlanned = false
+                    ),
+                    Trip(
+                        id = 3,
+                        startDate = LocalDate.now().plusDays(10),
+                        endDate = LocalDate.now().plusDays(20),
+                        segments = listOf(
+                            TripSegment(
+                                country = "Germany",
+                                startDate = LocalDate.now().plusDays(10),
+                                endDate = LocalDate.now().plusDays(15),
+                                type = SegmentType.STAY
+                            ),
+                            TripSegment(
+                                country = "Czech Republic",
+                                startDate = LocalDate.now().plusDays(15),
+                                endDate = LocalDate.now().plusDays(20),
+                                type = SegmentType.STAY
+                            )
+                        ),
+                        purpose = TripPurpose.EDUCATION,
+                        isPlanned = true
+                    )
+                ),
+                daysCalculation = DaysCalculation(
+                    totalDaysUsed = 16,
+                    remainingDays = 74,
+                    periodStart = LocalDate.now().minusDays(179),
+                    periodEnd = LocalDate.now(),
+                    isNearLimit = false,
+                    isOverLimit = false,
+                    exemptCountries = setOf("Poland"),
+                    daysPerCountry = mapOf(
+                        "Italy" to 6,
+                        "France" to 6,
+                        "Poland" to 16,
+                        "Germany" to 0,
+                        "Czech Republic" to 0
+                    )
+                ),
+                exemptCountries = setOf("Poland"),
+                selectedTab = HomeTab.TRIPS
+            ),
+            onAction = {},
         )
     }
 }

@@ -7,14 +7,17 @@ import androidx.room.TypeConverters
 import android.content.Context
 import ru.nikfirs.android.traveltracker.core.data.database.converter.Converters
 import ru.nikfirs.android.traveltracker.core.data.database.dao.TripDao
+import ru.nikfirs.android.traveltracker.core.data.database.dao.TripSegmentDao
 import ru.nikfirs.android.traveltracker.core.data.database.dao.VisaDao
 import ru.nikfirs.android.traveltracker.core.data.database.entity.TripEntity
+import ru.nikfirs.android.traveltracker.core.data.database.entity.TripSegmentEntity
 import ru.nikfirs.android.traveltracker.core.data.database.entity.VisaEntity
 
 @Database(
     entities = [
         VisaEntity::class,
-        TripEntity::class
+        TripEntity::class,
+        TripSegmentEntity::class,
     ],
     version = 1,
     exportSchema = false
@@ -24,6 +27,7 @@ abstract class TravelDatabase : RoomDatabase() {
 
     abstract fun visaDao(): VisaDao
     abstract fun tripDao(): TripDao
+    abstract fun tripSegmentDao(): TripSegmentDao
 
     companion object {
         private const val DATABASE_NAME = "travel_tracker_database"

@@ -8,7 +8,9 @@ data class DaysCalculation(
     val periodStart: LocalDate,
     val periodEnd: LocalDate,
     val isNearLimit: Boolean = false,
-    val isOverLimit: Boolean = false
+    val isOverLimit: Boolean = false,
+    val exemptCountries: Set<String> = emptySet(),
+    val daysPerCountry: Map<String, Int> = emptyMap(),
 ) {
     companion object {
         const val PERIOD_DAYS = 180
@@ -22,5 +24,14 @@ data class CalendarDay(
     val isAvailable: Boolean,
     val isInTrip: Boolean = false,
     val tripId: Long? = null,
-    val remainingDaysOnDate: Int? = null
+    val country: String? = null,
+    val isExempt: Boolean = false,
+    val remainingDaysOnDate: Int? = null,
+)
+
+data class DayCountInfo(
+    val date: LocalDate,
+    val country: String,
+    val tripId: Long,
+    val isExempt: Boolean,
 )

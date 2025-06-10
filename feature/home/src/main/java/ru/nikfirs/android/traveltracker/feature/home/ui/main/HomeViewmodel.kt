@@ -1,29 +1,38 @@
 package ru.nikfirs.android.traveltracker.feature.home.ui.main
 
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collectLatest
 import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
 import ru.nikfirs.android.traveltracker.core.domain.model.Trip
 import ru.nikfirs.android.traveltracker.core.domain.model.Visa
-import ru.nikfirs.android.traveltracker.core.domain.repository.TripRepository
-import ru.nikfirs.android.traveltracker.core.domain.repository.VisaRepository
 import ru.nikfirs.android.traveltracker.core.ui.mvi.ViewModel
 import ru.nikfirs.android.traveltracker.core.ui.mvi.launch
 import ru.nikfirs.android.traveltracker.feature.home.domain.model.HomeTab
+import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.CalculateDaysInPeriodUseCase
+import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.DeactivateExpiredVisasUseCase
+import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.DeleteTripUseCase
+import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.DeleteVisaUseCase
+import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.GetHomeDataUseCase
 import ru.nikfirs.android.traveltracker.feature.home.ui.main.HomeContract.Action
 import ru.nikfirs.android.traveltracker.feature.home.ui.main.HomeContract.State
 import ru.nikfirs.android.traveltracker.feature.home.ui.main.HomeContract.Effect
 import java.time.LocalDate
 import javax.inject.Inject
+import ru.nikfirs.android.traveltracker.core.ui.R as UiR
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val visaRepository: VisaRepository,
-    private val tripRepository: TripRepository
+    private val getHomeDataUseCase: GetHomeDataUseCase,
+    private val calculateDaysInPeriodUseCase: CalculateDaysInPeriodUseCase,
+    private val deleteTripUseCase: DeleteTripUseCase,
+    private val deleteVisaUseCase: DeleteVisaUseCase,
+    private val deactivateExpiredVisasUseCase: DeactivateExpiredVisasUseCase
 ) : ViewModel<Action, Effect, State>() {
 
     init {
         setAction(Action.LoadData)
+        deactivateExpiredVisas()
     }
 
     override fun createInitialState(): State = State()
@@ -37,7 +46,9 @@ class HomeViewModel @Inject constructor(
             is Action.NavigateToAddTrip -> navigateToAddTrip()
             is Action.NavigateToEditVisa -> navigateToEditVisa(action.visa)
             is Action.NavigateToEditTrip -> navigateToEditTrip(action.trip)
-            is Action.DismissError -> setError(null)
+            is Action.DeleteTrip -> deleteTrip(action.trip)
+            is Action.DeleteVisa -> deleteVisa(action.visa)
+            is Action.DismissError -> dismissError()
             is Action.RetryLoadData -> loadData()
         }
     }
@@ -47,25 +58,50 @@ class HomeViewModel @Inject constructor(
             setState { it.copy(isLoading = true, error = null) }
 
             try {
-                combine(
-                    visaRepository.getAllVisas(),
-                    tripRepository.getAllTrips()
-                ) { visas, trips ->
-                    Pair(visas, trips)
-                }.collect { (visas, trips) ->
-                    val daysCalculation = tripRepository.calculateDaysInPeriod(LocalDate.now())
-
-                    setState {
-                        it.copy(
-                            isLoading = false,
-                            visas = visas,
-                            trips = trips,
-                            daysCalculation = daysCalculation,
-                        )
+                getHomeDataUseCase()
+                    .catch { exception ->
+                        setError(CustomString.text(exception.message))
                     }
-                }
+                    .collectLatest { homeData ->
+                        setState {
+                            it.copy(
+                                visas = homeData.activeVisas,
+                                trips = homeData.allTrips,
+                                exemptCountries = homeData.exemptCountries,
+                                isLoading = false,
+                                error = null
+                            )
+                        }
+
+                        // Обновляем подсчет дней
+                        updateDaysCalculation(homeData.exemptCountries)
+                    }
             } catch (e: Exception) {
                 setError(CustomString.text(e.message))
+            }
+        }
+    }
+
+    private fun updateDaysCalculation(exemptCountries: Set<String>) {
+        launch {
+            try {
+                val calculation = calculateDaysInPeriodUseCase(
+                    periodEnd = LocalDate.now(),
+                    exemptCountries = exemptCountries
+                )
+                setState { it.copy(daysCalculation = calculation) }
+            } catch (e: Exception) {
+                // Не показываем ошибку подсчета дней, просто логируем
+            }
+        }
+    }
+
+    private fun deactivateExpiredVisas() {
+        launch {
+            try {
+                deactivateExpiredVisasUseCase()
+            } catch (e: Exception) {
+                // Не показываем ошибку пользователю
             }
         }
     }
@@ -88,6 +124,36 @@ class HomeViewModel @Inject constructor(
 
     private fun navigateToEditTrip(trip: Trip) {
         setEffect { Effect.NavigateToEditTrip(trip.id) }
+    }
+
+    private fun deleteTrip(trip: Trip) {
+        launch {
+            try {
+                deleteTripUseCase(trip)
+                setEffect {
+                    Effect.ShowMessage(CustomString.resource(UiR.string.trip_deleted_successfully))
+                }
+            } catch (e: Exception) {
+                setError(CustomString.text(e.message))
+            }
+        }
+    }
+
+    private fun deleteVisa(visa: Visa) {
+        launch {
+            try {
+                deleteVisaUseCase(visa)
+                setEffect {
+                    Effect.ShowMessage(CustomString.resource(UiR.string.visa_deleted_successfully))
+                }
+            } catch (e: Exception) {
+                setError(CustomString.text(e.message))
+            }
+        }
+    }
+
+    private fun dismissError() {
+        setState { it.copy(error = null) }
     }
 
     private fun setError(error: CustomString?) {

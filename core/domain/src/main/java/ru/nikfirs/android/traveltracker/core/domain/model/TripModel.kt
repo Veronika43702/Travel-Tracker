@@ -8,8 +8,7 @@ data class Trip(
     val visaId: Long? = null,
     val startDate: LocalDate,
     val endDate: LocalDate,
-    val country: String = "EU",
-    val city: String? = null,
+    val segments: List<TripSegment> = emptyList(),
     val purpose: TripPurpose = TripPurpose.TOURISM,
     val isPlanned: Boolean = false,
     val notes: String? = null,
@@ -21,7 +20,11 @@ data class Trip(
     val isOngoing: Boolean
         get() {
             val today = LocalDate.now()
-            return !isPlanned && today.isAfter(startDate.minusDays(1)) && today.isBefore(endDate.plusDays(1))
+            return !isPlanned && today.isAfter(startDate.minusDays(1)) && today.isBefore(
+                endDate.plusDays(
+                    1
+                )
+            )
         }
 
     val isPast: Boolean
@@ -29,6 +32,33 @@ data class Trip(
 
     val isFuture: Boolean
         get() = isPlanned || startDate.isAfter(LocalDate.now())
+
+    val countries: List<String>
+        get() = segments.filter { it.type != SegmentType.TRANSIT }
+            .map { it.country }
+            .distinct()
+
+    val primaryCountry: String?
+        get() = segments.maxByOrNull { it.endDate.toEpochDay() - it.startDate.toEpochDay() }?.country
+
+    val isMultiCountry: Boolean
+        get() = countries.size > 1
+}
+
+data class TripSegment(
+    val country: String,
+    val startDate: LocalDate,
+    val endDate: LocalDate,
+    val type: SegmentType = SegmentType.STAY,
+    val cities: List<String> = emptyList()
+) {
+    val duration: Long
+        get() = ChronoUnit.DAYS.between(startDate, endDate) + 1
+}
+
+enum class SegmentType {
+    STAY,
+    TRANSIT
 }
 
 enum class TripPurpose {

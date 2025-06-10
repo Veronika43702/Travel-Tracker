@@ -17,15 +17,27 @@ sealed class HomeContract {
         val visas: List<Visa> = emptyList(),
         val trips: List<Trip> = emptyList(),
         val daysCalculation: DaysCalculation? = null,
+        val exemptCountries: Set<String> = emptySet(),
         val error: CustomString? = null
     ) : MviState {
+
+        val activeVisas: List<Visa>
+            get() = visas.filter { it.isActive && !it.isExpired }
+
+        val currentSchengenVisa: Visa?
+            get() = activeVisas
+                .filter { it.requiresSchengenTracking }
+                .minByOrNull { it.expiryDate }
+
+        val hasActiveSchengenVisa: Boolean
+            get() = activeVisas.any { it.requiresSchengenTracking }
 
         val filteredItems: List<HomeItem>
             get() = when (selectedTab) {
                 HomeTab.ALL -> {
                     val items = mutableListOf<HomeItem>()
-                    items.addAll(visas.map { HomeItem.VisaItem(it) })
-                    items.addAll(trips.map { HomeItem.TripItem(it) })
+                    items.addAll(activeVisas.map { HomeItem.VisaItem(it) })
+                    items.addAll(trips.map { HomeItem.TripItem(it, isExempt(it)) })
                     items.sortedByDescending {
                         when (it) {
                             is HomeItem.VisaItem -> it.visa.expiryDate
@@ -33,10 +45,25 @@ sealed class HomeContract {
                         }
                     }
                 }
-
-                HomeTab.VISAS -> visas.map { HomeItem.VisaItem(it) }
-                HomeTab.TRIPS -> trips.map { HomeItem.TripItem(it) }
+                HomeTab.VISAS -> activeVisas.map { HomeItem.VisaItem(it) }
+                HomeTab.TRIPS -> trips.map { HomeItem.TripItem(it, isExempt(it)) }
             }
+
+        val ongoingTrips: List<Trip>
+            get() = trips.filter { it.isOngoing }
+
+        val plannedTrips: List<Trip>
+            get() = trips.filter { it.isFuture }
+
+        val pastTrips: List<Trip>
+            get() = trips.filter { it.isPast }
+
+        private fun isExempt(trip: Trip): Boolean {
+            return trip.segments.any { segment ->
+                segment.type == ru.nikfirs.android.traveltracker.core.domain.model.SegmentType.STAY &&
+                        segment.country in exemptCountries
+            }
+        }
     }
 
     sealed class Action : MviAction {
@@ -47,6 +74,8 @@ sealed class HomeContract {
         data object NavigateToAddTrip : Action()
         data class NavigateToEditVisa(val visa: Visa) : Action()
         data class NavigateToEditTrip(val trip: Trip) : Action()
+        data class DeleteTrip(val trip: Trip) : Action()
+        data class DeleteVisa(val visa: Visa) : Action()
         data object DismissError : Action()
         data object RetryLoadData : Action()
     }
@@ -56,7 +85,6 @@ sealed class HomeContract {
         data object NavigateToAddTrip : Effect()
         data class NavigateToEditVisa(val visaId: Long) : Effect()
         data class NavigateToEditTrip(val tripId: Long) : Effect()
-        data class ShowError(val message: String) : Effect()
+        data class ShowMessage(val message: CustomString) : Effect()
     }
 }
-

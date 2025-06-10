@@ -1,6 +1,8 @@
 package ru.nikfirs.android.traveltracker.core.data.database.entity
 
 import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import java.time.LocalDate
 
@@ -9,7 +11,8 @@ data class VisaEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
     val visaNumber: String,
-    val visaType: String = "C",
+    val visaCategory: VisaCategory,
+    val country: String? = null,
     val issueDate: LocalDate,
     val expiryDate: LocalDate,
     val durationOfStay: Int = 90,
@@ -22,15 +25,36 @@ data class VisaEntity(
 data class TripEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
-    val visaId: Long? = null, // Связь с визой (опционально)
+    val visaId: Long? = null,
     val startDate: LocalDate,
     val endDate: LocalDate,
-    val country: String = "EU",
-    val city: String? = null,
     val purpose: TripPurpose = TripPurpose.TOURISM,
     val isPlanned: Boolean = false,
     val notes: String? = null,
     val createdAt: LocalDate = LocalDate.now()
+)
+
+@Entity(
+    tableName = "trip_segments",
+    foreignKeys = [
+        ForeignKey(
+            entity = TripEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["tripId"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ],
+    indices = [Index(value = ["tripId"])]
+)
+data class TripSegmentEntity(
+    @PrimaryKey(autoGenerate = true)
+    val id: Long = 0,
+    val tripId: Long,
+    val country: String,
+    val startDate: LocalDate,
+    val endDate: LocalDate,
+    val segmentType: SegmentType = SegmentType.STAY,
+    val cities: String? = null
 )
 
 enum class TripPurpose {
@@ -46,10 +70,13 @@ enum class VisaType {
     SINGLE, DOUBLE, MULTI
 }
 
-// Вспомогательная сущность для подсчета дней
-data class DayCount(
-    val date: LocalDate,
-    val dayNumber: Int,
-    val isInTrip: Boolean,
-    val tripId: Long? = null
-)
+enum class VisaCategory {
+    TYPE_C,
+    TYPE_D,
+    RESIDENCE_PERMIT
+}
+
+enum class SegmentType {
+    STAY,
+    TRANSIT
+}

@@ -17,12 +17,12 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindVisaRepository(
-        repository: VisaRepositoryImpl
+        visaRepositoryImpl: VisaRepositoryImpl
     ): VisaRepository
 
     @Binds
     @Singleton
     abstract fun bindTripRepository(
-        repository: TripRepositoryImpl
+        tripRepositoryImpl: TripRepositoryImpl
     ): TripRepository
 }

@@ -60,6 +60,8 @@ fun Screen(
     actions: List<TopBarActionModel> = emptyList(),
     bottomNavRouteRoute: Any? = null,
     navigateRoute: (Any) -> Unit = {},
+    snackbarHost: @Composable () -> Unit = {},
+    floatingActionButton: @Composable () -> Unit = {},
     content: @Composable (PaddingValues) -> Unit,
 ) {
     Scaffold(
@@ -84,6 +86,8 @@ fun Screen(
                     .padding(padding)
             )
         },
+        snackbarHost = snackbarHost,
+        floatingActionButton = floatingActionButton,
         modifier = Modifier
             .fillMaxSize()
             .safeDrawingPadding()

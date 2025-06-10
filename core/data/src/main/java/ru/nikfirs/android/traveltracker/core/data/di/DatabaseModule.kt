@@ -8,6 +8,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import ru.nikfirs.android.traveltracker.core.data.database.TravelDatabase
 import ru.nikfirs.android.traveltracker.core.data.database.dao.TripDao
+import ru.nikfirs.android.traveltracker.core.data.database.dao.TripSegmentDao
 import ru.nikfirs.android.traveltracker.core.data.database.dao.VisaDao
 import javax.inject.Singleton
 
@@ -37,5 +38,13 @@ object DatabaseModule {
         database: TravelDatabase
     ): TripDao {
         return database.tripDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideTripSegmentDao(
+        database: TravelDatabase
+    ): TripSegmentDao {
+        return database.tripSegmentDao()
     }
 }

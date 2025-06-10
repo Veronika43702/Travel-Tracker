@@ -76,8 +76,11 @@ val TextDisabled = Color(0xFF94A3B8)
 
 // Travel specific colors
 val VisaBlue = Color(0xFF3B82F6) // For visa cards
+val VisaDarkBlue = Color(0xFF1E40AF) // For visa D
+val ResidenceGreen = Color(0xFF059669) // For residence permits
 val TripGreen = Color(0xFF10B981) // For trips
 val CalendarGray = Color(0xFF6B7280) // For calendar elements
 val AvailableDays = Color(0xFF86EFAC) // Light green for available days
 val LimitWarning = Color(0xFFFBBF24) // Warning when approaching limit
 val LimitExceeded = Color(0xFFEF4444) // Error when limit exceeded
+val ExemptBackground = Color(0xFFF3F4F6) // Light gray for exempt items

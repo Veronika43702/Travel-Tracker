@@ -56,4 +56,56 @@
     <string name="error_title">Ошибка</string>
     <string name="error_retry">Повторить</string>
 
+    <!-- Trip statuses -->
+    <string name="trip_status_ongoing">В поездке</string>
+    <string name="trip_status_planned">Запланировано</string>
+    <string name="trip_status_completed">Завершено</string>
+
+    <!-- Trip card -->
+    <string name="days_count">%d дней</string>
+    <string name="delete_trip">Удалить поездку</string>
+    <string name="exempt_badge">Не учитывается</string>
+
+    <!-- Visa types -->
+    <string name="visa_type_c">Виза C (краткосрочная)</string>
+    <string name="visa_type_d">Виза D (долгосрочная)</string>
+    <string name="visa_residence_permit">ВНЖ</string>
+
+    <!-- Countries -->
+    <string name="select_country">Выберите страну</string>
+    <string name="transit">Транзит</string>
+
+    <!-- Segment types -->
+    <string name="segment_stay">Пребывание</string>
+    <string name="segment_transit">Транзит</string>
+
+    <!-- Empty states -->
+    <string name="home_empty_all">Нет данных для отображения.\nДобавьте визу или поездку!</string>
+    <string name="home_empty_visas">У вас пока нет активных виз.\nДобавьте первую визу!</string>
+    <string name="home_empty_trips">У вас пока нет поездок.\nДобавьте первую поездку!</string>
+
+    <!-- Trip sections -->
+    <string name="trips_section_ongoing">Текущие поездки</string>
+    <string name="trips_section_planned">Запланированные</string>
+    <string name="trips_section_past">Прошедшие</string>
+
+    <!-- Trip statuses -->
+    <string name="trip_exempt">Не учитывается</string>
+    <string name="more_countries">еще</string>
+
+    <!-- Visa types -->
+    <string name="visa_type_c_short">Виза C</string>
+    <string name="visa_type_d_short">Виза D</string>
+    <string name="visa_type_residence_short">ВНЖ</string>
+    <string name="visa_valid_period">%1$s — %2$s</string>
+
+    <!-- Days counter info -->
+    <string name="exempt_countries_info">Не учитываются дни в: %1$s</string>
+    <string name="no_active_schengen_visa">Нет активной визы для поездок в ЕС</string>
+    <string name="visa_expiring_soon">Виза истекает через %1$d дней</string>
+
+    <!-- Success messages -->
+    <string name="trip_deleted_successfully">Поездка удалена</string>
+    <string name="visa_deleted_successfully">Виза удалена</string>
+
 </resources>

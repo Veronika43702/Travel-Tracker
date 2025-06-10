@@ -55,4 +55,55 @@
     <string name="error_deleting_data">Error deleting data</string>
     <string name="error_title">Error</string>
     <string name="error_retry">Retry</string>
+
+    <string name="trip_status_ongoing">Ongoing</string>
+    <string name="trip_status_planned">Planned</string>
+    <string name="trip_status_completed">Completed</string>
+
+    <!-- Trip card -->
+    <string name="days_count">%d days</string>
+    <string name="delete_trip">Delete trip</string>
+    <string name="exempt_badge">Exempt</string>
+
+    <!-- Visa types -->
+    <string name="visa_type_c">Visa C (short-term)</string>
+    <string name="visa_type_d">Visa D (long-term)</string>
+    <string name="visa_residence_permit">Residence permit</string>
+
+    <!-- Countries -->
+    <string name="select_country">Select country</string>
+    <string name="transit">Transit</string>
+
+    <!-- Segment types -->
+    <string name="segment_stay">Stay</string>
+    <string name="segment_transit">Transit</string>
+
+    <!-- Empty states -->
+    <string name="home_empty_all">No data to display.\nAdd a visa or trip!</string>
+    <string name="home_empty_visas">You don\'t have any active visas yet.\nAdd your first visa!</string>
+    <string name="home_empty_trips">You don\'t have any trips yet.\nAdd your first trip!</string>
+
+    <!-- Trip sections -->
+    <string name="trips_section_ongoing">Ongoing trips</string>
+    <string name="trips_section_planned">Planned</string>
+    <string name="trips_section_past">Past</string>
+
+    <!-- Trip statuses -->
+    <string name="trip_exempt">Exempt</string>
+    <string name="more_countries">more</string>
+
+    <!-- Visa types -->
+    <string name="visa_type_c_short">Visa C</string>
+    <string name="visa_type_d_short">Visa D</string>
+    <string name="visa_type_residence_short">RP</string>
+    <string name="visa_valid_period">%1$s — %2$s</string>
+
+    <!-- Days counter info -->
+    <string name="exempt_countries_info">Days not counted in: %1$s</string>
+    <string name="no_active_schengen_visa">No active visa for EU travel</string>
+    <string name="visa_expiring_soon">Visa expires in %1$d days</string>
+
+    <!-- Success messages -->
+    <string name="trip_deleted_successfully">Trip deleted</string>
+    <string name="visa_deleted_successfully">Visa deleted</string>
 </resources>

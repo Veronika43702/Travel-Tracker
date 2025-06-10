@@ -3,8 +3,6 @@ package ru.nikfirs.android.traveltracker.feature.home.ui.main.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -13,10 +11,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ru.nikfirs.android.traveltracker.core.domain.model.Trip
 import ru.nikfirs.android.traveltracker.core.domain.model.TripPurpose
+import ru.nikfirs.android.traveltracker.core.domain.model.TripSegment
+import ru.nikfirs.android.traveltracker.core.domain.model.SegmentType
 import ru.nikfirs.android.traveltracker.core.ui.R
 import ru.nikfirs.android.traveltracker.core.ui.component.StatusChip
 import ru.nikfirs.android.traveltracker.core.ui.component.TravelCard
@@ -27,6 +28,7 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun TripCard(
     trip: Trip,
+    isExempt: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -92,31 +94,23 @@ fun TripCard(
                         contentColor = MaterialTheme.colorScheme.onTertiary
                     )
                 }
+
+                if (isExempt) {
+                    StatusChip(
+                        text = stringResource(R.string.trip_exempt),
+                        backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
+                        contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
             }
         }
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.LocationOn,
-                contentDescription = null,
-                modifier = Modifier.size(16.dp),
-                tint = MaterialTheme.colorScheme.primary
-            )
-            Text(
-                text = buildString {
-                    append(trip.country)
-                    trip.city?.let { append(", $it") }
-                },
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Medium
-            )
-        }
+        // Страны
+        CountriesRow(trip = trip)
 
         Spacer(modifier = Modifier.height(4.dp))
 
+        // Даты
         Text(
             text = stringResource(
                 R.string.trip_dates,
@@ -126,6 +120,49 @@ fun TripCard(
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
+    }
+}
+
+@Composable
+private fun CountriesRow(
+    trip: Trip,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        val countries = trip.countries
+        val displayCountries = countries.take(2)
+
+        displayCountries.forEachIndexed { index, country ->
+            if (index > 0) {
+                Text(
+                    text = "→",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
+            Text(
+                text = country,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Medium,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f, fill = false)
+            )
+        }
+
+        if (countries.size > 2) {
+            Icon(
+                painter = painterResource(R.drawable.ic_more_horiz),
+                contentDescription = stringResource(R.string.more_countries),
+                modifier = Modifier.size(16.dp),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
     }
 }
 
@@ -142,11 +179,24 @@ private fun TripCardPreview() {
                     id = 1,
                     startDate = LocalDate.now().minusDays(5),
                     endDate = LocalDate.now().plusDays(5),
-                    country = "Germany",
-                    city = "Berlin",
+                    segments = listOf(
+                        TripSegment(
+                            country = "Germany",
+                            startDate = LocalDate.now().minusDays(5),
+                            endDate = LocalDate.now(),
+                            type = SegmentType.STAY
+                        ),
+                        TripSegment(
+                            country = "Poland",
+                            startDate = LocalDate.now(),
+                            endDate = LocalDate.now().plusDays(5),
+                            type = SegmentType.STAY
+                        )
+                    ),
                     purpose = TripPurpose.TOURISM,
                     isPlanned = false
                 ),
+                isExempt = false,
                 onClick = {}
             )
 
@@ -155,24 +205,33 @@ private fun TripCardPreview() {
                     id = 2,
                     startDate = LocalDate.now().plusDays(30),
                     endDate = LocalDate.now().plusDays(37),
-                    country = "France",
-                    city = "Paris",
+                    segments = listOf(
+                        TripSegment(
+                            country = "France",
+                            startDate = LocalDate.now().plusDays(30),
+                            endDate = LocalDate.now().plusDays(32),
+                            type = SegmentType.STAY,
+                            cities = listOf("Paris", "Lyon")
+                        ),
+                        TripSegment(
+                            country = "Spain",
+                            startDate = LocalDate.now().plusDays(32),
+                            endDate = LocalDate.now().plusDays(35),
+                            type = SegmentType.STAY,
+                            cities = listOf("Barcelona")
+                        ),
+                        TripSegment(
+                            country = "Italy",
+                            startDate = LocalDate.now().plusDays(35),
+                            endDate = LocalDate.now().plusDays(37),
+                            type = SegmentType.STAY,
+                            cities = listOf("Milan")
+                        )
+                    ),
                     purpose = TripPurpose.BUSINESS,
                     isPlanned = true
                 ),
-                onClick = {}
-            )
-
-            TripCard(
-                trip = Trip(
-                    id = 3,
-                    startDate = LocalDate.now().minusMonths(2),
-                    endDate = LocalDate.now().minusMonths(2).plusDays(14),
-                    country = "Italy",
-                    city = "Rome",
-                    purpose = TripPurpose.FAMILY,
-                    isPlanned = false
-                ),
+                isExempt = true,
                 onClick = {}
             )
         }
