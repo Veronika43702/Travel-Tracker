@@ -12,13 +12,13 @@ data class VisaEntity(
     val id: Long = 0,
     val visaNumber: String,
     val visaCategory: VisaCategory,
-    val country: String? = null,
+    val country: String = "",
     val issueDate: LocalDate,
     val expiryDate: LocalDate,
     val durationOfStay: Int = 90,
     val entries: VisaType = VisaType.MULTI,
     val isActive: Boolean = true,
-    val notes: String? = null
+    val notes: String = "",
 )
 
 @Entity(tableName = "trips")

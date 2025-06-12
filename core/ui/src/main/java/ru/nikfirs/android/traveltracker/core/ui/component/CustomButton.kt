@@ -1,12 +1,14 @@
 package ru.nikfirs.android.traveltracker.core.ui.component
 
 import androidx.annotation.DrawableRes
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,6 +29,7 @@ fun CustomButton(
     iconImage: ImageVector? = null,
     secondaryBtn: Boolean = false,
     contentColor: Color = Color.Unspecified,
+    smallButton: Boolean = false,
 ) {
     val colors =
         if (secondaryBtn) {
@@ -42,7 +45,8 @@ fun CustomButton(
         onClick = onClick,
         shape = MaterialTheme.shapes.button,
         colors = colors,
-        modifier = modifier
+        modifier = modifier,
+        contentPadding = PaddingValues(vertical = 4.dp, horizontal = 12.dp)
     ) {
         iconRes?.let {
             Icon(painter = painterResource(it), contentDescription = null)
@@ -52,9 +56,11 @@ fun CustomButton(
         }
         Text(
             text,
-            style = MaterialTheme.typography.titleSmall,
+            style = if (smallButton) {
+                LocalTextStyle.current
+            } else MaterialTheme.typography.titleSmall,
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(vertical = 10.5.dp, horizontal = 12.dp)
+            modifier = Modifier.padding(vertical = if (smallButton) 8.dp else 14.5.dp)
         )
     }
 }

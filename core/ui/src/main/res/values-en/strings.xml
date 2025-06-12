@@ -45,15 +45,19 @@
     <string name="action_add_trip">Add trip</string>
     <string name="action_edit">Edit</string>
     <string name="action_delete">Delete</string>
+    <string name="action_annul">Annul</string>
     <string name="action_cancel">Cancel</string>
     <string name="action_save">Save</string>
+    <string name="action_continue">Continue</string>
 
     <!-- Error Messages -->
     <string name="error_loading_data">Error loading data</string>
     <string name="error_saving_data">Error saving data</string>
+    <string name="error_updating_data">Error updating data</string>
     <string name="error_deleting_data">Error deleting data</string>
     <string name="error_title">Error</string>
     <string name="error_retry">Retry</string>
+    <string name="error_visa_not_found">Visa not found</string>
 
     <string name="trip_status_ongoing">Ongoing</string>
     <string name="trip_status_planned">Planned</string>
@@ -136,6 +140,10 @@
 
     <!-- Visa Details Screen -->
     <string name="visa_details_title">Visa</string>
+    <string name="visa_annul_dialog">Are you sure you want to annul visa?\nIt will be impossible to cancel the action.</string>
+    <string name="visa_delete_dialog">Are you sure you want to delete visa?\nIt will be impossible to cancel the action.</string>
+    <string name="visa_details_annulled">Annulled</string>
+
 
     <!-- Success Messages -->
     <string name="success_visa_added">Visa added successfully</string>

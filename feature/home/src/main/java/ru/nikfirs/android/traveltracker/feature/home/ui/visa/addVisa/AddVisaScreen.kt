@@ -293,7 +293,7 @@ private fun VisaTypeSelection(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun CountryDropdown(
-    selectedCountry: String?,
+    selectedCountry: String,
     expanded: Boolean,
     onExpandedChange: (Boolean) -> Unit,
     onCountrySelected: (String) -> Unit,
@@ -311,9 +311,8 @@ private fun CountryDropdown(
         }
     ) {
         CustomTextFieldButton(
-            text = selectedCountry?.let { code ->
-                SchengenCountries.getCountryByCode(code)?.getDisplayName(locale) ?: code
-            } ?: "",
+            text = SchengenCountries.getCountryByCode(selectedCountry)?.getDisplayName(locale)
+                ?: selectedCountry,
             enabled = enabled,
             required = true,
             label = stringResource(uiR.string.country),

@@ -14,7 +14,7 @@ sealed class AddVisaContract {
         val isLoading: Boolean = false,
         val visaNumber: String = "",
         val visaType: VisaCategory = VisaCategory.TYPE_C,
-        val selectedCountry: String? = null,
+        val selectedCountry: String = "",
         val startDate: LocalDate = LocalDate.now(),
         val expiryDate: LocalDate = LocalDate.now(),
         val durationOfStay: String = "1",

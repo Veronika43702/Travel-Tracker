@@ -41,6 +41,7 @@ class HomeViewModel @Inject constructor(
             is Action.SelectTab -> selectTab(action.tab)
             is Action.NavigateToAddVisa -> navigateToAddVisa()
             is Action.NavigateToAddTrip -> navigateToAddTrip()
+            is Action.NavigateToVisaDetails -> navigateToVisaDetails(action.visaId)
             is Action.NavigateToEditVisa -> navigateToEditVisa(action.visa)
             is Action.NavigateToEditTrip -> navigateToEditTrip(action.trip)
             is Action.DeleteTrip -> deleteTrip(action.trip)
@@ -62,7 +63,7 @@ class HomeViewModel @Inject constructor(
                     .collectLatest { homeData ->
                         setState {
                             it.copy(
-                                visas = homeData.activeVisas,
+                                visas = homeData.allVisas,
                                 trips = homeData.allTrips,
                                 exemptCountries = homeData.exemptCountries,
                                 isLoading = false,
@@ -103,6 +104,10 @@ class HomeViewModel @Inject constructor(
 
     private fun navigateToAddTrip() {
         setEffect { Effect.NavigateToAddTrip }
+    }
+
+    private fun navigateToVisaDetails(visaId: Long) {
+        setEffect { Effect.NavigateToVisaDetails(visaId) }
     }
 
     private fun navigateToEditVisa(visa: Visa) {

@@ -41,6 +41,7 @@ fun VisaCard(
                     .clip(CircleShape)
                     .background(
                         when {
+                            !visa.isActive -> MaterialTheme.colorScheme.errorContainer
                             visa.isExpired -> MaterialTheme.colorScheme.errorContainer
                             visa.visaType == VisaCategory.RESIDENCE_PERMIT -> MaterialTheme.colorScheme.secondaryContainer
                             visa.visaType == VisaCategory.TYPE_D -> MaterialTheme.colorScheme.tertiaryContainer
@@ -54,6 +55,7 @@ fun VisaCard(
                     contentDescription = null,
                     modifier = Modifier.size(24.dp),
                     tint = when {
+                        !visa.isActive -> MaterialTheme.colorScheme.onErrorContainer
                         visa.isExpired -> MaterialTheme.colorScheme.onErrorContainer
                         visa.visaType == VisaCategory.RESIDENCE_PERMIT -> MaterialTheme.colorScheme.onSecondaryContainer
                         visa.visaType == VisaCategory.TYPE_D -> MaterialTheme.colorScheme.onTertiaryContainer
@@ -122,9 +124,9 @@ fun VisaCard(
                     fontWeight = FontWeight.Medium
                 )
 
-                visa.country?.let { country ->
+                if (visa.country.isNotBlank()) {
                     Text(
-                        text = "• $country",
+                        text = "• ${visa.country}",
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.primary
                     )
@@ -207,6 +209,20 @@ private fun VisaCardPreview() {
                     expiryDate = LocalDate.now().minusDays(10),
                     entries = VisaEntries.SINGLE,
                     durationOfStay = 1,
+                ),
+                onClick = {}
+            )
+
+            VisaCard(
+                visa = Visa(
+                    id = 4,
+                    visaNumber = "C111111111",
+                    visaType = VisaCategory.TYPE_C,
+                    startDate = LocalDate.now().minusDays(1),
+                    expiryDate = LocalDate.now().plusDays(10),
+                    entries = VisaEntries.SINGLE,
+                    durationOfStay = 1,
+                    isActive = false,
                 ),
                 onClick = {}
             )

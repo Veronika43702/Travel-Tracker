@@ -27,6 +27,7 @@ fun TravelCard(
     Card(
         modifier = modifier
             .fillMaxWidth()
+            .clip(MaterialTheme.shapes.card)
             .then(
                 if (onClick != null) {
                     Modifier.clickableOnce { onClick() }

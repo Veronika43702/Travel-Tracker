@@ -153,7 +153,7 @@ class AddVisaViewModel @Inject constructor(
                         expiryDate = currentState.expiryDate,
                         durationOfStay = currentState.durationOfStay.toIntOrNull() ?: 90,
                         entries = currentState.entries,
-                        notes = currentState.notes.ifBlank { null }
+                        notes = currentState.notes
                     )
 
                     saveVisaUseCase.invoke(visa)
@@ -188,7 +188,7 @@ class AddVisaViewModel @Inject constructor(
         return AddVisaContract.ValidationErrors(
             visaNumberError = if (currentState.visaNumber.isBlank())
                 CustomString.resource(uiR.string.error_visa_number_required) else null,
-            countryError = if (currentState.selectedCountry == null)
+            countryError = if (currentState.selectedCountry.isBlank())
                 CustomString.resource(uiR.string.error_country_required) else null,
             durationError = validateDuration(currentState.durationOfStay),
             issueDateError = null, // Issue date is always valid as it's set by date picker

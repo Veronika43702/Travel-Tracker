@@ -45,15 +45,21 @@
     <string name="action_add_trip">Добавить поездку</string>
     <string name="action_edit">Редактировать</string>
     <string name="action_delete">Удалить</string>
+    <string name="action_annul">Аннулировать</string>
     <string name="action_cancel">Отмена</string>
     <string name="action_save">Сохранить</string>
+    <string name="action_continue">Продолжить</string>
+    <string name="action_back">Назад</string>
+    <string name="action_confirm">Подтвердить</string>
 
     <!-- Error Messages -->
     <string name="error_loading_data">Ошибка загрузки данных</string>
     <string name="error_saving_data">Ошибка сохранения данных</string>
+    <string name="error_updating_data">Ошибка обновления данных</string>
     <string name="error_deleting_data">Ошибка удаления данных</string>
     <string name="error_title">Ошибка</string>
     <string name="error_retry">Повторить</string>
+    <string name="error_visa_not_found">Виза не найдена</string>
 
     <!-- Trip statuses -->
     <string name="trip_status_ongoing">В поездке</string>
@@ -122,8 +128,6 @@
     <string name="notes_optional">Заметки (необязательно)</string>
     <string name="notes">Заметки</string>
     <string name="select_date">Выберите дату</string>
-    <string name="action_back">Назад</string>
-    <string name="action_confirm">Подтвердить</string>
 
     <!-- Validation Errors -->
     <string name="error_visa_number_required">Номер визы обязателен</string>
@@ -136,6 +140,9 @@
 
     <!-- Visa Details Screen -->
     <string name="visa_details_title">Виза</string>
+    <string name="visa_annul_dialog">Вы уверены, что хотите аннулировать визу? Отменить действие будет невозможно.</string>
+    <string name="visa_delete_dialog">Вы уверены, что хотите удалить визу? Отменить действие будет невозможно.</string>
+    <string name="visa_details_annulled">Аннулирована</string>
 
     <!-- Success Messages -->
     <string name="success_visa_added">Виза успешно добавлена</string>

@@ -44,8 +44,8 @@ val Typography = Typography(
     ),
     headlineSmall = TextStyle(
         fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 24.sp,
+        fontWeight = FontWeight.Medium,
+        fontSize = 20.sp,
         lineHeight = 32.sp,
         letterSpacing = 0.sp,
     ),

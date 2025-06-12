@@ -15,7 +15,7 @@ sealed class HomeItem {
 }
 
 data class HomeData(
-    val activeVisas: List<Visa>,
+    val allVisas: List<Visa>,
     val allTrips: List<Trip>,
     val exemptCountries: Set<String>
 )

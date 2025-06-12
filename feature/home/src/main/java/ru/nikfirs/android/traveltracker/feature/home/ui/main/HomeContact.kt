@@ -34,7 +34,7 @@ sealed class HomeContract {
             get() = when (selectedTab) {
                 HomeTab.ALL -> {
                     val items = mutableListOf<HomeItem>()
-                    items.addAll(activeVisas.map { HomeItem.VisaItem(it) })
+                    items.addAll(visas.map { HomeItem.VisaItem(it) })
                     items.addAll(trips.map { HomeItem.TripItem(it, isExempt(it)) })
                     items.sortedByDescending {
                         when (it) {
@@ -44,7 +44,7 @@ sealed class HomeContract {
                     }
                 }
 
-                HomeTab.VISAS -> activeVisas.map { HomeItem.VisaItem(it) }
+                HomeTab.VISAS -> visas.map { HomeItem.VisaItem(it) }
                 HomeTab.TRIPS -> trips.map { HomeItem.TripItem(it, isExempt(it)) }
             }
 
@@ -71,6 +71,7 @@ sealed class HomeContract {
         data class SelectTab(val tab: HomeTab) : Action()
         data object NavigateToAddVisa : Action()
         data object NavigateToAddTrip : Action()
+        data class NavigateToVisaDetails(val visaId: Long) : Action()
         data class NavigateToEditVisa(val visa: Visa) : Action()
         data class NavigateToEditTrip(val trip: Trip) : Action()
         data class DeleteTrip(val trip: Trip) : Action()
@@ -82,6 +83,7 @@ sealed class HomeContract {
     sealed class Effect : MviEffect {
         data object NavigateToAddVisa : Effect()
         data object NavigateToAddTrip : Effect()
+        data class NavigateToVisaDetails(val visaId: Long) : Effect()
         data class NavigateToEditVisa(val visaId: Long) : Effect()
         data class NavigateToEditTrip(val tripId: Long) : Effect()
         data class ShowMessage(val message: CustomString) : Effect()

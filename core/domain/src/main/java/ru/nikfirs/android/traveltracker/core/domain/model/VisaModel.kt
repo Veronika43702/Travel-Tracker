@@ -7,13 +7,13 @@ data class Visa(
     val id: Long = 0,
     val visaNumber: String,
     val visaType: VisaCategory = VisaCategory.TYPE_C,
-    val country: String? = null,
+    val country: String = "",
     val startDate: LocalDate,
     val expiryDate: LocalDate,
     val durationOfStay: Int,
     val entries: VisaEntries = VisaEntries.MULTI,
     val isActive: Boolean = true,
-    val notes: String? = null
+    val notes: String = "",
 ) {
     val isExpired: Boolean
         get() = expiryDate.isBefore(LocalDate.now())
@@ -22,7 +22,7 @@ data class Visa(
         get() = ChronoUnit.DAYS.between(LocalDate.now(), expiryDate)
 
     val validVisa: Boolean
-        get() = startDate.isBefore(LocalDate.now()) && expiryDate.isAfter(LocalDate.now())
+        get() = startDate.isBefore(LocalDate.now()) && expiryDate.isAfter(LocalDate.now()) && isActive
 }
 
 enum class VisaCategory {

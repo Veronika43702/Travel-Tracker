@@ -47,6 +47,7 @@ fun HomeScreen(
     navigateToAddTrip: () -> Unit,
     navigateToEditVisa: (Long) -> Unit,
     navigateToEditTrip: (Long) -> Unit,
+    navigateToVisaDetails: (visaId: Long) -> Unit,
     navigateRoute: (Any) -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
@@ -59,6 +60,7 @@ fun HomeScreen(
         when (effect) {
             is Effect.NavigateToAddVisa -> navigateToAddVisa()
             is Effect.NavigateToAddTrip -> navigateToAddTrip()
+            is Effect.NavigateToVisaDetails -> navigateToVisaDetails(effect.visaId)
             is Effect.NavigateToEditVisa -> navigateToEditVisa(effect.visaId)
             is Effect.NavigateToEditTrip -> navigateToEditTrip(effect.tripId)
             is Effect.ShowMessage -> {
@@ -226,7 +228,7 @@ private fun AllTabContent(
             when (item) {
                 is HomeItem.VisaItem -> VisaCard(
                     visa = item.visa,
-                    onClick = { onAction(Action.NavigateToEditVisa(item.visa)) }
+                    onClick = { onAction(Action.NavigateToVisaDetails(item.visa.id)) }
                 )
 
                 is HomeItem.TripItem -> TripCard(
@@ -249,12 +251,12 @@ private fun VisasTabContent(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         items(
-            items = state.activeVisas,
+            items = state.visas,
             key = { "visa_${it.id}" }
         ) { visa ->
             VisaCard(
                 visa = visa,
-                onClick = { onAction(Action.NavigateToEditVisa(visa)) }
+                onClick = { onAction(Action.NavigateToVisaDetails(visa.id)) }
             )
         }
     }
@@ -410,8 +412,7 @@ private fun HomeScreenEmptyPreview() {
                 selectedTab = HomeTab.ALL
             ),
             onAction = {},
-
-            )
+        )
     }
 }
 
@@ -432,6 +433,7 @@ private fun HomeScreenWithDataPreview() {
                         expiryDate = LocalDate.now().plusMonths(6),
                         entries = VisaEntries.MULTI,
                         durationOfStay = 1,
+                        isActive = false,
                     ),
                     Visa(
                         id = 2,
@@ -554,8 +556,7 @@ private fun HomeScreenNearLimitPreview() {
                 selectedTab = HomeTab.ALL
             ),
             onAction = {},
-
-            )
+        )
     }
 }
 
