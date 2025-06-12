@@ -2,13 +2,34 @@ package ru.nikfirs.android.traveltracker.feature.home.ui.screens.main
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -22,9 +43,18 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
-import ru.nikfirs.android.traveltracker.core.domain.model.*
+import ru.nikfirs.android.traveltracker.core.domain.model.DaysCalculation
+import ru.nikfirs.android.traveltracker.core.domain.model.SegmentType
+import ru.nikfirs.android.traveltracker.core.domain.model.Trip
+import ru.nikfirs.android.traveltracker.core.domain.model.TripPurpose
+import ru.nikfirs.android.traveltracker.core.domain.model.TripSegment
+import ru.nikfirs.android.traveltracker.core.domain.model.Visa
+import ru.nikfirs.android.traveltracker.core.domain.model.VisaCategory
+import ru.nikfirs.android.traveltracker.core.domain.model.VisaEntries
+import ru.nikfirs.android.traveltracker.core.domain.model.asString
 import ru.nikfirs.android.traveltracker.core.ui.R
 import ru.nikfirs.android.traveltracker.core.ui.component.CustomButton
+import ru.nikfirs.android.traveltracker.core.ui.component.DialogTwoRowButton
 import ru.nikfirs.android.traveltracker.core.ui.component.ErrorDialog
 import ru.nikfirs.android.traveltracker.core.ui.component.Screen
 import ru.nikfirs.android.traveltracker.core.ui.mvi.LaunchedEffectResolver
@@ -37,8 +67,10 @@ import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.HomeContrac
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.HomeContract.Effect
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.HomeContract.State
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.components.DaysCounterCard
+import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.components.SwipeableTripCard
+import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.components.SwipeableVisaCard
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.components.TripCard
-import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.components.VisaCard
+import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.utils.HomeAction
 import java.time.LocalDate
 
 @Composable
@@ -113,9 +145,33 @@ fun HomeScreen(
         )
     }
 
+    DialogTwoRowButton(
+        message = state.dialogText,
+        onRightBtn = {
+            viewModel.setAction(Action.HideDialog)
+            when (state.action?.action) {
+                HomeAction.DELETE_VISA -> {
+                    state.action?.visa?.let {
+                        viewModel.setAction(Action.DeleteVisa(it))
+                    }
+                }
+
+                HomeAction.DELETE_TRIP -> {
+                    state.action?.trip?.let {
+                        viewModel.setAction(Action.DeleteTrip(it))
+                    }
+                }
+
+                null -> {}
+            }
+        },
+        onDismiss = { viewModel.setAction(Action.HideDialog) }
+    )
+
+
     ErrorDialog(
         message = state.error,
-        onDismiss = { viewModel.setAction(Action.DismissError) },
+        onDismiss = { viewModel.setAction(Action.SetError()) },
         onRetry = { viewModel.setAction(Action.RetryLoadData) }
     )
 }
@@ -226,16 +282,18 @@ private fun AllTabContent(
             }
         ) { item ->
             when (item) {
-                is HomeItem.VisaItem -> VisaCard(
-                    visa = item.visa,
-                    onClick = { onAction(Action.NavigateToVisaDetails(item.visa.id)) }
-                )
+                is HomeItem.VisaItem ->
+                    SwipeableVisaCard(
+                        visa = item.visa,
+                        onAction = onAction,
+                    )
 
-                is HomeItem.TripItem -> TripCard(
-                    trip = item.trip,
-                    isExempt = item.isExempt,
-                    onClick = { onAction(Action.NavigateToEditTrip(item.trip)) }
-                )
+                is HomeItem.TripItem ->
+                    SwipeableTripCard(
+                        trip = item.trip,
+                        isExempt = item.isExempt,
+                        onAction = onAction,
+                    )
             }
         }
     }
@@ -254,9 +312,9 @@ private fun VisasTabContent(
             items = state.visas,
             key = { "visa_${it.id}" }
         ) { visa ->
-            VisaCard(
+            SwipeableVisaCard(
                 visa = visa,
-                onClick = { onAction(Action.NavigateToVisaDetails(visa.id)) }
+                onAction = onAction,
             )
         }
     }
@@ -286,12 +344,12 @@ private fun TripsTabContent(
                 items = state.ongoingTrips,
                 key = { "trip_${it.id}" }
             ) { trip ->
-                TripCard(
+                SwipeableTripCard(
                     trip = trip,
                     isExempt = state.exemptCountries.any { country ->
                         trip.segments.any { it.country == country }
                     },
-                    onClick = { onAction(Action.NavigateToEditTrip(trip)) }
+                    onAction = onAction,
                 )
             }
         }

@@ -18,6 +18,7 @@ android {
 
 dependencies {
     api(libs.bundles.base)
+    api(platform(libs.androidx.compose.bom))
     api(libs.bundles.compose)
     api(libs.bundles.debug)
 

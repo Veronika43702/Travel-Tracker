@@ -144,6 +144,9 @@
     <string name="visa_delete_dialog">Вы уверены, что хотите удалить визу? Отменить действие будет невозможно.</string>
     <string name="visa_details_annulled">Аннулирована</string>
 
+    <!-- Trip Details Screen -->
+    <string name="trip_delete_dialog">Вы уверены, что хотите удалить поездку? Отменить действие будет невозможно.</string>
+
     <!-- Edit Visa Screen -->
     <string name="visa_edit_title">Редактирование</string>
 

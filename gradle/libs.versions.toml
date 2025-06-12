@@ -52,6 +52,7 @@ room-testing = { group = "androidx.room", name = "room-testing", version.ref = "
 # compose
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
+androidx-foundation = { group = "androidx.compose.foundation", name = "foundation" }
 androidx-material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
 androidx-ui = { group = "androidx.compose.ui", name = "ui" }
@@ -113,6 +114,7 @@ database = [
 
 compose = [
     "androidx-activity-compose",
+    "androidx-foundation",
     "androidx-navigation-compose",
     "androidx-material3",
     "androidx-ui",

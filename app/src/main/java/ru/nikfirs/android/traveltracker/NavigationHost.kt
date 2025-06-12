@@ -1,11 +1,9 @@
 package ru.nikfirs.android.traveltracker
 
-import android.util.Log
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import ru.nikfirs.android.traveltracker.core.ui.navigation.BottomNavBarRoute

@@ -1,9 +1,18 @@
 package ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -14,16 +23,51 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import ru.nikfirs.android.traveltracker.core.domain.model.SegmentType
 import ru.nikfirs.android.traveltracker.core.domain.model.Trip
 import ru.nikfirs.android.traveltracker.core.domain.model.TripPurpose
 import ru.nikfirs.android.traveltracker.core.domain.model.TripSegment
-import ru.nikfirs.android.traveltracker.core.domain.model.SegmentType
 import ru.nikfirs.android.traveltracker.core.ui.R
+import ru.nikfirs.android.traveltracker.core.ui.component.EditAndDeleteRow
 import ru.nikfirs.android.traveltracker.core.ui.component.StatusChip
+import ru.nikfirs.android.traveltracker.core.ui.component.SwipeableCard
 import ru.nikfirs.android.traveltracker.core.ui.component.TravelCard
-import ru.nikfirs.android.traveltracker.core.ui.theme.*
+import ru.nikfirs.android.traveltracker.core.ui.theme.AppTheme
+import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.HomeContract.Action
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+
+@Composable
+fun SwipeableTripCard(
+    trip: Trip,
+    isExempt: Boolean,
+    onAction: (Action) -> Unit,
+) {
+    SwipeableCard(
+        primaryContent = { onPrimaryClick ->
+            TripCard(
+                trip = trip,
+                isExempt = isExempt,
+                onClick = {
+                    onPrimaryClick?.let { it() }
+                        ?: onAction(Action.NavigateToEditTrip(trip))
+                }
+            )
+        },
+        secondaryContent = { setDefaultState ->
+            EditAndDeleteRow(
+                onEditIconClick = {
+                    setDefaultState()
+                    onAction(Action.NavigateToEditTrip(trip))
+
+                },
+                onDeleteIconClick = {
+                    onAction(Action.ShowDeleteTripDialog(trip))
+                },
+            )
+        }
+    )
+}
 
 @Composable
 fun TripCard(

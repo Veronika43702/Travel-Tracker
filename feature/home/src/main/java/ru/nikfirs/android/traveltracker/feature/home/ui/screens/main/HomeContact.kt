@@ -9,6 +9,10 @@ import ru.nikfirs.android.traveltracker.core.ui.mvi.MviEffect
 import ru.nikfirs.android.traveltracker.core.ui.mvi.MviState
 import ru.nikfirs.android.traveltracker.feature.home.domain.model.HomeItem
 import ru.nikfirs.android.traveltracker.feature.home.domain.model.HomeTab
+import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.utils.HomeAction
+import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.utils.HomeActionModel
+import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.utils.VisaAction
+import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.visaDetails.VisaDetailsContract.Action
 
 sealed class HomeContract {
     data class State(
@@ -18,7 +22,9 @@ sealed class HomeContract {
         val trips: List<Trip> = emptyList(),
         val daysCalculation: DaysCalculation? = null,
         val exemptCountries: Set<String> = emptySet(),
-        val error: CustomString? = null
+        val error: CustomString? = null,
+        val dialogText: CustomString? = null,
+        val action: HomeActionModel? = null,
     ) : MviState {
 
         val activeVisas: List<Visa>
@@ -76,8 +82,11 @@ sealed class HomeContract {
         data class NavigateToEditTrip(val trip: Trip) : Action()
         data class DeleteTrip(val trip: Trip) : Action()
         data class DeleteVisa(val visa: Visa) : Action()
-        data object DismissError : Action()
+        data class SetError(val error: CustomString? = null) : Action()
         data object RetryLoadData : Action()
+        data class ShowDeleteVisaDialog(val visa: Visa) : Action()
+        data class ShowDeleteTripDialog(val trip: Trip) : Action()
+        data object HideDialog : Action()
     }
 
     sealed class Effect : MviEffect {

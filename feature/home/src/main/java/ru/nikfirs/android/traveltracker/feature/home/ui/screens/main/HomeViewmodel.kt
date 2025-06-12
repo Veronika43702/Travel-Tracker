@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.collectLatest
 import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
 import ru.nikfirs.android.traveltracker.core.domain.model.Trip
 import ru.nikfirs.android.traveltracker.core.domain.model.Visa
+import ru.nikfirs.android.traveltracker.core.ui.R
 import ru.nikfirs.android.traveltracker.core.ui.mvi.ViewModel
 import ru.nikfirs.android.traveltracker.core.ui.mvi.launch
 import ru.nikfirs.android.traveltracker.feature.home.domain.model.HomeTab
@@ -16,6 +17,9 @@ import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.GetHomeDataU
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.HomeContract.Action
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.HomeContract.State
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.HomeContract.Effect
+import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.utils.HomeAction
+import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.utils.HomeActionModel
+import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.utils.VisaAction
 import java.time.LocalDate
 import javax.inject.Inject
 import ru.nikfirs.android.traveltracker.core.ui.R as UiR
@@ -46,8 +50,11 @@ class HomeViewModel @Inject constructor(
             is Action.NavigateToEditTrip -> navigateToEditTrip(action.trip)
             is Action.DeleteTrip -> deleteTrip(action.trip)
             is Action.DeleteVisa -> deleteVisa(action.visa)
-            is Action.DismissError -> dismissError()
+            is Action.SetError -> setError(action.error)
             is Action.RetryLoadData -> loadData()
+            is Action.ShowDeleteTripDialog -> showDeleteTripDialog(action.trip)
+            is Action.ShowDeleteVisaDialog -> showDeleteVisaDialog(action.visa)
+            Action.HideDialog -> hideDialog()
         }
     }
 
@@ -144,8 +151,32 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private fun dismissError() {
-        setState { it.copy(error = null) }
+    private fun showDeleteVisaDialog(visa: Visa) {
+        setState {
+            it.copy(
+                dialogText = CustomString.resource(R.string.visa_delete_dialog),
+                action = HomeActionModel(
+                    action = HomeAction.DELETE_VISA,
+                    visa = visa,
+                )
+            )
+        }
+    }
+
+    private fun showDeleteTripDialog(trip: Trip) {
+        setState {
+            it.copy(
+                dialogText = CustomString.resource(R.string.trip_delete_dialog),
+                action = HomeActionModel(
+                    action = HomeAction.DELETE_TRIP,
+                    trip = trip,
+                )
+            )
+        }
+    }
+
+    private fun hideDialog() {
+        setState { it.copy(dialogText = null, action = null) }
     }
 
     private fun setError(error: CustomString?) {
