@@ -1,4 +1,4 @@
-package ru.nikfirs.android.traveltracker.feature.home.ui.visa.visaDetails
+package ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.visaDetails
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
@@ -8,10 +8,10 @@ import ru.nikfirs.android.traveltracker.core.ui.mvi.launch
 import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.visa.DeactivateVisaByIdUseCase
 import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.visa.DeleteVisaUseCase
 import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.visa.GetVisaByIdUseCase
-import ru.nikfirs.android.traveltracker.feature.home.ui.utils.VisaAction
-import ru.nikfirs.android.traveltracker.feature.home.ui.visa.visaDetails.VisaDetailsContract.Action
-import ru.nikfirs.android.traveltracker.feature.home.ui.visa.visaDetails.VisaDetailsContract.Effect
-import ru.nikfirs.android.traveltracker.feature.home.ui.visa.visaDetails.VisaDetailsContract.State
+import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.utils.VisaAction
+import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.visaDetails.VisaDetailsContract.Action
+import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.visaDetails.VisaDetailsContract.Effect
+import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.visaDetails.VisaDetailsContract.State
 import javax.inject.Inject
 
 @HiltViewModel

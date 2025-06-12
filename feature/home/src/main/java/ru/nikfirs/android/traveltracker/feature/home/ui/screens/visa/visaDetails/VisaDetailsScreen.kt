@@ -1,4 +1,4 @@
-package ru.nikfirs.android.traveltracker.feature.home.ui.visa.visaDetails
+package ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.visaDetails
 
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Arrangement
@@ -34,10 +34,10 @@ import ru.nikfirs.android.traveltracker.core.ui.component.LightRUScreenPreview
 import ru.nikfirs.android.traveltracker.core.ui.component.Screen
 import ru.nikfirs.android.traveltracker.core.ui.mvi.LaunchedEffectResolver
 import ru.nikfirs.android.traveltracker.core.ui.theme.AppTheme
-import ru.nikfirs.android.traveltracker.feature.home.ui.utils.VisaAction
-import ru.nikfirs.android.traveltracker.feature.home.ui.visa.visaDetails.VisaDetailsContract.Action
-import ru.nikfirs.android.traveltracker.feature.home.ui.visa.visaDetails.VisaDetailsContract.Effect
-import ru.nikfirs.android.traveltracker.feature.home.ui.visa.visaDetails.VisaDetailsContract.State
+import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.utils.VisaAction
+import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.visaDetails.VisaDetailsContract.Action
+import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.visaDetails.VisaDetailsContract.Effect
+import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.visaDetails.VisaDetailsContract.State
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import ru.nikfirs.android.traveltracker.core.ui.R as uiR

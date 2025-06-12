@@ -1,11 +1,11 @@
-package ru.nikfirs.android.traveltracker.feature.home.ui.visa.visaDetails
+package ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.visaDetails
 
 import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
 import ru.nikfirs.android.traveltracker.core.domain.model.Visa
 import ru.nikfirs.android.traveltracker.core.ui.mvi.MviAction
 import ru.nikfirs.android.traveltracker.core.ui.mvi.MviEffect
 import ru.nikfirs.android.traveltracker.core.ui.mvi.MviState
-import ru.nikfirs.android.traveltracker.feature.home.ui.utils.VisaAction
+import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.utils.VisaAction
 import java.time.format.DateTimeFormatter
 
 sealed class VisaDetailsContract {

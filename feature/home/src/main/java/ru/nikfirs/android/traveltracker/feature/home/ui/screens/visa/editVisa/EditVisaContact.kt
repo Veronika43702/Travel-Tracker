@@ -1,4 +1,4 @@
-package ru.nikfirs.android.traveltracker.feature.home.ui.visa.editVisa
+package ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.editVisa
 
 import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
 import ru.nikfirs.android.traveltracker.core.domain.model.VisaCategory
@@ -30,13 +30,13 @@ sealed class EditVisaContract {
     data class ValidationErrors(
         val visaNumberError: CustomString? = null,
         val countryError: CustomString? = null,
-        val issueDateError: CustomString? = null,
+        val startDateError: CustomString? = null,
         val expiryDateError: CustomString? = null,
         val durationError: CustomString? = null
     ) {
         fun isEmpty(): Boolean = visaNumberError == null &&
                 countryError == null &&
-                issueDateError == null &&
+                startDateError == null &&
                 expiryDateError == null &&
                 durationError == null
     }

@@ -1,4 +1,4 @@
-package ru.nikfirs.android.traveltracker.feature.home.ui.main
+package ru.nikfirs.android.traveltracker.feature.home.ui.screens.main
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.catch
@@ -13,9 +13,9 @@ import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.CalculateDay
 import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.trip.DeleteTripUseCase
 import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.visa.DeleteVisaUseCase
 import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.GetHomeDataUseCase
-import ru.nikfirs.android.traveltracker.feature.home.ui.main.HomeContract.Action
-import ru.nikfirs.android.traveltracker.feature.home.ui.main.HomeContract.State
-import ru.nikfirs.android.traveltracker.feature.home.ui.main.HomeContract.Effect
+import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.HomeContract.Action
+import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.HomeContract.State
+import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.HomeContract.Effect
 import java.time.LocalDate
 import javax.inject.Inject
 import ru.nikfirs.android.traveltracker.core.ui.R as UiR

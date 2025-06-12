@@ -1,4 +1,4 @@
-package ru.nikfirs.android.traveltracker.feature.home.ui.main
+package ru.nikfirs.android.traveltracker.feature.home.ui.screens.main
 
 import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
 import ru.nikfirs.android.traveltracker.core.domain.model.DaysCalculation

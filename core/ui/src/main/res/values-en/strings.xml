@@ -144,6 +144,8 @@
     <string name="visa_delete_dialog">Are you sure you want to delete visa?\nIt will be impossible to cancel the action.</string>
     <string name="visa_details_annulled">Annulled</string>
 
+    <!-- Edit Visa Screen -->
+    <string name="visa_edit_title">Editing</string>
 
     <!-- Success Messages -->
     <string name="success_visa_added">Visa added successfully</string>

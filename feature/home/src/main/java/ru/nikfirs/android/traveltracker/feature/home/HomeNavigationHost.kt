@@ -7,10 +7,10 @@ import androidx.navigation.toRoute
 import ru.nikfirs.android.traveltracker.core.ui.navigation.BottomNavBarRoute
 import ru.nikfirs.android.traveltracker.core.ui.navigation.DeepRoute
 import ru.nikfirs.android.traveltracker.core.ui.navigation.navigateBottomNavBarRoute
-import ru.nikfirs.android.traveltracker.feature.home.ui.main.HomeScreen
-import ru.nikfirs.android.traveltracker.feature.home.ui.visa.addVisa.AddVisaScreen
-import ru.nikfirs.android.traveltracker.feature.home.ui.visa.editVisa.EditVisaScreen
-import ru.nikfirs.android.traveltracker.feature.home.ui.visa.visaDetails.VisaDetailsScreen
+import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.HomeScreen
+import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.addVisa.AddVisaScreen
+import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.editVisa.EditVisaScreen
+import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.visaDetails.VisaDetailsScreen
 
 fun NavGraphBuilder.homeNavigationGraph(
     navController: NavHostController,

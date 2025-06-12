@@ -1,4 +1,4 @@
-package ru.nikfirs.android.traveltracker.feature.home.ui.main.components
+package ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

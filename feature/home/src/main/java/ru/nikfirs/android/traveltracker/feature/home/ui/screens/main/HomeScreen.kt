@@ -1,4 +1,4 @@
-package ru.nikfirs.android.traveltracker.feature.home.ui.main
+package ru.nikfirs.android.traveltracker.feature.home.ui.screens.main
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.background
@@ -33,12 +33,12 @@ import ru.nikfirs.android.traveltracker.core.ui.theme.AppTheme
 import ru.nikfirs.android.traveltracker.core.ui.theme.tab
 import ru.nikfirs.android.traveltracker.feature.home.domain.model.HomeItem
 import ru.nikfirs.android.traveltracker.feature.home.domain.model.HomeTab
-import ru.nikfirs.android.traveltracker.feature.home.ui.main.HomeContract.Action
-import ru.nikfirs.android.traveltracker.feature.home.ui.main.HomeContract.Effect
-import ru.nikfirs.android.traveltracker.feature.home.ui.main.HomeContract.State
-import ru.nikfirs.android.traveltracker.feature.home.ui.main.components.DaysCounterCard
-import ru.nikfirs.android.traveltracker.feature.home.ui.main.components.TripCard
-import ru.nikfirs.android.traveltracker.feature.home.ui.main.components.VisaCard
+import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.HomeContract.Action
+import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.HomeContract.Effect
+import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.HomeContract.State
+import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.components.DaysCounterCard
+import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.components.TripCard
+import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.components.VisaCard
 import java.time.LocalDate
 
 @Composable

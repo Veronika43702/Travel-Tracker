@@ -1,4 +1,4 @@
-package ru.nikfirs.android.traveltracker.feature.home.ui.trip
+package ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
@@ -7,9 +7,9 @@ import ru.nikfirs.android.traveltracker.core.domain.model.Trip
 import ru.nikfirs.android.traveltracker.core.domain.repository.TripRepository
 import ru.nikfirs.android.traveltracker.core.ui.mvi.ViewModel
 import ru.nikfirs.android.traveltracker.core.ui.mvi.launch
-import ru.nikfirs.android.traveltracker.feature.home.ui.trip.TripContract.Action
-import ru.nikfirs.android.traveltracker.feature.home.ui.trip.TripContract.State
-import ru.nikfirs.android.traveltracker.feature.home.ui.trip.TripContract.Effect
+import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.TripContract.Action
+import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.TripContract.State
+import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.TripContract.Effect
 import javax.inject.Inject
 
 @HiltViewModel

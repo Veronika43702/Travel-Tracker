@@ -1,4 +1,4 @@
-package ru.nikfirs.android.traveltracker.feature.home.ui.visa.editVisa
+package ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.editVisa
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
@@ -12,9 +12,9 @@ import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.visa.UpdateV
 import ru.nikfirs.android.traveltracker.core.ui.R as uiR
 import java.time.LocalDate
 import javax.inject.Inject
-import ru.nikfirs.android.traveltracker.feature.home.ui.visa.editVisa.EditVisaContract.Action
-import ru.nikfirs.android.traveltracker.feature.home.ui.visa.editVisa.EditVisaContract.State
-import ru.nikfirs.android.traveltracker.feature.home.ui.visa.editVisa.EditVisaContract.Effect
+import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.editVisa.EditVisaContract.Action
+import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.editVisa.EditVisaContract.State
+import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.editVisa.EditVisaContract.Effect
 import java.time.temporal.ChronoUnit
 
 @HiltViewModel
@@ -216,7 +216,7 @@ class EditVisaViewModel @Inject constructor(
             countryError = if (currentState.selectedCountry.isBlank())
                 CustomString.resource(uiR.string.error_country_required) else null,
             durationError = validateDuration(currentState.durationOfStay),
-            issueDateError = null, // Issue date is always valid as it's set by date picker
+            startDateError = null, // Issue date is always valid as it's set by date picker
             expiryDateError = if (currentState.expiryDate <= currentState.startDate)
                 CustomString.resource(uiR.string.error_expiry_date_invalid) else null
         )
