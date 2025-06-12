@@ -1,4 +1,4 @@
-package ru.nikfirs.android.traveltracker.feature.home.domain.usecase
+package ru.nikfirs.android.traveltracker.feature.home.domain.usecase.trip
 
 import kotlinx.coroutines.flow.Flow
 import ru.nikfirs.android.traveltracker.core.domain.model.Trip

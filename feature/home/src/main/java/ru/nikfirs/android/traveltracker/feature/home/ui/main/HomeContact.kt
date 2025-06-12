@@ -22,15 +22,13 @@ sealed class HomeContract {
     ) : MviState {
 
         val activeVisas: List<Visa>
-            get() = visas.filter { it.isActive && !it.isExpired }
+            get() = visas.filter { it.isActive }
 
         val currentSchengenVisa: Visa?
             get() = activeVisas
-                .filter { it.requiresSchengenTracking }
+                .filter { it.validVisa }
                 .minByOrNull { it.expiryDate }
 
-        val hasActiveSchengenVisa: Boolean
-            get() = activeVisas.any { it.requiresSchengenTracking }
 
         val filteredItems: List<HomeItem>
             get() = when (selectedTab) {
@@ -45,6 +43,7 @@ sealed class HomeContract {
                         }
                     }
                 }
+
                 HomeTab.VISAS -> activeVisas.map { HomeItem.VisaItem(it) }
                 HomeTab.TRIPS -> trips.map { HomeItem.TripItem(it, isExempt(it)) }
             }

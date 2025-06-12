@@ -29,7 +29,6 @@ import java.time.LocalDate
 @Composable
 fun DaysCounterCard(
     daysCalculation: DaysCalculation,
-    hasActiveVisa: Boolean,
     currentVisa: Visa?,
     exemptCountries: Set<String>,
     modifier: Modifier = Modifier
@@ -77,22 +76,6 @@ fun DaysCounterCard(
             }
         }
 
-        if (!hasActiveVisa) {
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.7f)
-                )
-            ) {
-                Text(
-                    text = stringResource(R.string.no_active_schengen_visa),
-                    modifier = Modifier.padding(12.dp),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onErrorContainer
-                )
-            }
-        }
-
         currentVisa?.let { visa ->
             if (visa.daysUntilExpiry in 1..30) {
                 Card(
@@ -126,9 +109,8 @@ private fun DaysCounterCardPreview() {
                 remainingDays = 45,
                 periodStart = LocalDate.now().minusDays(179),
                 periodEnd = LocalDate.now(),
-                exemptCountries = setOf("Germany", "Poland")
+                exemptCountries = setOf("Germany")
             ),
-            hasActiveVisa = true,
             currentVisa = null,
             exemptCountries = setOf("Germany", "Poland")
         )

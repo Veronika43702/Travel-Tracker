@@ -8,7 +8,7 @@ data class Visa(
     val visaNumber: String,
     val visaType: VisaCategory = VisaCategory.TYPE_C,
     val country: String? = null,
-    val issueDate: LocalDate,
+    val startDate: LocalDate,
     val expiryDate: LocalDate,
     val durationOfStay: Int,
     val entries: VisaEntries = VisaEntries.MULTI,
@@ -21,8 +21,8 @@ data class Visa(
     val daysUntilExpiry: Long
         get() = ChronoUnit.DAYS.between(LocalDate.now(), expiryDate)
 
-    val requiresSchengenTracking: Boolean
-        get() = visaType == VisaCategory.TYPE_C
+    val validVisa: Boolean
+        get() = startDate.isBefore(LocalDate.now()) && expiryDate.isAfter(LocalDate.now())
 }
 
 enum class VisaCategory {

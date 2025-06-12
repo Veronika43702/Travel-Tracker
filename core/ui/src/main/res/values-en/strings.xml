@@ -20,7 +20,6 @@
     <string name="visa_number_label">Visa number</string>
     <string name="visa_type_label">Type</string>
     <string name="visa_valid_until">Valid until %1$s</string>
-    <string name="visa_expired">Expired</string>
     <string name="visa_expires_in_days">Expires in %1$d days</string>
     <string name="visa_entries_single">Single entry</string>
     <string name="visa_entries_double">Double entry</string>
@@ -100,10 +99,44 @@
 
     <!-- Days counter info -->
     <string name="exempt_countries_info">Days not counted in: %1$s</string>
-    <string name="no_active_schengen_visa">No active visa for EU travel</string>
     <string name="visa_expiring_soon">Visa expires in %1$d days</string>
 
     <!-- Success messages -->
     <string name="trip_deleted_successfully">Trip deleted</string>
     <string name="visa_deleted_successfully">Visa deleted</string>
+
+    <!-- Add Visa Screen -->
+    <string name="add_visa_title">Add Visa</string>
+    <string name="visa_number">Visa Number</string>
+    <string name="visa_type">Visa Type</string>
+    <string name="country">Country</string>
+    <string name="issue_date">Start Date</string>
+    <string name="expiry_date">Expiry Date</string>
+    <string name="duration_of_stay">Duration of Stay</string>
+    <string name="days">days</string>
+    <string name="entries_type">Entry Type</string>
+    <string name="entries_single">Single Entry</string>
+    <string name="entries_double">Double Entry</string>
+    <string name="entries_multi">Multiple Entry</string>
+    <string name="notes_optional">Notes (optional)</string>
+    <string name="notes">Notes</string>
+    <string name="select_date">Select Date</string>
+    <string name="action_back">Back</string>
+    <string name="action_confirm">Confirm</string>
+
+    <!-- Validation Errors -->
+    <string name="error_visa_number_required">Visa number is required</string>
+    <string name="error_country_required">Please select issuing country</string>
+    <string name="error_expiry_date_invalid">Expiry date must be after issue date</string>
+    <string name="error_duration_required">Please specify duration of stay</string>
+    <string name="error_duration_invalid">Please enter a valid number</string>
+    <string name="error_duration_positive">Duration must be greater than 0</string>
+    <string name="error_saving_visa">Error saving visa</string>
+
+
+    <!-- Visa Details Screen -->
+    <string name="visa_details_title">Visa</string>
+
+    <!-- Success Messages -->
+    <string name="success_visa_added">Visa added successfully</string>
 </resources>

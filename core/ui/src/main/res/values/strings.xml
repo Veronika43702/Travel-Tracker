@@ -20,7 +20,6 @@
     <string name="visa_number_label">Номер визы</string>
     <string name="visa_type_label">Тип</string>
     <string name="visa_valid_until">Действует до %1$s</string>
-    <string name="visa_expired">Истекла</string>
     <string name="visa_expires_in_days">Истекает через %1$d дн.</string>
     <string name="visa_entries_single">Однократная</string>
     <string name="visa_entries_double">Двукратная</string>
@@ -101,11 +100,44 @@
 
     <!-- Days counter info -->
     <string name="exempt_countries_info">Не учитываются дни в: %1$s</string>
-    <string name="no_active_schengen_visa">Нет активной визы для поездок в ЕС</string>
     <string name="visa_expiring_soon">Виза истекает через %1$d дней</string>
 
     <!-- Success messages -->
     <string name="trip_deleted_successfully">Поездка удалена</string>
     <string name="visa_deleted_successfully">Виза удалена</string>
+
+    <!-- Add Visa Screen -->
+    <string name="add_visa_title">Добавить визу</string>
+    <string name="visa_number">Номер визы</string>
+    <string name="visa_type">Тип визы</string>
+    <string name="country">Страна</string>
+    <string name="issue_date">Дата начала</string>
+    <string name="expiry_date">Дата окончания</string>
+    <string name="duration_of_stay">Продолжительность пребывания</string>
+    <string name="days">дней</string>
+    <string name="entries_type">Тип въезда</string>
+    <string name="entries_single">Однократная</string>
+    <string name="entries_double">Двукратная</string>
+    <string name="entries_multi">Многократная</string>
+    <string name="notes_optional">Заметки (необязательно)</string>
+    <string name="notes">Заметки</string>
+    <string name="select_date">Выберите дату</string>
+    <string name="action_back">Назад</string>
+    <string name="action_confirm">Подтвердить</string>
+
+    <!-- Validation Errors -->
+    <string name="error_visa_number_required">Номер визы обязателен</string>
+    <string name="error_country_required">Выберите страну выдачи</string>
+    <string name="error_expiry_date_invalid">Дата окончания должна быть позже даты выдачи</string>
+    <string name="error_duration_required">Укажите продолжительность пребывания</string>
+    <string name="error_duration_invalid">Введите корректное число</string>
+    <string name="error_duration_positive">Продолжительность должна быть больше 0</string>
+    <string name="error_saving_visa">Ошибка при сохранении визы</string>
+
+    <!-- Visa Details Screen -->
+    <string name="visa_details_title">Виза</string>
+
+    <!-- Success Messages -->
+    <string name="success_visa_added">Виза успешно добавлена</string>
 
 </resources>

@@ -38,8 +38,8 @@ interface VisaDao {
     @Delete
     suspend fun deleteVisa(visa: VisaEntity)
 
-    @Query("UPDATE visas SET isActive = 0 WHERE expiryDate < :currentDate")
-    suspend fun deactivateExpiredVisas(currentDate: LocalDate)
+    @Query("UPDATE visas SET isActive = 0 WHERE id = :visaId")
+    suspend fun deactivateVisaById(visaId: Long)
 
     @Query("""
         SELECT COUNT(*) > 0 FROM visas 

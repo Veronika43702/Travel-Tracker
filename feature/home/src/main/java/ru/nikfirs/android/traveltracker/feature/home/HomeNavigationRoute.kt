@@ -7,6 +7,9 @@ import kotlinx.serialization.Serializable
 sealed class HomeRoute {
 
     @Serializable
-    data object Example
+    data object AddVisa
+
+    @Serializable
+    data class EditVisa(val visaId: Long)
 
 }

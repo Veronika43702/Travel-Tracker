@@ -59,8 +59,8 @@ class VisaRepositoryImpl @Inject constructor(
         visaDao.deleteVisa(visa.toEntity())
     }
 
-    override suspend fun deactivateExpiredVisas() {
-        visaDao.deactivateExpiredVisas(LocalDate.now())
+    override suspend fun deactivateVisaById(visaId: Long) {
+        visaDao.deactivateVisaById(visaId)
     }
 
     override suspend fun hasExemptionForCountry(country: String): Boolean {

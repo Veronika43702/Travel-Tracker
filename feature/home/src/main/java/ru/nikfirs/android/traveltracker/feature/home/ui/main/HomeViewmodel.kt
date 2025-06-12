@@ -10,9 +10,8 @@ import ru.nikfirs.android.traveltracker.core.ui.mvi.ViewModel
 import ru.nikfirs.android.traveltracker.core.ui.mvi.launch
 import ru.nikfirs.android.traveltracker.feature.home.domain.model.HomeTab
 import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.CalculateDaysInPeriodUseCase
-import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.DeactivateExpiredVisasUseCase
-import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.DeleteTripUseCase
-import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.DeleteVisaUseCase
+import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.trip.DeleteTripUseCase
+import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.visa.DeleteVisaUseCase
 import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.GetHomeDataUseCase
 import ru.nikfirs.android.traveltracker.feature.home.ui.main.HomeContract.Action
 import ru.nikfirs.android.traveltracker.feature.home.ui.main.HomeContract.State
@@ -27,12 +26,10 @@ class HomeViewModel @Inject constructor(
     private val calculateDaysInPeriodUseCase: CalculateDaysInPeriodUseCase,
     private val deleteTripUseCase: DeleteTripUseCase,
     private val deleteVisaUseCase: DeleteVisaUseCase,
-    private val deactivateExpiredVisasUseCase: DeactivateExpiredVisasUseCase
 ) : ViewModel<Action, Effect, State>() {
 
     init {
         setAction(Action.LoadData)
-        deactivateExpiredVisas()
     }
 
     override fun createInitialState(): State = State()
@@ -92,16 +89,6 @@ class HomeViewModel @Inject constructor(
                 setState { it.copy(daysCalculation = calculation) }
             } catch (e: Exception) {
                 // Не показываем ошибку подсчета дней, просто логируем
-            }
-        }
-    }
-
-    private fun deactivateExpiredVisas() {
-        launch {
-            try {
-                deactivateExpiredVisasUseCase()
-            } catch (e: Exception) {
-                // Не показываем ошибку пользователю
             }
         }
     }

@@ -3,6 +3,8 @@ package ru.nikfirs.android.traveltracker.feature.home.domain.usecase
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import ru.nikfirs.android.traveltracker.feature.home.domain.model.HomeData
+import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.trip.GetAllTripsUseCase
+import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.visa.GetActiveVisasUseCase
 import javax.inject.Inject
 
 class GetHomeDataUseCase @Inject constructor(

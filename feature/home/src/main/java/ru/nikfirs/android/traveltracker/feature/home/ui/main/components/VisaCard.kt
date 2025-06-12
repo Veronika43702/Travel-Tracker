@@ -101,12 +101,7 @@ fun VisaCard(
 
                 // Статус
                 when {
-                    visa.isExpired -> StatusChip(
-                        text = stringResource(R.string.visa_expired),
-                        backgroundColor = MaterialTheme.colorScheme.error,
-                        contentColor = MaterialTheme.colorScheme.onError
-                    )
-                    visa.daysUntilExpiry <= 30 -> StatusChip(
+                    visa.validVisa && visa.daysUntilExpiry <= 30 -> StatusChip(
                         text = stringResource(R.string.visa_expires_in_days, visa.daysUntilExpiry),
                         backgroundColor = MaterialTheme.colorScheme.tertiary,
                         contentColor = MaterialTheme.colorScheme.onTertiary
@@ -140,7 +135,7 @@ fun VisaCard(
             Text(
                 text = stringResource(
                     R.string.visa_valid_period,
-                    visa.issueDate.format(dateFormatter),
+                    visa.startDate.format(dateFormatter),
                     visa.expiryDate.format(dateFormatter)
                 ),
                 style = MaterialTheme.typography.bodyMedium,
@@ -167,7 +162,7 @@ private fun VisaCardPreview() {
                     id = 1,
                     visaNumber = "C123456789",
                     visaType = VisaCategory.TYPE_C,
-                    issueDate = LocalDate.now().minusMonths(6),
+                    startDate = LocalDate.now().minusMonths(6),
                     expiryDate = LocalDate.now().plusMonths(6),
                     entries = VisaEntries.MULTI,
                     durationOfStay = 1,
@@ -181,7 +176,7 @@ private fun VisaCardPreview() {
                     visaNumber = "D987654321",
                     visaType = VisaCategory.TYPE_D,
                     country = "Germany",
-                    issueDate = LocalDate.now().minusMonths(3),
+                    startDate = LocalDate.now().minusMonths(3),
                     expiryDate = LocalDate.now().plusMonths(9),
                     entries = VisaEntries.MULTI,
                     durationOfStay = 1,
@@ -195,7 +190,7 @@ private fun VisaCardPreview() {
                     visaNumber = "RP555555555",
                     visaType = VisaCategory.RESIDENCE_PERMIT,
                     country = "Poland",
-                    issueDate = LocalDate.now().minusYears(1),
+                    startDate = LocalDate.now().minusYears(1),
                     expiryDate = LocalDate.now().plusYears(1),
                     entries = VisaEntries.MULTI,
                     durationOfStay = 1,
@@ -208,7 +203,7 @@ private fun VisaCardPreview() {
                     id = 4,
                     visaNumber = "C111111111",
                     visaType = VisaCategory.TYPE_C,
-                    issueDate = LocalDate.now().minusYears(1),
+                    startDate = LocalDate.now().minusYears(1),
                     expiryDate = LocalDate.now().minusDays(10),
                     entries = VisaEntries.SINGLE,
                     durationOfStay = 1,

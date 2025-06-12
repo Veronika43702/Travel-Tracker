@@ -13,6 +13,6 @@ interface VisaRepository {
     suspend fun insertVisa(visa: Visa): Long
     suspend fun updateVisa(visa: Visa)
     suspend fun deleteVisa(visa: Visa)
-    suspend fun deactivateExpiredVisas()
+    suspend fun deactivateVisaById(visaId: Long)
     suspend fun hasExemptionForCountry(country: String): Boolean
 }

@@ -11,6 +11,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -22,12 +24,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
 import ru.nikfirs.android.traveltracker.core.domain.model.*
 import ru.nikfirs.android.traveltracker.core.ui.R
+import ru.nikfirs.android.traveltracker.core.ui.component.CustomButton
 import ru.nikfirs.android.traveltracker.core.ui.component.ErrorDialog
 import ru.nikfirs.android.traveltracker.core.ui.component.Screen
 import ru.nikfirs.android.traveltracker.core.ui.mvi.LaunchedEffectResolver
 import ru.nikfirs.android.traveltracker.core.ui.navigation.BottomNavBarRoute
 import ru.nikfirs.android.traveltracker.core.ui.theme.AppTheme
-import ru.nikfirs.android.traveltracker.core.ui.theme.button
+import ru.nikfirs.android.traveltracker.core.ui.theme.tab
 import ru.nikfirs.android.traveltracker.feature.home.domain.model.HomeItem
 import ru.nikfirs.android.traveltracker.feature.home.domain.model.HomeTab
 import ru.nikfirs.android.traveltracker.feature.home.ui.main.HomeContract.Action
@@ -133,7 +136,6 @@ private fun HomeContent(
             ) {
                 DaysCounterCard(
                     daysCalculation = calculation,
-                    hasActiveVisa = state.hasActiveSchengenVisa,
                     currentVisa = state.currentSchengenVisa,
                     exemptCountries = state.exemptCountries
                 )
@@ -157,7 +159,10 @@ private fun HomeContent(
                                 HomeTab.TRIPS -> stringResource(R.string.home_tab_trips)
                             }
                         )
-                    }
+                    },
+                    modifier = Modifier
+                        .clip(MaterialTheme.shapes.tab)
+                        .background(Color.Transparent, MaterialTheme.shapes.tab)
                 )
             }
         }
@@ -382,20 +387,15 @@ private fun EmptyState(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        Button(
+        CustomButton(
+            text = when (tab) {
+                HomeTab.VISAS -> stringResource(R.string.action_add_visa)
+                HomeTab.TRIPS -> stringResource(R.string.action_add_trip)
+                HomeTab.ALL -> stringResource(R.string.action_add_trip)
+            },
+            iconImage = Icons.Default.Add,
             onClick = onAddClick,
-            shape = MaterialTheme.shapes.button
-        ) {
-            Icon(Icons.Default.Add, contentDescription = null)
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = when (tab) {
-                    HomeTab.VISAS -> stringResource(R.string.action_add_visa)
-                    HomeTab.TRIPS -> stringResource(R.string.action_add_trip)
-                    HomeTab.ALL -> stringResource(R.string.action_add_trip)
-                }
-            )
-        }
+        )
     }
 }
 
@@ -428,7 +428,7 @@ private fun HomeScreenWithDataPreview() {
                         id = 1,
                         visaNumber = "C123456789",
                         visaType = VisaCategory.TYPE_C,
-                        issueDate = LocalDate.now().minusMonths(6),
+                        startDate = LocalDate.now().minusMonths(6),
                         expiryDate = LocalDate.now().plusMonths(6),
                         entries = VisaEntries.MULTI,
                         durationOfStay = 1,
@@ -438,7 +438,7 @@ private fun HomeScreenWithDataPreview() {
                         visaNumber = "D987654321",
                         visaType = VisaCategory.TYPE_D,
                         country = "Germany",
-                        issueDate = LocalDate.now().minusMonths(3),
+                        startDate = LocalDate.now().minusMonths(3),
                         expiryDate = LocalDate.now().plusMonths(9),
                         entries = VisaEntries.MULTI,
                         durationOfStay = 1,
@@ -519,7 +519,7 @@ private fun HomeScreenNearLimitPreview() {
                         id = 1,
                         visaNumber = "C123456789",
                         visaType = VisaCategory.TYPE_C,
-                        issueDate = LocalDate.now().minusMonths(6),
+                        startDate = LocalDate.now().minusMonths(6),
                         expiryDate = LocalDate.now().plusDays(25),
                         entries = VisaEntries.MULTI,
                         durationOfStay = 1,
@@ -572,7 +572,7 @@ private fun HomeScreenTripsTabPreview() {
                         visaNumber = "RP123456",
                         visaType = VisaCategory.RESIDENCE_PERMIT,
                         country = "Poland",
-                        issueDate = LocalDate.now().minusYears(1),
+                        startDate = LocalDate.now().minusYears(1),
                         expiryDate = LocalDate.now().plusYears(1),
                         entries = VisaEntries.MULTI,
                         durationOfStay = 1,
@@ -638,7 +638,7 @@ private fun HomeScreenTripsTabPreview() {
                     )
                 ),
                 daysCalculation = DaysCalculation(
-                    totalDaysUsed = 16,
+                    totalDaysUsed = 22,
                     remainingDays = 74,
                     periodStart = LocalDate.now().minusDays(179),
                     periodEnd = LocalDate.now(),
@@ -654,7 +654,7 @@ private fun HomeScreenTripsTabPreview() {
                     )
                 ),
                 exemptCountries = setOf("Poland"),
-                selectedTab = HomeTab.TRIPS
+                selectedTab = HomeTab.ALL
             ),
             onAction = {},
         )
