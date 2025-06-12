@@ -1,4 +1,4 @@
-package ru.nikfirs.android.traveltracker.feature.home.ui.visa.addVisa
+package ru.nikfirs.android.traveltracker.feature.home.ui.visa.editVisa
 
 import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
 import ru.nikfirs.android.traveltracker.core.domain.model.VisaCategory
@@ -9,9 +9,10 @@ import ru.nikfirs.android.traveltracker.core.ui.mvi.MviState
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-sealed class AddVisaContract {
+sealed class EditVisaContract {
     data class State(
         val isLoading: Boolean = false,
+        val visaId: Long? = null,
         val visaNumber: String = "",
         val visaType: VisaCategory = VisaCategory.TYPE_C,
         val selectedCountry: String = "",
@@ -41,6 +42,7 @@ sealed class AddVisaContract {
     }
 
     sealed class Action : MviAction {
+        data class LoadData(val visaId: Long) : Action()
         data class UpdateVisaNumber(val number: String) : Action()
         data class UpdateVisaType(val type: VisaCategory) : Action()
         data class UpdateCountry(val country: String) : Action()
@@ -50,8 +52,8 @@ sealed class AddVisaContract {
         data class UpdateEntries(val entries: VisaEntries) : Action()
         data class UpdateNotes(val notes: String) : Action()
         data class SetCountryDropdownExpanded(val expanded: Boolean) : Action()
-        data object SaveVisa : Action()
-        data object DismissError : Action()
+        data object UpdateVisa : Action()
+        data class SetError(val error: CustomString? = null) : Action()
     }
 
     sealed class Effect : MviEffect {

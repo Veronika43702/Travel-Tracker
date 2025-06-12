@@ -9,6 +9,7 @@ import ru.nikfirs.android.traveltracker.core.ui.navigation.DeepRoute
 import ru.nikfirs.android.traveltracker.core.ui.navigation.navigateBottomNavBarRoute
 import ru.nikfirs.android.traveltracker.feature.home.ui.main.HomeScreen
 import ru.nikfirs.android.traveltracker.feature.home.ui.visa.addVisa.AddVisaScreen
+import ru.nikfirs.android.traveltracker.feature.home.ui.visa.editVisa.EditVisaScreen
 import ru.nikfirs.android.traveltracker.feature.home.ui.visa.visaDetails.VisaDetailsScreen
 
 fun NavGraphBuilder.homeNavigationGraph(
@@ -19,7 +20,7 @@ fun NavGraphBuilder.homeNavigationGraph(
         HomeScreen(
             navigateToAddVisa = { navController.navigate(HomeRoute.AddVisa) },
             navigateToAddTrip = {},
-            navigateToEditVisa = {},
+            navigateToEditVisa = { navController.navigate(HomeRoute.EditVisa(it)) },
             navigateToEditTrip = {},
             navigateToVisaDetails = { navController.navigate(HomeRoute.VisaDetails(it)) },
             navigateRoute = { navController.navigateBottomNavBarRoute(it) },
@@ -35,7 +36,14 @@ fun NavGraphBuilder.homeNavigationGraph(
         VisaDetailsScreen(
             visaId = route.visaId,
             navigateBack = { navController.popBackStack() },
-            navigateToEdit = {}
+            navigateToEdit = { navController.navigate(HomeRoute.EditVisa(route.visaId)) }
+        )
+    }
+    composable<HomeRoute.EditVisa> { backStack ->
+        val route = backStack.toRoute<HomeRoute.EditVisa>()
+        EditVisaScreen(
+            visaId = route.visaId,
+            navigateBack = { navController.popBackStack() },
         )
     }
 }

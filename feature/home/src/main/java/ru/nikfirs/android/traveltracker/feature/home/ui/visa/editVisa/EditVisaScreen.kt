@@ -1,4 +1,4 @@
-package ru.nikfirs.android.traveltracker.feature.home.ui.visa.addVisa
+package ru.nikfirs.android.traveltracker.feature.home.ui.visa.editVisa
 
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
@@ -29,6 +29,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -62,32 +63,35 @@ import ru.nikfirs.android.traveltracker.core.ui.extension.asString
 import ru.nikfirs.android.traveltracker.core.ui.extension.clickableOnce
 import ru.nikfirs.android.traveltracker.core.ui.mvi.LaunchedEffectResolver
 import ru.nikfirs.android.traveltracker.core.ui.theme.AppTheme
-import ru.nikfirs.android.traveltracker.feature.home.ui.visa.addVisa.AddVisaContract.Action
-import ru.nikfirs.android.traveltracker.feature.home.ui.visa.addVisa.AddVisaContract.Effect
-import ru.nikfirs.android.traveltracker.feature.home.ui.visa.addVisa.AddVisaContract.State
+import ru.nikfirs.android.traveltracker.feature.home.ui.visa.editVisa.EditVisaContract.Action
+import ru.nikfirs.android.traveltracker.feature.home.ui.visa.editVisa.EditVisaContract.Effect
+import ru.nikfirs.android.traveltracker.feature.home.ui.visa.editVisa.EditVisaContract.State
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 import ru.nikfirs.android.traveltracker.core.ui.R as uiR
 
 @Composable
-fun AddVisaScreen(
-    onNavigateBack: () -> Unit,
-    viewModel: AddVisaViewModel = hiltViewModel(),
+fun EditVisaScreen(
+    visaId: Long,
+    navigateBack: () -> Unit,
+    viewModel: EditVisaViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
     val verticalScroll = rememberScrollState()
+    LaunchedEffect(visaId) {
+        viewModel.setAction(Action.LoadData(visaId))
+    }
     LaunchedEffectResolver(flow = viewModel.effect) { effect ->
         when (effect) {
-            is Effect.NavigateBack -> onNavigateBack()
+            is Effect.NavigateBack -> navigateBack()
             Effect.ScrollUp -> scope.launch { verticalScroll.scrollTo(0) }
         }
     }
-
     Screen(
         topTitle = stringResource(uiR.string.add_visa_title),
-        navigateBack = onNavigateBack,
+        navigateBack = navigateBack,
     ) {
         AddVisaScreenContent(
             state = state,
@@ -98,7 +102,7 @@ fun AddVisaScreen(
 
     ErrorDialog(
         message = state.error,
-        onDismiss = { viewModel.setAction(Action.DismissError) }
+        onDismiss = { viewModel.setAction(Action.SetError()) }
     )
 }
 
@@ -227,7 +231,7 @@ private fun AddVisaScreenContent(
         Spacer(Modifier.weight(1f))
         CustomButton(
             text = stringResource(uiR.string.action_save),
-            onClick = { onAction(Action.SaveVisa) },
+            onClick = { onAction(Action.UpdateVisa) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 20.dp)
