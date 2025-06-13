@@ -6,6 +6,7 @@ import kotlinx.serialization.Serializable
 @Immutable
 sealed class HomeRoute {
 
+    // Visa
     @Serializable
     data object AddVisa
 
@@ -14,5 +15,9 @@ sealed class HomeRoute {
 
     @Serializable
     data class EditVisa(val visaId: Long)
+
+    // Trip
+    @Serializable
+    data object AddTrip
 
 }

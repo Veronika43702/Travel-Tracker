@@ -153,4 +153,47 @@
     <!-- Success Messages -->
     <string name="success_visa_added">Виза успешно добавлена</string>
 
+    <!-- Add Trip Screen -->
+    <string name="add_trip_title">Добавить поездку</string>
+    <string name="visa_section">Виза</string>
+    <string name="no_available_visas">Нет доступных виз</string>
+    <string name="visa_validity_period">%1$s — %2$s</string>
+    <string name="selected_visa_validity">Виза действует: %1$s — %2$s</string>
+    <string name="select_purpose">Выберите цель поездки</string>
+    <string name="trip_dates_section">Даты поездки</string>
+    <string name="start_date">Дата начала</string>
+    <string name="end_date">Дата окончания</string>
+    <string name="trip_duration">Общая длительность</string>
+    <string name="countable_days_count">учитывается %d дн.</string>
+    <string name="days_available_at_start">Доступно дней на начало</string>
+    <string name="days_available_at_end">Доступно дней на конец</string>
+    <string name="trip_purpose_section">Цель поездки</string>
+    <string name="purpose_tourism">Туризм</string>
+    <string name="purpose_business">Бизнес</string>
+    <string name="purpose_family">Семейные обстоятельства</string>
+    <string name="purpose_medical">Медицинские цели</string>
+    <string name="purpose_education">Образование</string>
+    <string name="purpose_other">Другое</string>
+    <string name="select_visa">Выберите визу</string>
+    <string name="trip_segments_section">Сегменты поездки</string>
+    <string name="add_segment">Добавить сегмент</string>
+    <string name="segment_country">Страна</string>
+    <string name="segment_dates">Даты пребывания</string>
+    <string name="segment_cities">Города (опционально)</string>
+    <string name="segment_type">Тип пребывания</string>
+    <string name="cities_placeholder">Например: Берлин, Мюнхен</string>
+
+    <!-- Validation Errors for Trip -->
+    <string name="error_start_date_required">Выберите дату начала поездки</string>
+    <string name="error_end_date_required">Выберите дату окончания поездки</string>
+    <string name="error_end_date_before_start">Дата окончания должна быть после даты начала</string>
+    <string name="error_visa_required">Выберите визу для поездки</string>
+    <string name="error_no_segments">Добавьте хотя бы один сегмент поездки</string>
+    <string name="error_segment_overlap">Сегменты не должны пересекаться</string>
+    <string name="error_segment_gap">Между сегментами есть пробелы. Добавьте транзитные сегменты</string>
+    <string name="error_segment_country_required">Выберите страну для сегмента</string>
+    <string name="error_segment_dates_invalid">Некорректные даты сегмента</string>
+    <string name="error_visa_doesnt_cover_dates">Выбранная виза не покрывает даты поездки</string>
+    <string name="error_days_limit_exceeded">Поездка превышает лимит дней пребывания</string>
+    <string name="error_saving_trip">Ошибка при сохранении поездки</string>
 </resources>

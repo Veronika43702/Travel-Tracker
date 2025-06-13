@@ -5,7 +5,6 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -137,7 +136,7 @@ fun CustomTextFieldButton(
 
     LaunchedEffect(interactionSource, text) {
         interactionSource.interactions.collect { interaction ->
-            if (interaction is PressInteraction.Release) {
+            if (interaction is PressInteraction.Release && enabled) {
                 onClick()
             }
         }
@@ -153,8 +152,8 @@ fun CustomTextFieldButton(
         leadingIcon = leadingIcon,
         trailingIconImage = trailingIconImage,
         leadingIconImage = leadingIconImage,
-        onTrailingIconClick = onClick,
-        onLeadingIconClick = onClick,
+        onTrailingIconClick = if (enabled) onClick else null,
+        onLeadingIconClick = if (enabled) onClick else null,
         modifier = modifier,
         isError = isError,
         supportingText = supportingText,

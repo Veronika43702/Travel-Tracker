@@ -30,6 +30,7 @@ fun CustomButton(
     secondaryBtn: Boolean = false,
     contentColor: Color = Color.Unspecified,
     smallButton: Boolean = false,
+    enabled: Boolean = true,
 ) {
     val colors =
         if (secondaryBtn) {
@@ -46,6 +47,7 @@ fun CustomButton(
         shape = MaterialTheme.shapes.button,
         colors = colors,
         modifier = modifier,
+        enabled = enabled,
         contentPadding = PaddingValues(vertical = 4.dp, horizontal = 12.dp)
     ) {
         iconRes?.let {

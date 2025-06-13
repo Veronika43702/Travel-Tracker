@@ -153,4 +153,48 @@
 
     <!-- Success Messages -->
     <string name="success_visa_added">Visa added successfully</string>
+
+    <!-- Add Trip Screen -->
+    <string name="add_trip_title">Add Trip</string>
+    <string name="visa_section">Visa</string>
+    <string name="no_available_visas">No available visas</string>
+    <string name="visa_validity_period">%1$s — %2$s</string>
+    <string name="selected_visa_validity">Visa valid: %1$s — %2$s</string>
+    <string name="select_purpose">Select trip purpose</string>
+    <string name="trip_dates_section">Trip Dates</string>
+    <string name="start_date">Start Date</string>
+    <string name="end_date">End Date</string>
+    <string name="trip_duration">Total Duration</string>
+    <string name="countable_days_count">counted %d days</string>
+    <string name="days_available_at_start">Available days at start</string>
+    <string name="days_available_at_end">Available days at end</string>
+    <string name="trip_purpose_section">Trip Purpose</string>
+    <string name="purpose_tourism">Tourism</string>
+    <string name="purpose_business">Business</string>
+    <string name="purpose_family">Family</string>
+    <string name="purpose_medical">Medical</string>
+    <string name="purpose_education">Education</string>
+    <string name="purpose_other">Other</string>
+    <string name="select_visa">Select Visa</string>
+    <string name="trip_segments_section">Trip Segments</string>
+    <string name="add_segment">Add Segment</string>
+    <string name="segment_country">Country</string>
+    <string name="segment_dates">Dates of Stay</string>
+    <string name="segment_cities">Cities (optional)</string>
+    <string name="segment_type">Type of Stay</string>
+    <string name="cities_placeholder">e.g. Berlin, Munich</string>
+
+    <!-- Validation Errors for Trip -->
+    <string name="error_start_date_required">Select trip start date</string>
+    <string name="error_end_date_required">Select trip end date</string>
+    <string name="error_end_date_before_start">End date must be after start date</string>
+    <string name="error_visa_required">Select a visa for the trip</string>
+    <string name="error_no_segments">Add at least one trip segment</string>
+    <string name="error_segment_overlap">Segments should not overlap</string>
+    <string name="error_segment_gap">There are gaps between segments. Add transit segments</string>
+    <string name="error_segment_country_required">Select country for segment</string>
+    <string name="error_segment_dates_invalid">Invalid segment dates</string>
+    <string name="error_visa_doesnt_cover_dates">Selected visa doesn\'t cover trip dates</string>
+    <string name="error_days_limit_exceeded">Trip exceeds stay limit</string>
+    <string name="error_saving_trip">Error saving trip</string>
 </resources>
