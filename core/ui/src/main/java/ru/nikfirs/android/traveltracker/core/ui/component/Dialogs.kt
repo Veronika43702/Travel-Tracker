@@ -42,7 +42,7 @@ fun ErrorDialog(
     onRetry: (() -> Unit)? = null,
 ) {
     message ?: return
-    val text = message.asString()
+    val text = message.asString() ?: ""
     Dialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(
@@ -136,7 +136,7 @@ fun DialogTwoRowButton(
     onDismiss: () -> Unit = {},
 ) {
     message ?: return
-    val text = message.asString()
+    val text = message.asString() ?: ""
     val leftText = leftBtnText.ifBlank { stringResource(id = R.string.action_cancel) }
     val rightText = rightBtnText.ifBlank { stringResource(id = R.string.action_continue) }
     val leftAction = onLeftBtn ?: onDismiss
@@ -215,7 +215,7 @@ fun DialogTwoColumnButton(
     onDismiss: () -> Unit = {},
 ) {
     message ?: return
-    val text = message.asString()
+    val text = message.asString() ?: ""
     val leftText = leftBtnText.ifBlank { stringResource(id = R.string.action_cancel) }
     val rightText = rightBtnText.ifBlank { stringResource(id = R.string.action_continue) }
     val leftAction = onLeftBtn ?: onDismiss

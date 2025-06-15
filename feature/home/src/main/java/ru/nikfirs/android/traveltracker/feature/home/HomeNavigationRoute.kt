@@ -20,4 +20,7 @@ sealed class HomeRoute {
     @Serializable
     data object AddTrip
 
+    @Serializable
+    data object AddTripSegment
+
 }

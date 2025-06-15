@@ -99,16 +99,28 @@ sealed class AddTripContract {
         data class AddSegment(val segment: TripSegmentUi) : Action()
         data class UpdateSegment(val index: Int, val segment: TripSegmentUi) : Action()
         data class RemoveSegment(val index: Int) : Action()
+        data object OpenAddSegmentEditor : Action()
+        data class OpenEditSegmentEditor(val index: Int) : Action()
+        data class OnSegmentEditorResult(
+            val country: String,
+            val startDate: LocalDate,
+            val endDate: LocalDate,
+            val cities: List<String>,
+            val isUpdate: Boolean,
+            val segmentIndex: Int?
+        ) : Action()
+        data class OnSegmentDeleted(val segmentIndex: Int) : Action()
         data object SaveTrip : Action()
         data class SetError(val error: CustomString? = null) : Action()
         data object DismissError : Action()
         data object RecalculateDays : Action()
+        data object CheckSegmentResults : Action()
     }
 
     sealed class Effect : MviEffect {
         data object NavigateBack : Effect()
         data object ScrollUp : Effect()
         data class ShowMessage(val message: CustomString) : Effect()
-        data class OpenSegmentEditor(val segment: TripSegmentUi?, val index: Int?) : Effect()
+        data object OpenSegmentEditor : Effect()
     }
 }

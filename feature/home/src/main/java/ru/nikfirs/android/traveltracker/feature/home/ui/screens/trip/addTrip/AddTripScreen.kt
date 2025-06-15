@@ -7,6 +7,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -19,8 +20,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
+import ru.nikfirs.android.traveltracker.core.domain.model.SchengenCountries
 import ru.nikfirs.android.traveltracker.core.domain.model.SegmentType
 import ru.nikfirs.android.traveltracker.core.domain.model.TripPurpose
 import ru.nikfirs.android.traveltracker.core.domain.model.Visa
@@ -29,6 +34,7 @@ import ru.nikfirs.android.traveltracker.core.domain.model.VisaEntries
 import ru.nikfirs.android.traveltracker.core.ui.R
 import ru.nikfirs.android.traveltracker.core.ui.component.*
 import ru.nikfirs.android.traveltracker.core.ui.extension.asString
+import ru.nikfirs.android.traveltracker.core.ui.extension.clickableOnce
 import ru.nikfirs.android.traveltracker.core.ui.mvi.LaunchedEffectResolver
 import ru.nikfirs.android.traveltracker.core.ui.theme.AppTheme
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTrip.AddTripContract.Action
@@ -40,11 +46,22 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun AddTripScreen(
     navigateBack: () -> Unit,
+    navigateToTripSegment: () -> Unit,
     viewModel: AddTripViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
     val verticalScroll = rememberScrollState()
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                viewModel.setAction(Action.CheckSegmentResults)
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
 
     LaunchedEffectResolver(flow = viewModel.effect) { effect ->
         when (effect) {
@@ -54,9 +71,7 @@ fun AddTripScreen(
                 // TODO: Показать snackbar
             }
 
-            is Effect.OpenSegmentEditor -> {
-                // TODO: Открыть редактор сегмента
-            }
+            is Effect.OpenSegmentEditor -> navigateToTripSegment()
         }
     }
 
@@ -166,7 +181,7 @@ private fun AddTripScreenContent(
                 label = stringResource(R.string.select_visa),
                 trailingIconImage = Icons.Default.KeyboardArrowDown,
                 isError = state.validationErrors.visaError != null,
-                supportingText = state.validationErrors.visaError?.let { it.asString() },
+                supportingText = state.validationErrors.visaError?.asString(),
                 modifier = Modifier
                     .fillMaxWidth()
                     .menuAnchor(MenuAnchorType.PrimaryEditable)
@@ -366,7 +381,7 @@ private fun AddTripScreenContent(
 
                 if (state.validationErrors.daysLimitError != null) {
                     Text(
-                        text = state.validationErrors.daysLimitError.asString(),
+                        text = state.validationErrors.daysLimitError.asString() ?: "",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.error
                     )
@@ -438,7 +453,7 @@ private fun AddTripScreenContent(
 
         if (state.validationErrors.segmentsError != null) {
             Text(
-                text = state.validationErrors.segmentsError.asString(),
+                text = state.validationErrors.segmentsError.asString() ?: "",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.error
             )
@@ -449,7 +464,7 @@ private fun AddTripScreenContent(
             TripSegmentCard(
                 segment = segment,
                 onEdit = {
-                    // TODO: Открыть редактор сегмента
+                    onAction(Action.OpenEditSegmentEditor(index))
                 },
                 onDelete = {
                     onAction(Action.RemoveSegment(index))
@@ -460,8 +475,8 @@ private fun AddTripScreenContent(
         // Кнопка добавления сегмента
         OutlinedButton(
             onClick = {
-                // TODO: Открыть редактор для добавления сегмента
                 focusManager.clearFocus()
+                onAction(Action.OpenAddSegmentEditor)
             },
             enabled = state.hasSelectedVisa,
             modifier = Modifier.fillMaxWidth()
@@ -529,7 +544,7 @@ private fun AddTripScreenContent(
 }
 
 @Composable
-private fun TripSegmentCard(
+private fun TripSegmentCardOld(
     segment: AddTripContract.TripSegmentUi,
     onEdit: () -> Unit,
     onDelete: () -> Unit
@@ -590,6 +605,115 @@ private fun TripSegmentCard(
                             contentDescription = stringResource(R.string.action_edit)
                         )
                     }
+                }
+            }
+
+            Text(
+                text = "${segment.startDate.format(dateFormatter)} - ${
+                    segment.endDate.format(
+                        dateFormatter
+                    )
+                }",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                if (segment.cities.isNotEmpty()) {
+                    Text(
+                        text = segment.cities.joinToString(", "),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.weight(1f)
+                    )
+                } else {
+                    Spacer(modifier = Modifier.weight(1f))
+                }
+
+                StatusChip(
+                    text = stringResource(R.string.days_count, segment.duration),
+                    backgroundColor = if (segment.isExempt) {
+                        MaterialTheme.colorScheme.surfaceVariant
+                    } else {
+                        MaterialTheme.colorScheme.primaryContainer
+                    },
+                    contentColor = if (segment.isExempt) {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    } else {
+                        MaterialTheme.colorScheme.onPrimaryContainer
+                    }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun TripSegmentCard(
+    segment: AddTripContract.TripSegmentUi,
+    onEdit: () -> Unit,
+    onDelete: () -> Unit
+) {
+    val dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickableOnce { onEdit() },
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = if (segment.country == "TRANSIT") {
+                            stringResource(R.string.segment_transit_option)
+                        } else {
+                            SchengenCountries.getCountryByCode(segment.country)?.nameRu
+                                ?: segment.country
+                        },
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+
+                    if (segment.isExempt) {
+                        StatusChip(
+                            text = stringResource(R.string.exempt_badge),
+                            backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
+                            contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+
+                    if (segment.country == "TRANSIT") {
+                        StatusChip(
+                            text = stringResource(R.string.transit),
+                            backgroundColor = MaterialTheme.colorScheme.tertiaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onTertiaryContainer
+                        )
+                    }
+                }
+
+                IconButton(onClick = onDelete) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = stringResource(R.string.action_delete),
+                    )
                 }
             }
 

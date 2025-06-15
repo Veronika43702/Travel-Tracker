@@ -16,6 +16,7 @@ import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.visa.GetActi
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTrip.AddTripContract.Action
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTrip.AddTripContract.Effect
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTrip.AddTripContract.State
+import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.utils.AddTripHolder
 import java.time.LocalDate
 import javax.inject.Inject
 import ru.nikfirs.android.traveltracker.core.ui.R as uiR
@@ -26,7 +27,8 @@ class AddTripViewModel @Inject constructor(
     private val getExemptCountriesUseCase: GetExemptCountriesUseCase,
     private val calculateDaysInPeriodUseCase: CalculateDaysInPeriodUseCase,
     private val getAllTripsUseCase: GetAllTripsUseCase,
-    private val saveTripUseCase: SaveTripUseCase
+    private val saveTripUseCase: SaveTripUseCase,
+    private val addTripHolder: AddTripHolder,
 ) : ViewModel<Action, Effect, State>() {
 
     init {
@@ -52,10 +54,15 @@ class AddTripViewModel @Inject constructor(
             is Action.AddSegment -> addSegment(action.segment)
             is Action.UpdateSegment -> updateSegment(action.index, action.segment)
             is Action.RemoveSegment -> removeSegment(action.index)
+            is Action.OpenAddSegmentEditor -> openSegmentEditor()
+            is Action.OpenEditSegmentEditor -> openSegmentEditor(action.index)
+            is Action.OnSegmentEditorResult -> onSegmentEditorResult(action)
+            is Action.OnSegmentDeleted -> removeSegment(action.segmentIndex)
             is Action.SaveTrip -> saveTrip()
             is Action.SetError -> setError(action.error)
             is Action.DismissError -> dismissError()
             is Action.RecalculateDays -> recalculateDays()
+            is Action.CheckSegmentResults -> checkSegmentResults()
         }
     }
 
@@ -420,7 +427,7 @@ class AddTripViewModel @Inject constructor(
                     isOverLimit = startCalculation.isOverLimit
                 )
 
-                val countableDays = if(currentState.segments.isNotEmpty()) {
+                val countableDays = if (currentState.segments.isNotEmpty()) {
                     currentState.segments.filter { !it.isExempt }.sumOf { it.duration }.toInt()
                 } else {
                     currentState.totalDuration.toInt() // TODO
@@ -531,6 +538,96 @@ class AddTripViewModel @Inject constructor(
         // 2. Страна совпадает со страной выдавшей визу
         return (visa.visaType == VisaCategory.TYPE_D || visa.visaType == VisaCategory.RESIDENCE_PERMIT) &&
                 visa.country == country
+    }
+
+    private fun checkSegmentResults() {
+        // Проверяем результат работы с сегментом
+        addTripHolder.consumeSegmentResult()?.let { result ->
+            onSegmentEditorResult(
+                Action.OnSegmentEditorResult(
+                    country = result.country,
+                    startDate = result.startDate,
+                    endDate = result.endDate,
+                    cities = result.cities,
+                    isUpdate = result.isUpdate,
+                    segmentIndex = result.segmentIndex
+                )
+            )
+        }
+
+        // Проверяем удаленный сегмент
+        addTripHolder.consumeDeletedSegmentIndex()?.let { index ->
+            removeSegment(index)
+        }
+    }
+
+    private fun openSegmentEditor(segmentIndex: Int? = null) {
+        val selectedSegmentDates = calculateSelectedDatesForSegmentEditor(segmentIndex)
+
+        if (segmentIndex != null) {
+            // Режим редактирования
+            val segment = currentState.segments.getOrNull(segmentIndex)
+            if (segment != null) {
+                addTripHolder.prepareForEditSegment(
+                    tripStartDate = currentState.startDate,
+                    tripEndDate = currentState.endDate,
+                    blockedDates = selectedSegmentDates,
+                    segmentIndex = segmentIndex,
+                    existingCountry = segment.country,
+                    existingStartDate = segment.startDate,
+                    existingEndDate = segment.endDate,
+                    existingCities = segment.cities.joinToString(", ")
+                )
+            } else {
+                setError(CustomString.resource(uiR.string.error_segment_not_found))
+                return
+            }
+        } else {
+            // Режим добавления
+            addTripHolder.prepareForAddSegment(
+                tripStartDate = currentState.startDate,
+                tripEndDate = currentState.endDate,
+                blockedDates = selectedSegmentDates
+            )
+        }
+
+        setEffect { Effect.OpenSegmentEditor }
+    }
+
+    private fun calculateSelectedDatesForSegmentEditor(excludeSegmentIndex: Int?): Set<LocalDate> {
+        val segmentsDates = mutableSetOf<LocalDate>()
+
+        currentState.segments.forEachIndexed { index, segment ->
+            // Исключаем редактируемый сегмент
+            if (excludeSegmentIndex == null || index != excludeSegmentIndex) {
+                var date = segment.startDate
+                while (!date.isAfter(segment.endDate)) {
+                    segmentsDates.add(date)
+                    date = date.plusDays(1)
+                }
+            }
+        }
+
+        return segmentsDates
+    }
+
+    private fun onSegmentEditorResult(action: Action.OnSegmentEditorResult) {
+        val newSegment = AddTripContract.TripSegmentUi(
+            country = action.country,
+            startDate = action.startDate,
+            endDate = action.endDate,
+            cities = action.cities,
+            isExempt = isCountryExempt(action.country)
+        )
+
+        if (action.isUpdate && action.segmentIndex != null) {
+            updateSegment(action.segmentIndex, newSegment)
+        } else {
+            addSegment(newSegment)
+        }
+
+        // Автоматически пересчитываем дни после изменения сегментов
+        recalculateDays()
     }
 
     private fun setError(error: CustomString?) {

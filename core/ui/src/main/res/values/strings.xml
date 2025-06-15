@@ -196,4 +196,19 @@
     <string name="error_visa_doesnt_cover_dates">Выбранная виза не покрывает даты поездки</string>
     <string name="error_days_limit_exceeded">Поездка превышает лимит дней пребывания</string>
     <string name="error_saving_trip">Ошибка при сохранении поездки</string>
+
+    <!-- Add Trip Segment Screen -->
+    <string name="add_segment_title">Добавить сегмент</string>
+    <string name="edit_segment_title">Редактировать сегмент</string>
+    <string name="segment_transit_option">Транзит (любая страна)</string>
+
+    <!-- Segment validation errors -->
+    <string name="error_segment_start_before_trip">Начало сегмента не может быть раньше начала поездки</string>
+    <string name="error_segment_start_after_trip">Начало сегмента не может быть позже окончания поездки</string>
+    <string name="error_segment_end_after_trip">Окончание сегмента не может быть позже окончания поездки</string>
+    <string name="error_segment_dates_conflict">Выбранные даты пересекаются с существующими сегментами</string>
+    <string name="error_segment_not_found">Сегмент не найден</string>
+
+    <!-- Segment duration -->
+    <string name="segment_duration">Длительность: %d дн.</string>
 </resources>

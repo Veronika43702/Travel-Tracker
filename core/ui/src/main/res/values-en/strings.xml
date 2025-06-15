@@ -197,4 +197,19 @@
     <string name="error_visa_doesnt_cover_dates">Selected visa doesn\'t cover trip dates</string>
     <string name="error_days_limit_exceeded">Trip exceeds stay limit</string>
     <string name="error_saving_trip">Error saving trip</string>
+
+    <!-- Add Trip Segment Screen -->
+    <string name="add_segment_title">Add Segment</string>
+    <string name="edit_segment_title">Edit Segment</string>
+    <string name="segment_transit_option">Transit (any country)</string>
+
+    <!-- Segment validation errors -->
+    <string name="error_segment_start_before_trip">Segment start cannot be before trip start</string>
+    <string name="error_segment_start_after_trip">Segment start cannot be after trip end</string>
+    <string name="error_segment_end_after_trip">Segment end cannot be after trip end</string>
+    <string name="error_segment_dates_conflict">Selected dates conflict with existing segments</string>
+    <string name="error_segment_not_found">Segment not found</string>
+
+    <!-- Segment duration -->
+    <string name="segment_duration">Duration: %d days</string>
 </resources>

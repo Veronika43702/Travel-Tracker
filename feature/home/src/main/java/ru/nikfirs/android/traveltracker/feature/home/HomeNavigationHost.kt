@@ -9,6 +9,7 @@ import ru.nikfirs.android.traveltracker.core.ui.navigation.DeepRoute
 import ru.nikfirs.android.traveltracker.core.ui.navigation.navigateBottomNavBarRoute
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.HomeScreen
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTrip.AddTripScreen
+import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTripSegment.AddTripSegmentScreen
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.addVisa.AddVisaScreen
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.editVisa.EditVisaScreen
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.visaDetails.VisaDetailsScreen
@@ -49,8 +50,14 @@ fun NavGraphBuilder.homeNavigationGraph(
         )
     }
     // Trip
-    composable<HomeRoute.AddTrip> { backStack ->
+    composable<HomeRoute.AddTrip> {
         AddTripScreen(
+            navigateToTripSegment = { navController.navigate(HomeRoute.AddTripSegment) },
+            navigateBack = { navController.popBackStack() },
+        )
+    }
+    composable<HomeRoute.AddTripSegment> {
+        AddTripSegmentScreen(
             navigateBack = { navController.popBackStack() },
         )
     }
