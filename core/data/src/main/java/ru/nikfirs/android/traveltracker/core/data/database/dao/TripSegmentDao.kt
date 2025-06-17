@@ -45,17 +45,10 @@ interface TripSegmentDao {
     ): List<TripSegmentEntity>
 
     @Query("""
-        SELECT DISTINCT country FROM trip_segments 
-        WHERE segmentType = :segmentType
-        ORDER BY country
-    """)
-    suspend fun getCountriesBySegmentType(segmentType: SegmentType): List<String>
-
-    @Query("""
         SELECT country, SUM(JULIANDAY(endDate) - JULIANDAY(startDate) + 1) as days
         FROM trip_segments
         WHERE startDate <= :endDate AND endDate >= :startDate
-        AND segmentType != 'TRANSIT'
+        AND country != 'TRANSIT'
         GROUP BY country
     """)
     suspend fun getCountryStatisticsInPeriod(

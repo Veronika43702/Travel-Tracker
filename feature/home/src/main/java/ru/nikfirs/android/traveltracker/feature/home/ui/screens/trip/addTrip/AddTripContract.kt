@@ -1,12 +1,13 @@
 package ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTrip
 
 import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
-import ru.nikfirs.android.traveltracker.core.domain.model.SegmentType
 import ru.nikfirs.android.traveltracker.core.domain.model.TripPurpose
 import ru.nikfirs.android.traveltracker.core.domain.model.Visa
+import ru.nikfirs.android.traveltracker.core.ui.component.ExistingRange
 import ru.nikfirs.android.traveltracker.core.ui.mvi.MviAction
 import ru.nikfirs.android.traveltracker.core.ui.mvi.MviEffect
 import ru.nikfirs.android.traveltracker.core.ui.mvi.MviState
+import ru.nikfirs.android.traveltracker.feature.home.domain.model.TripSegmentUi
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -45,18 +46,18 @@ sealed class AddTripContract {
 
         val hasSelectedVisa: Boolean
             get() = selectedVisa != null
-    }
 
-    data class TripSegmentUi(
-        val country: String,
-        val startDate: LocalDate,
-        val endDate: LocalDate,
-        val type: SegmentType = SegmentType.STAY,
-        val cities: List<String> = emptyList(),
-        val isExempt: Boolean = false
-    ) {
-        val duration: Long
-            get() = java.time.temporal.ChronoUnit.DAYS.between(startDate, endDate) + 1
+        /**
+         * Преобразование в TripSegmentDisplay для календаря
+         */
+        val segmentsForDisplay: List<ExistingRange>
+            get() = segments.mapIndexed { index, segment ->
+                ExistingRange(
+                    startDate = segment.startDate,
+                    endDate = segment.endDate,
+                    color = segment.color,
+                )
+            }
     }
 
     data class DaysAvailableInfo(

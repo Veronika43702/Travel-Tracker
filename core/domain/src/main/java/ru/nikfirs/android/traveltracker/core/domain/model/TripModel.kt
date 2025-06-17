@@ -34,7 +34,7 @@ data class Trip(
         get() = isPlanned || startDate.isAfter(LocalDate.now())
 
     val countries: List<String>
-        get() = segments.filter { it.type != SegmentType.TRANSIT }
+        get() = segments
             .map { it.country }
             .distinct()
 
@@ -49,8 +49,7 @@ data class TripSegment(
     val country: String,
     val startDate: LocalDate,
     val endDate: LocalDate,
-    val type: SegmentType = SegmentType.STAY,
-    val cities: List<String> = emptyList()
+    val cities: List<String> = emptyList(),
 ) {
     val duration: Long
         get() = ChronoUnit.DAYS.between(startDate, endDate) + 1

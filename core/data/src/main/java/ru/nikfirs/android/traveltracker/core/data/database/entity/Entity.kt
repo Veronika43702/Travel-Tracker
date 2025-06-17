@@ -53,7 +53,6 @@ data class TripSegmentEntity(
     val country: String,
     val startDate: LocalDate,
     val endDate: LocalDate,
-    val segmentType: SegmentType = SegmentType.STAY,
     val cities: String? = null
 )
 

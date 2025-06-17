@@ -1,5 +1,7 @@
 package ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.utils
 
+import androidx.compose.ui.graphics.Color
+import ru.nikfirs.android.traveltracker.feature.home.domain.model.TripSegmentUi
 import java.time.LocalDate
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -7,46 +9,63 @@ import javax.inject.Singleton
 @Singleton
 class AddTripHolder @Inject constructor() {
 
-    // Данные для передачи в экран редактирования сегмента
     var tripStartDate: LocalDate? = null
         private set
 
     var tripEndDate: LocalDate? = null
         private set
 
-    var blockedDates: Set<LocalDate> = emptySet()
+    var visaExemptCountry: String? = null
+
+    var segmentList: List<TripSegmentUi> = emptyList()
+        private set
+
+    var currentSegment: TripSegmentUi? = null
         private set
 
     var segmentIndex: Int? = null
         private set
 
-    var existingCountry: String? = null
-        private set
-
-    var existingStartDate: LocalDate? = null
-        private set
-
-    var existingEndDate: LocalDate? = null
-        private set
-
-    var existingCities: String? = null
-        private set
-
-    // Результат от экрана редактирования сегмента
-    var segmentResult: SegmentResult? = null
-        private set
-
     var deletedSegmentIndex: Int? = null
         private set
 
-    data class SegmentResult(
-        val country: String,
-        val startDate: LocalDate,
-        val endDate: LocalDate,
-        val cities: List<String>,
-        val isUpdate: Boolean,
-        val segmentIndex: Int?
-    )
+    companion object {
+        // Предустановленные цвета для сегментов
+        private val SEGMENT_COLORS = listOf(
+            Color(0xFF2196F3), // Blue
+            Color(0xFF4CAF50), // Green
+            Color(0xFFFF9800), // Orange
+            Color(0xFF9C27B0), // Purple
+            Color(0xFFF44336), // Red
+            Color(0xFF00BCD4), // Cyan
+            Color(0xFF8BC34A), // Light Green
+            Color(0xFFFF5722), // Deep Orange
+            Color(0xFF673AB7), // Deep Purple
+            Color(0xFF607D8B), // Blue Grey
+        )
+
+        fun getSegmentColor(index: Int): Color {
+            return SEGMENT_COLORS[index % SEGMENT_COLORS.size]
+        }
+    }
+
+    fun getSegmentColor(): Color {
+        return segmentIndex?.let { SEGMENT_COLORS[it % SEGMENT_COLORS.size] } ?: Color.Blue
+    }
+
+    fun addSegmentToList(segment: TripSegmentUi? = currentSegment) {
+        val newList = segmentList.toMutableList()
+        segment?.let { newList.add(it) }
+        segmentList = newList
+    }
+
+    fun getSegmentCities(): String {
+        return currentSegment?.cities?.joinToString(", ") ?: ""
+    }
+
+    fun deleteSegmentFromList(segment: TripSegmentUi? = currentSegment) {
+        segmentList = segmentList.filter { it != segment }
+    }
 
     /**
      * Подготовка данных для экрана добавления нового сегмента
@@ -54,13 +73,13 @@ class AddTripHolder @Inject constructor() {
     fun prepareForAddSegment(
         tripStartDate: LocalDate,
         tripEndDate: LocalDate,
-        blockedDates: Set<LocalDate>
+        existingSegments: List<TripSegmentUi>
     ) {
         this.tripStartDate = tripStartDate
         this.tripEndDate = tripEndDate
-        this.blockedDates = blockedDates
+        this.segmentList = existingSegments
         this.segmentIndex = null
-        clearExistingSegmentData()
+        clearCurrentSegmentData()
         clearResults()
     }
 
@@ -70,61 +89,16 @@ class AddTripHolder @Inject constructor() {
     fun prepareForEditSegment(
         tripStartDate: LocalDate,
         tripEndDate: LocalDate,
-        blockedDates: Set<LocalDate>,
+        existingSegments: List<TripSegmentUi>,
         segmentIndex: Int,
-        existingCountry: String,
-        existingStartDate: LocalDate,
-        existingEndDate: LocalDate,
-        existingCities: String
+        segment: TripSegmentUi,
     ) {
         this.tripStartDate = tripStartDate
         this.tripEndDate = tripEndDate
-        this.blockedDates = blockedDates
+        this.segmentList = existingSegments
         this.segmentIndex = segmentIndex
-        this.existingCountry = existingCountry
-        this.existingStartDate = existingStartDate
-        this.existingEndDate = existingEndDate
-        this.existingCities = existingCities
+        this.currentSegment = segment
         clearResults()
-    }
-
-    /**
-     * Сохранение результата работы с сегментом
-     */
-    fun setSegmentResult(
-        country: String,
-        startDate: LocalDate,
-        endDate: LocalDate,
-        cities: List<String>,
-        isUpdate: Boolean,
-        segmentIndex: Int?
-    ) {
-        this.segmentResult = SegmentResult(
-            country = country,
-            startDate = startDate,
-            endDate = endDate,
-            cities = cities,
-            isUpdate = isUpdate,
-            segmentIndex = segmentIndex
-        )
-        this.deletedSegmentIndex = null
-    }
-
-    /**
-     * Сохранение информации об удаленном сегменте
-     */
-    fun setDeletedSegmentIndex(index: Int) {
-        this.deletedSegmentIndex = index
-        this.segmentResult = null
-    }
-
-    /**
-     * Получение и очистка результата
-     */
-    fun consumeSegmentResult(): SegmentResult? {
-        val result = segmentResult
-        segmentResult = null
-        return result
     }
 
     /**
@@ -139,7 +113,7 @@ class AddTripHolder @Inject constructor() {
     /**
      * Проверка наличия данных для редактирования
      */
-    fun hasSegmentData(): Boolean {
+    fun hasTripData(): Boolean {
         return tripStartDate != null && tripEndDate != null
     }
 
@@ -156,27 +130,24 @@ class AddTripHolder @Inject constructor() {
     fun clear() {
         tripStartDate = null
         tripEndDate = null
-        blockedDates = emptySet()
+        segmentList = emptyList()
         segmentIndex = null
-        clearExistingSegmentData()
+        clearCurrentSegmentData()
         clearResults()
     }
 
     /**
      * Очистка данных существующего сегмента
      */
-    private fun clearExistingSegmentData() {
-        existingCountry = null
-        existingStartDate = null
-        existingEndDate = null
-        existingCities = null
+    private fun clearCurrentSegmentData() {
+        currentSegment = null
     }
 
     /**
      * Очистка результатов
      */
     private fun clearResults() {
-        segmentResult = null
+        currentSegment = null
         deletedSegmentIndex = null
     }
 }

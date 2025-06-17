@@ -208,6 +208,7 @@
     <string name="error_segment_end_after_trip">Окончание сегмента не может быть позже окончания поездки</string>
     <string name="error_segment_dates_conflict">Выбранные даты пересекаются с существующими сегментами</string>
     <string name="error_segment_not_found">Сегмент не найден</string>
+    <string name="error_segment_dates_required">Выберите даты для сегмента</string>
 
     <!-- Segment duration -->
     <string name="segment_duration">Длительность: %d дн.</string>
@@ -219,4 +220,6 @@
     <string name="calendar_today">Сегодня</string>
     <string name="calendar_select_range">Выберите диапазон дат</string>
     <string name="calendar_range_selected">Диапазон выбран: %1$s - %2$s</string>
+    <string name="calendar_select_dates">Выберите даты</string>
+    <string name="calendar_clear_selection">Очистить выбор</string>
 </resources>

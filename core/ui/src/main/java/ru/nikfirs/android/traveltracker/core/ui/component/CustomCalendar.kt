@@ -2,17 +2,16 @@ package ru.nikfirs.android.traveltracker.core.ui.component
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -21,10 +20,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -39,10 +42,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import ru.nikfirs.android.traveltracker.core.ui.R
 import ru.nikfirs.android.traveltracker.core.ui.extension.clickableOnce
+import ru.nikfirs.android.traveltracker.core.ui.model.CustomIndication
 import ru.nikfirs.android.traveltracker.core.ui.theme.AppTheme
-import ru.nikfirs.android.traveltracker.core.ui.theme.calendar
 import ru.nikfirs.android.traveltracker.core.ui.theme.calendarCircle
 import ru.nikfirs.android.traveltracker.core.ui.theme.calendarEnd
 import ru.nikfirs.android.traveltracker.core.ui.theme.calendarStart
@@ -53,12 +58,10 @@ import java.time.format.TextStyle
 import java.time.temporal.WeekFields
 import java.util.Locale
 
-data class TripSegmentDisplay(
-    val id: String,
+data class ExistingRange(
     val startDate: LocalDate,
     val endDate: LocalDate,
     val color: Color,
-    val isSelected: Boolean = false
 )
 
 data class DateRangeSelection(
@@ -66,82 +69,172 @@ data class DateRangeSelection(
     val endDate: LocalDate? = null
 ) {
     val isComplete: Boolean get() = startDate != null && endDate != null
-    val isPartial: Boolean get() = startDate != null && endDate == null
 }
 
 @Composable
 fun CustomCalendar(
     modifier: Modifier = Modifier,
     selectedRange: DateRangeSelection = DateRangeSelection(),
-    existingSegments: List<TripSegmentDisplay> = emptyList(),
+    existingRangeList: List<ExistingRange> = emptyList(),
     availableDateRange: ClosedRange<LocalDate>? = null,
     onDateRangeSelected: (DateRangeSelection) -> Unit = {},
-    onRangeComplete: (LocalDate, LocalDate) -> Unit = {_, _ ->},
-    currentMonth: YearMonth = YearMonth.now()
+    currentMonth: YearMonth = YearMonth.now(),
+    onCancelClick: () -> Unit = {},
+    onConfirmClick: (LocalDate, LocalDate) -> Unit = { _, _ -> },
 ) {
     var displayedMonth by remember { mutableStateOf(currentMonth) }
     var tempSelection by remember { mutableStateOf(selectedRange) }
 
-    Column(
-        modifier = modifier
-            .background(
-                MaterialTheme.colorScheme.surface,
-                RoundedCornerShape(16.dp)
-            )
-            .padding(16.dp)
+    Dialog(
+        onDismissRequest = onCancelClick,
+        properties = DialogProperties(
+            dismissOnBackPress = false,
+            dismissOnClickOutside = false,
+        )
     ) {
-        // Header with month navigation
-        CalendarHeader(
-            currentMonth = displayedMonth,
-            onPreviousMonth = { displayedMonth = displayedMonth.minusMonths(1) },
-            onNextMonth = { displayedMonth = displayedMonth.plusMonths(1) }
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Days of week header
-        DaysOfWeekHeader()
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Calendar grid
-        CalendarGrid(
-            month = displayedMonth,
-            selectedRange = tempSelection,
-            existingSegments = existingSegments,
-            availableDateRange = availableDateRange,
-            onDateClick = { date ->
-                val newSelection = when {
-                    tempSelection.startDate == null -> {
-                        DateRangeSelection(startDate = date)
-                    }
-                    tempSelection.endDate == null -> {
-                        val startDate = tempSelection.startDate!!
-                        if (date.isBefore(startDate)) {
-                            DateRangeSelection(startDate = date)
-                        } else {
-                            onRangeComplete(startDate, date)
-                            DateRangeSelection(startDate = startDate, endDate = date)
-                        }
-                    }
-                    else -> {
-                        DateRangeSelection(startDate = date)
-                    }
-                }
-                tempSelection = newSelection
-                onDateRangeSelected(newSelection)
-            }
-        )
-
-        if (tempSelection.isPartial) {
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = stringResource(R.string.calendar_select_end_date),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
+        Card(
+            modifier = modifier
+                .fillMaxWidth()
+                .wrapContentHeight(),
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surface
             )
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 16.dp, horizontal = 12.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                // Date range display header
+                DateRangeHeader(
+                    selectedRange = tempSelection,
+                    onClear = {
+                        tempSelection = DateRangeSelection()
+                        onDateRangeSelected(DateRangeSelection())
+                    }
+                )
+
+                // Header with month navigation
+                CalendarHeader(
+                    currentMonth = displayedMonth,
+                    onPreviousMonth = { displayedMonth = displayedMonth.minusMonths(1) },
+                    onNextMonth = { displayedMonth = displayedMonth.plusMonths(1) }
+                )
+
+                // Days of week header
+                DaysOfWeekHeader()
+
+                // Calendar grid
+                Column {
+                    CalendarGrid(
+                        month = displayedMonth,
+                        selectedRange = tempSelection,
+                        existingSegments = existingRangeList,
+                        availableDateRange = availableDateRange,
+                        onDateClick = { date ->
+                            val newSelection = when {
+                                tempSelection.startDate == null -> {
+                                    DateRangeSelection(startDate = date)
+                                }
+
+                                tempSelection.endDate == null -> {
+                                    val startDate = tempSelection.startDate!!
+                                    val (finalStart, finalEnd) = if (date.isBefore(startDate)) {
+                                        Pair(date, startDate)
+                                    } else {
+                                        Pair(startDate, date)
+                                    }
+                                    DateRangeSelection(startDate = finalStart, endDate = finalEnd)
+                                }
+
+                                else -> {
+                                    DateRangeSelection(startDate = date)
+                                }
+                            }
+                            tempSelection = newSelection
+                            onDateRangeSelected(newSelection)
+                        }
+                    )
+                }
+
+                CalendarButtons(
+                    modifier = Modifier
+                        .align(Alignment.End)
+                        .padding(top = 24.dp, bottom = 12.dp),
+                    enabledConfirm = tempSelection.startDate != null && tempSelection.endDate != null,
+                    onConfirmClick = {
+                        val startDate = tempSelection.startDate
+                        val endDate = tempSelection.endDate
+                        if (startDate != null && endDate != null) {
+                            onConfirmClick(startDate, endDate)
+                        }
+                    },
+                    onCancelClick = onCancelClick,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun DateRangeHeader(
+    selectedRange: DateRangeSelection,
+    onClear: () -> Unit
+) {
+    val locale = Locale.getDefault()
+    val isRussian = locale.language.startsWith("ru")
+
+    val dateFormatter = if (isRussian) {
+        DateTimeFormatter.ofPattern("d MMM", locale)
+    } else {
+        DateTimeFormatter.ofPattern("MMM d", locale)
+    }
+
+    val displayText = when {
+        selectedRange.startDate == null -> {
+            stringResource(R.string.calendar_select_dates)
+        }
+
+        selectedRange.endDate == null -> {
+            "${selectedRange.startDate.format(dateFormatter)} -"
+        }
+
+        else -> {
+            "${selectedRange.startDate.format(dateFormatter)} - ${
+                selectedRange.endDate.format(
+                    dateFormatter
+                )
+            }"
+        }
+    }
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = displayText,
+            style = MaterialTheme.typography.titleLarge,
+            color = MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier.weight(1f)
+        )
+
+        if (selectedRange.startDate != null) {
+            IconButton(
+                onClick = onClear,
+                modifier = Modifier.size(32.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = stringResource(R.string.calendar_clear_selection),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(18.dp)
+                )
+            }
         }
     }
 }
@@ -216,7 +309,7 @@ private fun DaysOfWeekHeader() {
 private fun CalendarGrid(
     month: YearMonth,
     selectedRange: DateRangeSelection,
-    existingSegments: List<TripSegmentDisplay>,
+    existingSegments: List<ExistingRange>,
     availableDateRange: ClosedRange<LocalDate>?,
     onDateClick: (LocalDate) -> Unit
 ) {
@@ -236,7 +329,9 @@ private fun CalendarGrid(
     LazyVerticalGrid(
         columns = GridCells.Fixed(7),
         userScrollEnabled = false,
-        modifier = Modifier.height(240.dp) // 6 weeks * 40dp per week
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(240.dp), // 6 weeks * 40dp per week
     ) {
         items(dates) { date ->
             CalendarDay(
@@ -245,6 +340,7 @@ private fun CalendarGrid(
                 isSelected = isDateInRange(date, selectedRange),
                 isRangeStart = selectedRange.startDate == date,
                 isRangeEnd = selectedRange.endDate == date,
+                isEndSelected = selectedRange.endDate != null,
                 existingSegments = existingSegments.filter {
                     date >= it.startDate && date <= it.endDate
                 },
@@ -262,7 +358,8 @@ private fun CalendarDay(
     isSelected: Boolean,
     isRangeStart: Boolean,
     isRangeEnd: Boolean,
-    existingSegments: List<TripSegmentDisplay>,
+    isEndSelected: Boolean,
+    existingSegments: List<ExistingRange>,
     isAvailable: Boolean,
     onClick: () -> Unit
 ) {
@@ -278,7 +375,12 @@ private fun CalendarDay(
         modifier = Modifier
             .size(40.dp)
             .alpha(alpha)
-            .clickableOnce(enabled = isCurrentMonth && isAvailable) { onClick() },
+            .clickableOnce(
+                enabled = isCurrentMonth && isAvailable,
+                indication = CustomIndication(
+                    ripple(bounded = false, radius = 28.dp)
+                ),
+            ) { onClick() },
         contentAlignment = Alignment.Center
     ) {
         // Background for existing segments
@@ -298,12 +400,12 @@ private fun CalendarDay(
                     .background(
                         color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
                         shape = when {
-                            isRangeStart && isRangeEnd -> MaterialTheme.shapes.calendarCircle
+                            isRangeStart && (isRangeEnd || !isEndSelected) -> MaterialTheme.shapes.calendarCircle
                             isRangeStart -> MaterialTheme.shapes.calendarStart
                             isRangeEnd -> MaterialTheme.shapes.calendarEnd
                             else -> RoundedCornerShape(0.dp)
                         }
-                    )
+                    ),
             )
         }
 
@@ -315,7 +417,7 @@ private fun CalendarDay(
                     .background(
                         color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
                         shape = CircleShape
-                    )
+                    ),
             )
         }
 
@@ -337,7 +439,7 @@ private fun CalendarDay(
 @Composable
 private fun ExistingSegmentBackground(
     date: LocalDate,
-    segments: List<TripSegmentDisplay>,
+    segments: List<ExistingRange>,
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier) {
@@ -350,16 +452,45 @@ private fun ExistingSegmentBackground(
                         shape = when {
                             segment.startDate == segment.endDate -> MaterialTheme.shapes.calendarCircle
                             date == segment.startDate -> MaterialTheme.shapes.calendarStart
-                            date == segment.endDate-> MaterialTheme.shapes.calendarEnd
+                            date == segment.endDate -> MaterialTheme.shapes.calendarEnd
                             else -> RoundedCornerShape(0.dp)
                         }
-                    )
+                    ),
             )
         }
     }
 }
 
-private fun isDateInRange(date: LocalDate, range: DateRangeSelection): Boolean {
+@Composable
+private fun CalendarButtons(
+    enabledConfirm: Boolean,
+    onConfirmClick: () -> Unit,
+    onCancelClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(24.dp),
+    ) {
+        CustomButton(
+            text = stringResource(R.string.action_cancel),
+            onClick = onCancelClick,
+            secondaryBtn = true,
+            smallButton = true,
+        )
+        CustomButton(
+            text = stringResource(R.string.action_save),
+            onClick = onConfirmClick,
+            smallButton = true,
+            enabled = enabledConfirm,
+        )
+    }
+}
+
+private fun isDateInRange(
+    date: LocalDate,
+    range: DateRangeSelection
+): Boolean {
     val start = range.startDate ?: return false
     val end = range.endDate ?: return date == start
     return date in start..end
@@ -367,7 +498,7 @@ private fun isDateInRange(date: LocalDate, range: DateRangeSelection): Boolean {
 
 // Preview
 @LightRUScreenPreview
-@DarkENScreenPreview
+@DarkENPreview
 @Composable
 private fun CustomCalendarPreview() {
     AppTheme {
@@ -376,22 +507,19 @@ private fun CustomCalendarPreview() {
                 startDate = LocalDate.now().plusDays(3),
                 endDate = LocalDate.now().plusDays(5)
             ),
-            existingSegments = listOf(
-                TripSegmentDisplay(
-                    id = "1",
+            existingRangeList = listOf(
+                ExistingRange(
                     startDate = LocalDate.now(),
                     endDate = LocalDate.now().plusDays(3),
                     color = Color.Green
                 ),
-                TripSegmentDisplay(
-                    id = "2",
+                ExistingRange(
                     startDate = LocalDate.now().plusDays(5),
                     endDate = LocalDate.now().plusDays(7),
-                    color = Color.Green
+                    color = Color.Magenta
                 )
             ),
             availableDateRange = LocalDate.now()..LocalDate.now().plusDays(14),
-            modifier = Modifier.padding(16.dp)
         )
     }
 }

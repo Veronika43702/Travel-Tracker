@@ -65,8 +65,7 @@ sealed class HomeContract {
 
         private fun isExempt(trip: Trip): Boolean {
             return trip.segments.any { segment ->
-                segment.type == ru.nikfirs.android.traveltracker.core.domain.model.SegmentType.STAY &&
-                        segment.country in exemptCountries
+                segment.country in exemptCountries
             }
         }
     }

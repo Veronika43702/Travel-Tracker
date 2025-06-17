@@ -42,7 +42,6 @@ fun TripSegmentEntity.toModel(): TripSegment {
         country = country,
         startDate = startDate,
         endDate = endDate,
-        type = segmentType.toDomainSegmentType(),
         cities = cities?.split(", ") ?: emptyList()
     )
 }
@@ -53,7 +52,6 @@ fun TripSegment.toEntity(tripId: Long): TripSegmentEntity {
         country = country,
         startDate = startDate,
         endDate = endDate,
-        segmentType = type.toEntitySegmentType(),
         cities = cities.takeIf { it.isNotEmpty() }?.joinToString(", ")
     )
 }

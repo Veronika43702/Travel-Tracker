@@ -514,13 +514,11 @@ private fun HomeScreenWithDataPreview() {
                                 country = "Germany",
                                 startDate = LocalDate.now().minusDays(5),
                                 endDate = LocalDate.now(),
-                                type = SegmentType.STAY
                             ),
                             TripSegment(
                                 country = "Poland",
                                 startDate = LocalDate.now(),
                                 endDate = LocalDate.now().plusDays(5),
-                                type = SegmentType.STAY
                             )
                         ),
                         purpose = TripPurpose.TOURISM,
@@ -535,14 +533,12 @@ private fun HomeScreenWithDataPreview() {
                                 country = "France",
                                 startDate = LocalDate.now().plusDays(30),
                                 endDate = LocalDate.now().plusDays(33),
-                                type = SegmentType.STAY,
                                 cities = listOf("Paris")
                             ),
                             TripSegment(
                                 country = "Spain",
                                 startDate = LocalDate.now().plusDays(33),
                                 endDate = LocalDate.now().plusDays(37),
-                                type = SegmentType.STAY,
                                 cities = listOf("Madrid", "Barcelona")
                             )
                         ),
@@ -595,7 +591,6 @@ private fun HomeScreenNearLimitPreview() {
                                 country = "Spain",
                                 startDate = LocalDate.now().minusDays(10),
                                 endDate = LocalDate.now().minusDays(3),
-                                type = SegmentType.STAY,
                                 cities = listOf("Madrid")
                             )
                         ),
@@ -647,13 +642,11 @@ private fun HomeScreenTripsTabPreview() {
                                 country = "Italy",
                                 startDate = LocalDate.now().minusDays(90),
                                 endDate = LocalDate.now().minusDays(85),
-                                type = SegmentType.STAY
                             ),
                             TripSegment(
                                 country = "France",
                                 startDate = LocalDate.now().minusDays(85),
                                 endDate = LocalDate.now().minusDays(80),
-                                type = SegmentType.STAY
                             )
                         ),
                         purpose = TripPurpose.TOURISM,
@@ -668,7 +661,6 @@ private fun HomeScreenTripsTabPreview() {
                                 country = "Poland",
                                 startDate = LocalDate.now().minusDays(60),
                                 endDate = LocalDate.now().minusDays(45),
-                                type = SegmentType.STAY
                             )
                         ),
                         purpose = TripPurpose.FAMILY,
@@ -683,13 +675,11 @@ private fun HomeScreenTripsTabPreview() {
                                 country = "Germany",
                                 startDate = LocalDate.now().plusDays(10),
                                 endDate = LocalDate.now().plusDays(15),
-                                type = SegmentType.STAY
                             ),
                             TripSegment(
                                 country = "Czech Republic",
                                 startDate = LocalDate.now().plusDays(15),
                                 endDate = LocalDate.now().plusDays(20),
-                                type = SegmentType.STAY
                             )
                         ),
                         purpose = TripPurpose.EDUCATION,

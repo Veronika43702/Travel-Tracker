@@ -3,6 +3,7 @@ package ru.nikfirs.android.traveltracker.core.ui.component
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
@@ -46,7 +47,7 @@ fun CustomButton(
         onClick = onClick,
         shape = MaterialTheme.shapes.button,
         colors = colors,
-        modifier = modifier,
+        modifier = modifier.defaultMinSize(minWidth = 100.dp),
         enabled = enabled,
         contentPadding = PaddingValues(vertical = 4.dp, horizontal = 12.dp)
     ) {

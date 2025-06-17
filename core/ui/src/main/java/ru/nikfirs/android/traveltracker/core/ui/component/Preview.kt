@@ -21,3 +21,20 @@ annotation class LightRUScreenPreview
     locale = "EN"
 )
 annotation class DarkENScreenPreview
+
+
+
+@Preview(
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_NO,
+    apiLevel = 35,
+    locale = "RU"
+)
+annotation class LightRUPreview
+
+@Preview(
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    apiLevel = 35,
+    locale = "EN"
+)
+annotation class DarkENPreview

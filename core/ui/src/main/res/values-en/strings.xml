@@ -209,6 +209,7 @@
     <string name="error_segment_end_after_trip">Segment end cannot be after trip end</string>
     <string name="error_segment_dates_conflict">Selected dates conflict with existing segments</string>
     <string name="error_segment_not_found">Segment not found</string>
+    <string name="error_segment_dates_required">Please select dates for the segment</string>
 
     <!-- Segment duration -->
     <string name="segment_duration">Duration: %d days</string>
@@ -220,4 +221,6 @@
     <string name="calendar_today">Today</string>
     <string name="calendar_select_range">Select date range</string>
     <string name="calendar_range_selected">Range selected: %1$s - %2$s</string>
+    <string name="calendar_select_dates">Select dates</string>
+    <string name="calendar_clear_selection">Clear selection</string>
 </resources>

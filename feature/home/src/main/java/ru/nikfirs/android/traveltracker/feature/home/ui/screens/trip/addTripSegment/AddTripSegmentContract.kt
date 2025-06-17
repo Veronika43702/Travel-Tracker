@@ -1,9 +1,11 @@
 package ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTripSegment
 
 import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
+import ru.nikfirs.android.traveltracker.core.ui.component.DateRangeSelection
 import ru.nikfirs.android.traveltracker.core.ui.mvi.MviAction
 import ru.nikfirs.android.traveltracker.core.ui.mvi.MviEffect
 import ru.nikfirs.android.traveltracker.core.ui.mvi.MviState
+import ru.nikfirs.android.traveltracker.feature.home.domain.model.TripSegmentUi
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -11,15 +13,15 @@ sealed class AddTripSegmentContract {
     data class State(
         val isLoading: Boolean = false,
         val country: String = "",
-        val startDate: LocalDate = LocalDate.now(),
-        val endDate: LocalDate = LocalDate.now(),
-        val cities: String = "",
         val isCountryDropdownExpanded: Boolean = false,
-        val showStartDatePicker: Boolean = false,
-        val showEndDatePicker: Boolean = false,
+        val selectedDateRange: DateRangeSelection = DateRangeSelection(),
+        val startDate: LocalDate? = null,
+        val endDate: LocalDate? = null,
+        val showCalendar: Boolean = false,
+        val cities: String = "",
         val tripStartDate: LocalDate = LocalDate.now(),
         val tripEndDate: LocalDate = LocalDate.now(),
-        val selectedSegmentDays: Set<LocalDate> = emptySet(),
+        val segmentList: List<TripSegmentUi> = emptyList(),
         val isEditMode: Boolean = false,
         val error: CustomString? = null,
         val validationErrors: ValidationErrors = ValidationErrors(),
@@ -27,41 +29,34 @@ sealed class AddTripSegmentContract {
     ) : MviState {
 
         val duration: Long
-            get() = java.time.temporal.ChronoUnit.DAYS.between(startDate, endDate) + 1
+            get() = if (selectedDateRange.isComplete) {
+                java.time.temporal.ChronoUnit.DAYS.between(
+                    selectedDateRange.startDate!!,
+                    selectedDateRange.endDate!!
+                ) + 1
+            } else 0
 
-        val availableStartDate: LocalDate
-            get() = if (startDate.isBefore(tripStartDate)) tripStartDate else startDate
-
-        val availableEndDate: LocalDate
-            get() = if (endDate.isAfter(tripEndDate)) tripEndDate else endDate
+        val availableDateRange: ClosedRange<LocalDate>
+            get() = tripStartDate..tripEndDate
     }
 
     data class ValidationErrors(
         val countryError: CustomString? = null,
-        val startDateError: CustomString? = null,
-        val endDateError: CustomString? = null,
-        val datesRangeError: CustomString? = null
+        val datesError: CustomString? = null
     ) {
-        fun isEmpty(): Boolean = countryError == null &&
-                startDateError == null &&
-                endDateError == null &&
-                datesRangeError == null
+        fun isEmpty(): Boolean = countryError == null && datesError == null
     }
 
     sealed class Action : MviAction {
         data object LoadData : Action()
 
         data class UpdateCountry(val country: String) : Action()
-        data class UpdateStartDate(val date: LocalDate) : Action()
-        data class UpdateEndDate(val date: LocalDate) : Action()
+        data class ShowDatePicker(val value: Boolean) : Action()
+        data class UpdateDateRange(val dateRange: DateRangeSelection) : Action()
+        data class OnDateRangeComplete(val startDate: LocalDate, val endDate: LocalDate) : Action()
         data class UpdateCities(val cities: String) : Action()
 
         data class SetCountryDropdownExpanded(val expanded: Boolean) : Action()
-
-        data object ShowStartDatePicker : Action()
-        data object HideStartDatePicker : Action()
-        data object ShowEndDatePicker : Action()
-        data object HideEndDatePicker : Action()
 
         data object SaveSegment : Action()
         data object DeleteSegment : Action()
