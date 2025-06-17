@@ -211,4 +211,12 @@
 
     <!-- Segment duration -->
     <string name="segment_duration">Длительность: %d дн.</string>
+
+    <!-- Custom Calendar -->
+    <string name="calendar_select_end_date">Выберите дату окончания</string>
+    <string name="calendar_previous_month">Предыдущий месяц</string>
+    <string name="calendar_next_month">Следующий месяц</string>
+    <string name="calendar_today">Сегодня</string>
+    <string name="calendar_select_range">Выберите диапазон дат</string>
+    <string name="calendar_range_selected">Диапазон выбран: %1$s - %2$s</string>
 </resources>

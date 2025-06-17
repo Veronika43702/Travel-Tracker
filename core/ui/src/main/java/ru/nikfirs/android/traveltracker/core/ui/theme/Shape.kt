@@ -18,3 +18,17 @@ val Shapes.banner get() = RoundedCornerShape(22.dp)
 val Shapes.textField get() = RoundedCornerShape(20.dp)
 val Shapes.row get() = RoundedCornerShape(20.dp)
 val Shapes.tab get() = RoundedCornerShape(12.dp)
+
+val calendar = 18.dp
+val Shapes.calendarCircle
+    get() = RoundedCornerShape(calendar)
+val Shapes.calendarStart
+    get() = RoundedCornerShape(
+        topStart = calendar,
+        bottomStart = calendar,
+    )
+val Shapes.calendarEnd
+    get() = RoundedCornerShape(
+        topEnd = calendar,
+        bottomEnd = calendar,
+    )

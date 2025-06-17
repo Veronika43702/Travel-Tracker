@@ -212,4 +212,12 @@
 
     <!-- Segment duration -->
     <string name="segment_duration">Duration: %d days</string>
+
+    <!-- Custom Calendar -->
+    <string name="calendar_select_end_date">Select end date</string>
+    <string name="calendar_previous_month">Previous month</string>
+    <string name="calendar_next_month">Next month</string>
+    <string name="calendar_today">Today</string>
+    <string name="calendar_select_range">Select date range</string>
+    <string name="calendar_range_selected">Range selected: %1$s - %2$s</string>
 </resources>
