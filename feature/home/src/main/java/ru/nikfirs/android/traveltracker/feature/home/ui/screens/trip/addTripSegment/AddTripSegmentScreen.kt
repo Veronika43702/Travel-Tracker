@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -36,7 +37,7 @@ import ru.nikfirs.android.traveltracker.core.data.model.TRANSIT
 import ru.nikfirs.android.traveltracker.core.domain.model.SchengenCountries
 import ru.nikfirs.android.traveltracker.core.ui.R
 import ru.nikfirs.android.traveltracker.core.ui.component.CustomButton
-import ru.nikfirs.android.traveltracker.core.ui.component.CustomCalendar
+import ru.nikfirs.android.traveltracker.core.ui.component.CustomCalendarRangePicker
 import ru.nikfirs.android.traveltracker.core.ui.component.CustomTextField
 import ru.nikfirs.android.traveltracker.core.ui.component.CustomTextFieldButton
 import ru.nikfirs.android.traveltracker.core.ui.component.DateRangeSelection
@@ -227,7 +228,7 @@ private fun AddTripSegmentContent(
     }
 
     if (state.showCalendar) {
-        CustomCalendar(
+        CustomCalendarRangePicker(
             selectedRange = state.selectedDateRange,
             existingRangeList = state.segmentList.map {
                 ExistingRange(
@@ -279,7 +280,7 @@ private fun AddTripSegmentScreenPreview() {
                         color = Color.Blue
                     )
                 ),
-                showCalendar = false,
+                showCalendar = true,
             ),
             onAction = {}
         )

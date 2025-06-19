@@ -70,6 +70,13 @@ val WarningAmber = Color(0xFFF59E0B)
 val DangerRed = Color(0xFFEF4444)
 val InfoBlue = Color(0xFF0EA5E9)
 
+val CalendarDay = Color(0xFFD1FAE5)
+val DarkCalendarDay = Color(0xFF047857)
+
+val TextBright = Color(0xFF000000)
+val DarkTextBright = Color(0xFFFFFFFF)
+
+
 val TextPrimary = Color(0xFF1E293B)
 val TextSecondary = Color(0xFF64748B)
 val TextDisabled = Color(0xFF94A3B8)

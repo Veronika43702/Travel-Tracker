@@ -112,3 +112,12 @@ val Typography = Typography(
         letterSpacing = 0.5.sp,
     ),
 )
+
+val Typography.calendarDay
+    get() = TextStyle(
+        fontFamily = FontFamily.Default,
+        fontWeight = FontWeight.ExtraLight,
+        fontSize = 19.sp,
+        lineHeight = 24.sp,
+        letterSpacing = 0.3.sp
+    )

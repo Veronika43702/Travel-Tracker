@@ -206,7 +206,7 @@ class AddTripViewModel @Inject constructor(
             addTripHolder.prepareForEditSegment(
                 tripStartDate = currentState.startDate,
                 tripEndDate = currentState.endDate,
-                existingSegments = currentState.segments,
+                existingSegments = currentState.segments.filter { it != segment },
                 exemptCountry = currentState.exemptVisaCountry,
                 segment = segment,
                 segmentIndex = currentState.segments.indexOf(segment),

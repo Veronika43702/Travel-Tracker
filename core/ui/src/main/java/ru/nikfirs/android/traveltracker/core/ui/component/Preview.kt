@@ -5,7 +5,7 @@ import androidx.compose.ui.tooling.preview.Preview
 
 @Preview(
     showBackground = true,
-    widthDp = 360,
+    widthDp = 380,
     heightDp = 780,
     uiMode = Configuration.UI_MODE_NIGHT_NO,
     apiLevel = 35,

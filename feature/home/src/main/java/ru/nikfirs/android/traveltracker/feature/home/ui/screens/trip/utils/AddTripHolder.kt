@@ -52,8 +52,11 @@ class AddTripHolder @Inject constructor() {
 
     fun addSegmentToList(segment: TripSegmentUi? = currentSegment) {
         val newList = segmentList.toMutableList()
+        currentSegment?.let { newList.remove(it) }
         segment?.let { newList.add(it) }
-        segmentList = newList
+        segmentList = newList.sortedBy { it.startDate }.mapIndexed { index, item ->
+            item.copy(color = getSegmentColorByIndex(index))
+        }
     }
 
     fun getSegmentCities(): String {
@@ -80,7 +83,7 @@ class AddTripHolder @Inject constructor() {
 
         this.tripStartDate = tripStartDate
         this.tripEndDate = tripEndDate
-        this.segmentList = existingSegments
+        this.segmentList = existingSegments.sortedBy { it.startDate }
         this.visaExemptCountry = exemptCountry
         this.segmentIndex = null
         this.currentSegment = null
@@ -102,7 +105,7 @@ class AddTripHolder @Inject constructor() {
 
         this.tripStartDate = tripStartDate
         this.tripEndDate = tripEndDate
-        this.segmentList = existingSegments
+        this.segmentList = existingSegments.sortedBy { it.startDate }
         this.visaExemptCountry = exemptCountry
         this.segmentIndex = segmentIndex
         this.currentSegment = segment
