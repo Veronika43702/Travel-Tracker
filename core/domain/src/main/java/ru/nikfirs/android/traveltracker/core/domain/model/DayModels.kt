@@ -11,13 +11,7 @@ data class DaysCalculation(
     val isOverLimit: Boolean = false,
     val exemptCountries: Set<String> = emptySet(),
     val daysPerCountry: Map<String, Int> = emptyMap(),
-) {
-    companion object {
-        const val PERIOD_DAYS = 180
-        const val MAX_STAY_DAYS = 90
-        const val WARNING_THRESHOLD = 75
-    }
-}
+)
 
 data class CalendarDay(
     val date: LocalDate,

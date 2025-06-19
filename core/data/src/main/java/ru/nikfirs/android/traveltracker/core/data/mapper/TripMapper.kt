@@ -5,6 +5,7 @@ import ru.nikfirs.android.traveltracker.core.data.database.entity.TripWithSegmen
 import ru.nikfirs.android.traveltracker.core.data.database.entity.TripSegmentEntity
 import ru.nikfirs.android.traveltracker.core.domain.model.Trip
 import ru.nikfirs.android.traveltracker.core.domain.model.TripSegment
+import java.time.LocalDate
 import ru.nikfirs.android.traveltracker.core.data.database.entity.TripPurpose as EntityTripPurpose
 import ru.nikfirs.android.traveltracker.core.domain.model.TripPurpose as DomainTripPurpose
 import ru.nikfirs.android.traveltracker.core.data.database.entity.SegmentType as EntitySegmentType
@@ -28,8 +29,8 @@ fun Trip.toEntity(): TripEntity {
     return TripEntity(
         id = id,
         visaId = visaId,
-        startDate = startDate,
-        endDate = endDate,
+        startDate = startDate ?: LocalDate.now(),
+        endDate = endDate ?: LocalDate.now(),
         purpose = purpose.toEntityTripPurpose(),
         isPlanned = isPlanned,
         notes = notes,

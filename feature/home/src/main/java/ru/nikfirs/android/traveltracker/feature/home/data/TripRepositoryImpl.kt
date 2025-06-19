@@ -6,6 +6,9 @@ import ru.nikfirs.android.traveltracker.core.data.database.dao.TripDao
 import ru.nikfirs.android.traveltracker.core.data.database.dao.TripSegmentDao
 import ru.nikfirs.android.traveltracker.core.data.mapper.toEntity
 import ru.nikfirs.android.traveltracker.core.data.mapper.toModel
+import ru.nikfirs.android.traveltracker.core.domain.MAX_STAY_DAYS
+import ru.nikfirs.android.traveltracker.core.domain.PERIOD_DAYS
+import ru.nikfirs.android.traveltracker.core.domain.WARNING_THRESHOLD
 import ru.nikfirs.android.traveltracker.core.domain.model.DaysCalculation
 import ru.nikfirs.android.traveltracker.core.domain.model.Trip
 import ru.nikfirs.android.traveltracker.core.domain.model.TripSegment
@@ -82,7 +85,7 @@ class TripRepositoryImpl @Inject constructor(
         periodEnd: LocalDate,
         exemptCountries: Set<String>
     ): DaysCalculation {
-        val periodStart = periodEnd.minusDays(179)
+        val periodStart = periodEnd.minusDays((PERIOD_DAYS-1).toLong())
 
         // Получаем количество дней с учетом исключений
         val totalDaysUsed = tripDao.getDaysCountInPeriodWithExemptions(
@@ -95,15 +98,15 @@ class TripRepositoryImpl @Inject constructor(
         val countryStatisticsList = tripDao.getCountryStatistics(periodStart, periodEnd)
         val daysPerCountry = countryStatisticsList.associate { it.country to it.days }
 
-        val remainingDays = DaysCalculation.MAX_STAY_DAYS - totalDaysUsed
+        val remainingDays = MAX_STAY_DAYS - totalDaysUsed
 
         return DaysCalculation(
             totalDaysUsed = totalDaysUsed,
             remainingDays = remainingDays.coerceAtLeast(0),
             periodStart = periodStart,
             periodEnd = periodEnd,
-            isNearLimit = totalDaysUsed >= DaysCalculation.WARNING_THRESHOLD,
-            isOverLimit = totalDaysUsed > DaysCalculation.MAX_STAY_DAYS,
+            isNearLimit = totalDaysUsed >= WARNING_THRESHOLD,
+            isOverLimit = totalDaysUsed > MAX_STAY_DAYS,
             exemptCountries = exemptCountries,
             daysPerCountry = daysPerCountry
         )

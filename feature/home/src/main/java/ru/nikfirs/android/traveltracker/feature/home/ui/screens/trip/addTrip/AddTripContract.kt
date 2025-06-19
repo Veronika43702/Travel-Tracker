@@ -1,5 +1,6 @@
 package ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTrip
 
+import ru.nikfirs.android.traveltracker.core.domain.MAX_STAY_DAYS
 import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
 import ru.nikfirs.android.traveltracker.core.domain.model.TripPurpose
 import ru.nikfirs.android.traveltracker.core.domain.model.Visa
@@ -14,29 +15,35 @@ import java.time.format.DateTimeFormatter
 sealed class AddTripContract {
     data class State(
         val isLoading: Boolean = false,
-        val startDate: LocalDate = LocalDate.now(),
-        val endDate: LocalDate = LocalDate.now(),
-        val purpose: TripPurpose = TripPurpose.TOURISM,
+
         val selectedVisa: Visa? = null,
-        val availableVisas: List<Visa> = emptyList(),
-        val segments: List<TripSegmentUi> = emptyList(),
-        val notes: String = "",
-        val exemptCountries: Set<String> = emptySet(),
         val isVisaDropdownExpanded: Boolean = false,
-        val isPurposeDropdownExpanded: Boolean = false,
-        val showStartDatePicker: Boolean = false,
-        val showEndDatePicker: Boolean = false,
-        val blockedDatesForStart: Set<LocalDate> = emptySet(),
-        val blockedDatesForEnd: Set<LocalDate> = emptySet(),
-        val error: CustomString? = null,
-        val validationErrors: ValidationErrors = ValidationErrors(),
+        val availableVisas: List<Visa> = emptyList(),
+
+        val startDate: LocalDate? = null,
+        val endDate: LocalDate? = null,
+        val showDatePicker: Boolean = false,
+        val blockedDates: Set<LocalDate> = emptySet(),
+
         val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy"),
         val daysAvailableAtStart: DaysAvailableInfo? = null,
         val daysAvailableAtEnd: DaysAvailableInfo? = null,
+
+        val purpose: TripPurpose = TripPurpose.TOURISM,
+        val isPurposeDropdownExpanded: Boolean = false,
+
+        val segments: List<TripSegmentUi> = emptyList(),
+        val notes: String = "",
+        val exemptCountries: Set<String> = emptySet(),
+
+        val error: CustomString? = null,
+        val validationErrors: ValidationErrors = ValidationErrors(),
     ) : MviState {
 
         val totalDuration: Long
-            get() = java.time.temporal.ChronoUnit.DAYS.between(startDate, endDate) + 1
+            get() = if (startDate != null && endDate != null) {
+                java.time.temporal.ChronoUnit.DAYS.between(startDate, endDate) + 1
+            } else 0
 
         val countableDuration: Long
             get() = segments.filter { !it.isExempt }.sumOf { it.duration }
@@ -62,8 +69,8 @@ sealed class AddTripContract {
 
     data class DaysAvailableInfo(
         val used: Int,
-        val total: Int,
         val remaining: Int,
+        val total: Int = MAX_STAY_DAYS,
         val isNearLimit: Boolean = false,
         val isOverLimit: Boolean = false
     ) {
@@ -72,13 +79,11 @@ sealed class AddTripContract {
 
     data class ValidationErrors(
         val startDateError: CustomString? = null,
-        val endDateError: CustomString? = null,
         val visaError: CustomString? = null,
         val segmentsError: CustomString? = null,
         val daysLimitError: CustomString? = null
     ) {
         fun isEmpty(): Boolean = startDateError == null &&
-                endDateError == null &&
                 visaError == null &&
                 segmentsError == null &&
                 daysLimitError == null
@@ -86,34 +91,26 @@ sealed class AddTripContract {
 
     sealed class Action : MviAction {
         data object LoadData : Action()
-        data class UpdateStartDate(val date: LocalDate) : Action()
-        data class UpdateEndDate(val date: LocalDate) : Action()
-        data object ShowStartDatePicker : Action()
-        data object HideStartDatePicker : Action()
-        data object ShowEndDatePicker : Action()
-        data object HideEndDatePicker : Action()
-        data class UpdatePurpose(val purpose: TripPurpose) : Action()
-        data class UpdateSelectedVisa(val visa: Visa?) : Action()
-        data class UpdateNotes(val notes: String) : Action()
+        data object UpdateSegmentList : Action()
+
         data class SetVisaDropdownExpanded(val expanded: Boolean) : Action()
+        data class UpdateSelectedVisa(val visa: Visa?) : Action()
+        data class UpdateDates(val startDate: LocalDate, val endDate: LocalDate) : Action()
+        data class ShowDatePicker(val value: Boolean) : Action()
         data class SetPurposeDropdownExpanded(val expanded: Boolean) : Action()
+        data class UpdatePurpose(val purpose: TripPurpose) : Action()
         data class AddSegment(val segment: TripSegmentUi) : Action()
-        data class UpdateSegment(val index: Int, val segment: TripSegmentUi) : Action()
+        data class UpdateNotes(val notes: String) : Action()
+
+
         data class RemoveSegment(val index: Int) : Action()
         data object OpenAddSegmentEditor : Action()
         data class OpenEditSegmentEditor(val index: Int) : Action()
-        data class OnSegmentEditorResult(
-            val country: String,
-            val startDate: LocalDate,
-            val endDate: LocalDate,
-            val cities: List<String>,
-            val isUpdate: Boolean,
-            val segmentIndex: Int?
-        ) : Action()
         data class OnSegmentDeleted(val segmentIndex: Int) : Action()
+
         data object SaveTrip : Action()
         data class SetError(val error: CustomString? = null) : Action()
-        data object DismissError : Action()
+
         data object RecalculateDays : Action()
         data object CheckSegmentResults : Action()
     }

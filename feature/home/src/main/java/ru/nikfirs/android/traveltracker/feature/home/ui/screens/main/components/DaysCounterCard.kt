@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import ru.nikfirs.android.traveltracker.core.domain.MAX_STAY_DAYS
 import ru.nikfirs.android.traveltracker.core.domain.model.DaysCalculation
 import ru.nikfirs.android.traveltracker.core.domain.model.Visa
 import ru.nikfirs.android.traveltracker.core.ui.R
@@ -39,7 +40,7 @@ fun DaysCounterCard(
     ) {
         DaysCounter(
             daysUsed = daysCalculation.totalDaysUsed,
-            maxDays = DaysCalculation.MAX_STAY_DAYS,
+            maxDays = MAX_STAY_DAYS,
             showWarning = daysCalculation.isNearLimit,
             isOverLimit = daysCalculation.isOverLimit
         )

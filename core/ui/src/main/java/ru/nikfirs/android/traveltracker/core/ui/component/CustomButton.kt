@@ -1,7 +1,9 @@
 package ru.nikfirs.android.traveltracker.core.ui.component
 
 import androidx.annotation.DrawableRes
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.padding
@@ -17,8 +19,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import ru.nikfirs.android.traveltracker.core.ui.R
 import ru.nikfirs.android.traveltracker.core.ui.theme.button
 
 @Composable
@@ -64,6 +68,32 @@ fun CustomButton(
             } else MaterialTheme.typography.titleSmall,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(vertical = if (smallButton) 8.dp else 14.5.dp)
+        )
+    }
+}
+
+@Composable
+fun CalendarButtons(
+    enabledConfirm: Boolean,
+    onConfirmClick: () -> Unit,
+    onCancelClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(24.dp),
+    ) {
+        CustomButton(
+            text = stringResource(R.string.action_cancel),
+            onClick = onCancelClick,
+            secondaryBtn = true,
+            smallButton = true,
+        )
+        CustomButton(
+            text = stringResource(R.string.action_save),
+            onClick = onConfirmClick,
+            smallButton = true,
+            enabled = enabledConfirm,
         )
     }
 }

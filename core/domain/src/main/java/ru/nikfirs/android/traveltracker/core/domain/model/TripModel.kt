@@ -6,8 +6,8 @@ import java.time.temporal.ChronoUnit
 data class Trip(
     val id: Long = 0,
     val visaId: Long? = null,
-    val startDate: LocalDate,
-    val endDate: LocalDate,
+    val startDate: LocalDate? = null,
+    val endDate: LocalDate? = null,
     val segments: List<TripSegment> = emptyList(),
     val purpose: TripPurpose = TripPurpose.TOURISM,
     val isPlanned: Boolean = false,
@@ -20,18 +20,18 @@ data class Trip(
     val isOngoing: Boolean
         get() {
             val today = LocalDate.now()
-            return !isPlanned && today.isAfter(startDate.minusDays(1)) && today.isBefore(
-                endDate.plusDays(
+            return !isPlanned && today.isAfter(startDate?.minusDays(1)) && today.isBefore(
+                endDate?.plusDays(
                     1
                 )
             )
         }
 
     val isPast: Boolean
-        get() = !isPlanned && endDate.isBefore(LocalDate.now())
+        get() = !isPlanned && endDate?.isBefore(LocalDate.now()) == true
 
     val isFuture: Boolean
-        get() = isPlanned || startDate.isAfter(LocalDate.now())
+        get() = isPlanned || startDate?.isAfter(LocalDate.now()) == true
 
     val countries: List<String>
         get() = segments

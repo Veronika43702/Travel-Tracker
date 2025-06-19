@@ -184,12 +184,8 @@
     <string name="cities_placeholder">Например: Берлин, Мюнхен</string>
 
     <!-- Validation Errors for Trip -->
-    <string name="error_start_date_required">Выберите дату начала поездки</string>
-    <string name="error_end_date_required">Выберите дату окончания поездки</string>
-    <string name="error_end_date_before_start">Дата окончания должна быть после даты начала</string>
     <string name="error_visa_required">Выберите визу для поездки</string>
     <string name="error_no_segments">Добавьте хотя бы один сегмент поездки</string>
-    <string name="error_segment_overlap">Сегменты не должны пересекаться</string>
     <string name="error_segment_gap">Между сегментами есть пробелы. Добавьте транзитные сегменты</string>
     <string name="error_segment_country_required">Выберите страну для сегмента</string>
     <string name="error_segment_dates_invalid">Некорректные даты сегмента</string>

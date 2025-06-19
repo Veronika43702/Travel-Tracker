@@ -23,7 +23,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import ru.nikfirs.android.traveltracker.core.domain.model.SegmentType
 import ru.nikfirs.android.traveltracker.core.domain.model.Trip
 import ru.nikfirs.android.traveltracker.core.domain.model.TripPurpose
 import ru.nikfirs.android.traveltracker.core.domain.model.TripSegment
@@ -155,15 +154,17 @@ fun TripCard(
         Spacer(modifier = Modifier.height(4.dp))
 
         // Даты
-        Text(
-            text = stringResource(
-                R.string.trip_dates,
-                trip.startDate.format(dateFormatter),
-                trip.endDate.format(dateFormatter)
-            ),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
+        if (trip.startDate != null && trip.endDate != null) {
+            Text(
+                text = stringResource(
+                    R.string.trip_dates,
+                    trip.startDate?.format(dateFormatter) ?: "",
+                    trip.endDate?.format(dateFormatter) ?: "",
+                ),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
     }
 }
 

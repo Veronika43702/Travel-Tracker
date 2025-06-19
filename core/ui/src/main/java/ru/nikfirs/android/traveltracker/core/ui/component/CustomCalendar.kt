@@ -140,7 +140,7 @@ fun CustomCalendar(
                                 }
 
                                 tempSelection.endDate == null -> {
-                                    val startDate = tempSelection.startDate!!
+                                    val startDate = tempSelection.startDate
                                     val (finalStart, finalEnd) = if (date.isBefore(startDate)) {
                                         Pair(date, startDate)
                                     } else {
@@ -458,32 +458,6 @@ private fun ExistingSegmentBackground(
                     ),
             )
         }
-    }
-}
-
-@Composable
-private fun CalendarButtons(
-    enabledConfirm: Boolean,
-    onConfirmClick: () -> Unit,
-    onCancelClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(24.dp),
-    ) {
-        CustomButton(
-            text = stringResource(R.string.action_cancel),
-            onClick = onCancelClick,
-            secondaryBtn = true,
-            smallButton = true,
-        )
-        CustomButton(
-            text = stringResource(R.string.action_save),
-            onClick = onConfirmClick,
-            smallButton = true,
-            enabled = enabledConfirm,
-        )
     }
 }
 

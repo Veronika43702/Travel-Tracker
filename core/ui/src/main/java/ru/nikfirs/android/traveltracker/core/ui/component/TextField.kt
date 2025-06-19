@@ -134,7 +134,7 @@ fun CustomTextFieldButton(
 ) {
     val interactionSource = remember { MutableInteractionSource() }
 
-    LaunchedEffect(interactionSource, text) {
+    LaunchedEffect(interactionSource, enabled) {
         interactionSource.interactions.collect { interaction ->
             if (interaction is PressInteraction.Release && enabled) {
                 onClick()
