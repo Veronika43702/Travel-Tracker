@@ -15,10 +15,10 @@ class AddTripHolder @Inject constructor() {
     var tripEndDate: LocalDate? = null
         private set
 
-    var visaExemptCountry: String? = null
-
     var segmentList: List<TripSegmentUi> = emptyList()
         private set
+
+    var visaExemptCountry: String? = null
 
     var currentSegment: TripSegmentUi? = null
         private set
@@ -26,11 +26,7 @@ class AddTripHolder @Inject constructor() {
     var segmentIndex: Int? = null
         private set
 
-    var deletedSegmentIndex: Int? = null
-        private set
-
     companion object {
-        // Предустановленные цвета для сегментов
         private val SEGMENT_COLORS = listOf(
             Color(0xFF2196F3), // Blue
             Color(0xFF4CAF50), // Green
@@ -43,14 +39,15 @@ class AddTripHolder @Inject constructor() {
             Color(0xFF673AB7), // Deep Purple
             Color(0xFF607D8B), // Blue Grey
         )
-
-        fun getSegmentColor(index: Int): Color {
-            return SEGMENT_COLORS[index % SEGMENT_COLORS.size]
-        }
     }
 
     fun getSegmentColor(): Color {
-        return segmentIndex?.let { SEGMENT_COLORS[it % SEGMENT_COLORS.size] } ?: Color.Blue
+        return segmentIndex?.let { SEGMENT_COLORS[it % SEGMENT_COLORS.size] }
+            ?: segmentList.lastIndex.let { SEGMENT_COLORS[(it + 1) % SEGMENT_COLORS.size] }
+    }
+
+    fun getSegmentColorByIndex(index: Int): Color {
+        return SEGMENT_COLORS[index % SEGMENT_COLORS.size]
     }
 
     fun addSegmentToList(segment: TripSegmentUi? = currentSegment) {
@@ -64,50 +61,51 @@ class AddTripHolder @Inject constructor() {
     }
 
     fun deleteSegmentFromList(segment: TripSegmentUi? = currentSegment) {
-        segmentList = segmentList.filter { it != segment }
+        segmentList = segmentList.filter { it != segment }.mapIndexed { index, item ->
+            item.copy(color = getSegmentColorByIndex(index))
+        }
     }
 
     /**
-     * Подготовка данных для экрана добавления нового сегмента
+     * Preparing data for adding new trip segment
      */
     fun prepareForAddSegment(
-        tripStartDate: LocalDate,
-        tripEndDate: LocalDate,
-        existingSegments: List<TripSegmentUi>
+        tripStartDate: LocalDate?,
+        tripEndDate: LocalDate?,
+        existingSegments: List<TripSegmentUi>,
+        exemptCountry: String? = null,
     ) {
+        tripStartDate ?: return
+        tripEndDate ?: return
+
         this.tripStartDate = tripStartDate
         this.tripEndDate = tripEndDate
         this.segmentList = existingSegments
+        this.visaExemptCountry = exemptCountry
         this.segmentIndex = null
-        clearCurrentSegmentData()
-        clearResults()
+        this.currentSegment = null
     }
 
     /**
-     * Подготовка данных для экрана редактирования существующего сегмента
+     * Preparing data for editing existing trip segment
      */
     fun prepareForEditSegment(
-        tripStartDate: LocalDate,
-        tripEndDate: LocalDate,
+        tripStartDate: LocalDate?,
+        tripEndDate: LocalDate?,
         existingSegments: List<TripSegmentUi>,
+        exemptCountry: String? = null,
         segmentIndex: Int,
         segment: TripSegmentUi,
     ) {
+        tripStartDate ?: return
+        tripEndDate ?: return
+
         this.tripStartDate = tripStartDate
         this.tripEndDate = tripEndDate
         this.segmentList = existingSegments
+        this.visaExemptCountry = exemptCountry
         this.segmentIndex = segmentIndex
         this.currentSegment = segment
-        clearResults()
-    }
-
-    /**
-     * Получение и очистка информации об удаленном сегменте
-     */
-    fun consumeDeletedSegmentIndex(): Int? {
-        val index = deletedSegmentIndex
-        deletedSegmentIndex = null
-        return index
     }
 
     /**
@@ -118,36 +116,21 @@ class AddTripHolder @Inject constructor() {
     }
 
     /**
-     * Проверка режима редактирования
+     * Check whether segment is edited. Returns true when [segmentIndex] is null.
      */
     fun isEditMode(): Boolean {
         return segmentIndex != null
     }
 
     /**
-     * Полная очистка всех данных
+     * Clears all holder data
      */
     fun clear() {
         tripStartDate = null
         tripEndDate = null
         segmentList = emptyList()
+        visaExemptCountry = null
         segmentIndex = null
-        clearCurrentSegmentData()
-        clearResults()
-    }
-
-    /**
-     * Очистка данных существующего сегмента
-     */
-    private fun clearCurrentSegmentData() {
         currentSegment = null
-    }
-
-    /**
-     * Очистка результатов
-     */
-    private fun clearResults() {
-        currentSegment = null
-        deletedSegmentIndex = null
     }
 }

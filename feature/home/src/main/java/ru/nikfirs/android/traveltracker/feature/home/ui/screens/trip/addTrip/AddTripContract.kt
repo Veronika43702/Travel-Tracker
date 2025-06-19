@@ -4,6 +4,7 @@ import ru.nikfirs.android.traveltracker.core.domain.MAX_STAY_DAYS
 import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
 import ru.nikfirs.android.traveltracker.core.domain.model.TripPurpose
 import ru.nikfirs.android.traveltracker.core.domain.model.Visa
+import ru.nikfirs.android.traveltracker.core.domain.model.VisaCategory
 import ru.nikfirs.android.traveltracker.core.ui.component.ExistingRange
 import ru.nikfirs.android.traveltracker.core.ui.mvi.MviAction
 import ru.nikfirs.android.traveltracker.core.ui.mvi.MviEffect
@@ -54,6 +55,14 @@ sealed class AddTripContract {
         val hasSelectedVisa: Boolean
             get() = selectedVisa != null
 
+        val hasSelectedDates: Boolean
+            get() = startDate != null && endDate != null
+
+        val exemptVisaCountry: String?
+            get() = if (selectedVisa?.visaType != VisaCategory.TYPE_C) {
+                selectedVisa?.country
+            } else null
+
         /**
          * Преобразование в TripSegmentDisplay для календаря
          */
@@ -99,20 +108,18 @@ sealed class AddTripContract {
         data class ShowDatePicker(val value: Boolean) : Action()
         data class SetPurposeDropdownExpanded(val expanded: Boolean) : Action()
         data class UpdatePurpose(val purpose: TripPurpose) : Action()
-        data class AddSegment(val segment: TripSegmentUi) : Action()
+
         data class UpdateNotes(val notes: String) : Action()
 
 
-        data class RemoveSegment(val index: Int) : Action()
+        data class DeleteSegment(val segment: TripSegmentUi) : Action()
         data object OpenAddSegmentEditor : Action()
-        data class OpenEditSegmentEditor(val index: Int) : Action()
-        data class OnSegmentDeleted(val segmentIndex: Int) : Action()
+        data class OpenEditSegmentEditor(val segment: TripSegmentUi) : Action()
 
         data object SaveTrip : Action()
         data class SetError(val error: CustomString? = null) : Action()
 
         data object RecalculateDays : Action()
-        data object CheckSegmentResults : Action()
     }
 
     sealed class Effect : MviEffect {

@@ -1,6 +1,5 @@
 package ru.nikfirs.android.traveltracker.core.ui.component
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.AnchoredDraggableState
 import androidx.compose.foundation.gestures.DraggableAnchors
 import androidx.compose.foundation.gestures.Orientation
@@ -16,6 +15,8 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -74,39 +75,44 @@ fun SwipeableCard(
             }
         }
     }
-    Box(
+    Card(
         modifier = modifier
             .fillMaxWidth()
             .clip(MaterialTheme.shapes.card)
-            .background(MaterialTheme.colorScheme.surfaceVariant)
             .anchoredDraggable(
                 state = state,
                 orientation = Orientation.Horizontal,
                 reverseDirection = false
-            )
+            ),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Box(
-            modifier = Modifier
-                .align(Alignment.CenterEnd)
-                .wrapContentWidth()
-                .onGloballyPositioned { coordinates ->
-                    secondaryContentWidth =
-                        with(density) { coordinates.size.width.toDp().toPx() }
-                }
-        ) {
-            secondaryContent(::setDefaultState)
-        }
+        Box {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .wrapContentWidth()
+                    .onGloballyPositioned { coordinates ->
+                        secondaryContentWidth =
+                            with(density) { coordinates.size.width.toDp().toPx() }
+                    }
+            ) {
+                secondaryContent(::setDefaultState)
+            }
 
-        Box(
-            modifier = Modifier
-                .offset { IntOffset(x = state.offset.roundToInt(), y = 0) }
-                .fillMaxWidth()
-        ) {
-            primaryContent(
-                if (state.currentValue != SwipeState.Default) {
-                    { setDefaultState() }
-                } else null
-            )
+            Box(
+                modifier = Modifier
+                    .offset { IntOffset(x = state.offset.roundToInt(), y = 0) }
+                    .fillMaxWidth()
+            ) {
+                primaryContent(
+                    if (state.currentValue != SwipeState.Default) {
+                        { setDefaultState() }
+                    } else null
+                )
+            }
         }
     }
 }

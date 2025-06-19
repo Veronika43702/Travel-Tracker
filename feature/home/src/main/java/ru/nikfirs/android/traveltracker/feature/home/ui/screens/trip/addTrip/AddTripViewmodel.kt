@@ -6,6 +6,7 @@ import ru.nikfirs.android.traveltracker.core.domain.MAX_STAY_DAYS
 import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
 import ru.nikfirs.android.traveltracker.core.domain.model.Trip
 import ru.nikfirs.android.traveltracker.core.domain.model.TripSegment
+import ru.nikfirs.android.traveltracker.core.domain.model.Visa
 import ru.nikfirs.android.traveltracker.core.domain.model.VisaCategory
 import ru.nikfirs.android.traveltracker.core.ui.mvi.ViewModel
 import ru.nikfirs.android.traveltracker.core.ui.mvi.launch
@@ -52,17 +53,15 @@ class AddTripViewModel @Inject constructor(
             is Action.SetPurposeDropdownExpanded -> setPurposeDropdownExpanded(action.expanded)
             is Action.UpdatePurpose -> updatePurpose(action.purpose)
 
-            is Action.AddSegment -> addSegment(action.segment)
             is Action.UpdateNotes -> updateNotes(action.notes)
 
-            is Action.RemoveSegment -> removeSegment(action.index)
+            is Action.DeleteSegment -> removeSegment(action.segment)
             is Action.OpenAddSegmentEditor -> openSegmentEditor()
-            is Action.OpenEditSegmentEditor -> openSegmentEditor(action.index)
-            is Action.OnSegmentDeleted -> removeSegment(action.segmentIndex)
+            is Action.OpenEditSegmentEditor -> openSegmentEditor(action.segment)
+
             is Action.SaveTrip -> saveTrip()
             is Action.SetError -> setError(action.error)
             is Action.RecalculateDays -> recalculateDays()
-            is Action.CheckSegmentResults -> checkSegmentResults()
 
         }
     }
@@ -142,9 +141,28 @@ class AddTripViewModel @Inject constructor(
         }
     }
 
-    private fun updateSegmentList() {
-        setState { it.copy(segments = addTripHolder.segmentList) }
+    private fun setVisaDropdownExpanded(expanded: Boolean) {
+        setState { it.copy(isVisaDropdownExpanded = expanded) }
+    }
+
+    private fun updateSelectedVisa(visa: Visa?) {
+        setState {
+            it.copy(
+                selectedVisa = visa,
+                isVisaDropdownExpanded = false,
+                validationErrors = currentState.validationErrors.copy(visaError = null),
+                startDate = null,
+                endDate = null,
+                segments = emptyList(),
+            )
+        }
+
+        // Пересчитать сегменты с учетом новой визы
+        recalculateSegmentsExemption()
         recalculateDays()
+
+        // Пересчитать заблокированные даты с учетом диапазона новой визы
+        recalculateBlockedDatesForExistingTrips()
     }
 
     private fun updateStartDate(startDate: LocalDate, endDate: LocalDate) {
@@ -167,84 +185,53 @@ class AddTripViewModel @Inject constructor(
         recalculateBlockedDatesForExistingTrips()
     }
 
-    private fun updatePurpose(purpose: ru.nikfirs.android.traveltracker.core.domain.model.TripPurpose) {
-        setState { it.copy(purpose = purpose, isPurposeDropdownExpanded = false) }
-    }
-
-    private fun updateSelectedVisa(visa: ru.nikfirs.android.traveltracker.core.domain.model.Visa?) {
-        setState {
-            it.copy(
-                selectedVisa = visa,
-                isVisaDropdownExpanded = false,
-                validationErrors = currentState.validationErrors.copy(visaError = null)
-            )
-        }
-
-        // Пересчитать сегменты с учетом новой визы
-        recalculateSegmentsExemption()
-        recalculateDays()
-
-        // Пересчитать заблокированные даты с учетом диапазона новой визы
-        recalculateBlockedDatesForExistingTrips()
-    }
-
-    private fun updateNotes(notes: String) {
-        setState { it.copy(notes = notes) }
-    }
-
-    private fun setVisaDropdownExpanded(expanded: Boolean) {
-        setState { it.copy(isVisaDropdownExpanded = expanded) }
-    }
-
     private fun setPurposeDropdownExpanded(expanded: Boolean) {
         setState { it.copy(isPurposeDropdownExpanded = expanded) }
     }
 
-    private fun addSegment(segment: TripSegmentUi) {
-        val segmentWithColor = segment.copy(
-            isExempt = isCountryExempt(segment.country),
-            color = AddTripHolder.getSegmentColor(currentState.segments.size)
-        )
+    private fun updatePurpose(purpose: ru.nikfirs.android.traveltracker.core.domain.model.TripPurpose) {
+        setState { it.copy(purpose = purpose, isPurposeDropdownExpanded = false) }
+    }
 
-        val updatedSegments = currentState.segments + segmentWithColor
-
-        setState {
-            it.copy(
-                segments = updatedSegments,
-                validationErrors = currentState.validationErrors.copy(segmentsError = null)
-            )
-        }
-
+    private fun updateSegmentList() {
+        setState { it.copy(segments = addTripHolder.segmentList) }
         recalculateDays()
     }
 
-    private fun updateSegment(index: Int, segment: TripSegmentUi) {
-        val updatedSegments = currentState.segments.toMutableList()
-        if (index in updatedSegments.indices) {
-            val segmentWithUpdatedData = segment.copy(
-                isExempt = isCountryExempt(segment.country),
-                color = updatedSegments[index].color // Сохраняем существующий цвет
-            )
-            updatedSegments[index] = segmentWithUpdatedData
+    private fun openSegmentEditor(segment: TripSegmentUi? = null) {
+        if (!(currentState.hasSelectedVisa && currentState.hasSelectedDates)) return
 
-            setState { it.copy(segments = updatedSegments) }
-            recalculateDays()
+        if (segment != null) {
+            // Edit existing segment
+            addTripHolder.prepareForEditSegment(
+                tripStartDate = currentState.startDate,
+                tripEndDate = currentState.endDate,
+                existingSegments = currentState.segments,
+                exemptCountry = currentState.exemptVisaCountry,
+                segment = segment,
+                segmentIndex = currentState.segments.indexOf(segment),
+            )
+        } else {
+            // Adding New Segment
+            addTripHolder.prepareForAddSegment(
+                tripStartDate = currentState.startDate,
+                tripEndDate = currentState.endDate,
+                existingSegments = currentState.segments,
+                exemptCountry = currentState.exemptVisaCountry,
+            )
         }
+
+        setEffect { Effect.OpenSegmentEditor }
     }
 
-    private fun removeSegment(index: Int) {
-        val updatedSegments = currentState.segments.toMutableList()
-        if (index in updatedSegments.indices) {
-            updatedSegments.removeAt(index)
+    private fun removeSegment(segment: TripSegmentUi) {
+        addTripHolder.deleteSegmentFromList(segment)
+        setState { it.copy(segments = addTripHolder.segmentList) }
+        recalculateDays() // TODO
+    }
 
-            // Пересчитываем цвета для оставшихся сегментов
-            val recoloredSegments = updatedSegments.mapIndexed { newIndex, segment ->
-                segment.copy(color = AddTripHolder.getSegmentColor(newIndex))
-            }
-
-            setState { it.copy(segments = recoloredSegments) }
-            recalculateDays()
-        }
+    private fun updateNotes(notes: String) {
+        setState { it.copy(notes = notes) }
     }
 
     private fun recalculateSegmentsExemption() {
@@ -308,95 +295,6 @@ class AddTripViewModel @Inject constructor(
         // 2. Страна совпадает со страной выдавшей визу
         return (visa.visaType == VisaCategory.TYPE_D || visa.visaType == VisaCategory.RESIDENCE_PERMIT) &&
                 visa.country == country
-    }
-
-    private fun openSegmentEditor(segmentIndex: Int? = null) {
-        // Создаем TripSegmentDisplay для передачи в редактор сегментов
-        val existingSegments = currentState.segmentsForDisplay.let { segments ->
-            if (segmentIndex != null) {
-                // В режиме редактирования исключаем редактируемый сегмент
-                segments.filterIndexed { index, _ -> index != segmentIndex }
-            } else {
-                segments
-            }
-        }
-
-//        if (segmentIndex != null) {
-//            // Режим редактирования
-//            val segment = currentState.segments.getOrNull(segmentIndex)
-//            if (segment != null) {
-//                addTripHolder.prepareForEditSegment(
-//                    tripStartDate = currentState.startDate,
-//                    tripEndDate = currentState.endDate,
-//                    existingSegments = existingSegments,
-//                    segmentIndex = segmentIndex,
-////                    existingCountry = segment.country,
-////                    existingStartDate = segment.startDate,
-////                    existingEndDate = segment.endDate,
-////                    existingCities = segment.cities.joinToString(", ")
-//                )
-//            } else {
-//                setError(CustomString.resource(uiR.string.error_segment_not_found))
-//                return
-//            }
-//        } else {
-//            // Режим добавления
-//            addTripHolder.prepareForAddSegment(
-//                tripStartDate = currentState.startDate,
-//                tripEndDate = currentState.endDate,
-//                existingSegments = existingSegments
-//            )
-//        }
-
-        setEffect { Effect.OpenSegmentEditor }
-    }
-
-//    private fun onSegmentEditorResult(action: Action.OnSegmentEditorResult) {
-//        val newSegment = TripSegmentUi(
-//            country = action.country,
-//            startDate = action.startDate,
-//            endDate = action.endDate,
-//            cities = action.cities,
-//            isExempt = isCountryExempt(action.country),
-//            color = if (action.isUpdate && action.segmentIndex != null) {
-//                // При обновлении сохраняем существующий цвет
-//                currentState.segments.getOrNull(action.segmentIndex)?.color
-//                    ?: AddTripHolder.getSegmentColor(action.segmentIndex)
-//            } else {
-//                // При добавлении назначаем новый цвет
-//                AddTripHolder.getSegmentColor(currentState.segments.size)
-//            }
-//        )
-//
-//        if (action.isUpdate && action.segmentIndex != null) {
-//            updateSegment(action.segmentIndex, newSegment)
-//        } else {
-//            addSegment(newSegment)
-//        }
-//
-//        // Автоматически пересчитываем дни после изменения сегментов
-//        recalculateDays()
-//    }
-
-    private fun checkSegmentResults() {
-        // Проверяем результат работы с сегментом
-//        addTripHolder.consumeSegmentResult()?.let { result ->
-//            onSegmentEditorResult(
-//                Action.OnSegmentEditorResult(
-//                    country = result.country,
-//                    startDate = result.startDate,
-//                    endDate = result.endDate,
-//                    cities = result.cities,
-//                    isUpdate = result.isUpdate,
-//                    segmentIndex = result.segmentIndex
-//                )
-//            )
-//        }
-
-        // Проверяем удаленный сегмент
-        addTripHolder.consumeDeletedSegmentIndex()?.let { index ->
-            removeSegment(index)
-        }
     }
 
     private fun saveTrip() {

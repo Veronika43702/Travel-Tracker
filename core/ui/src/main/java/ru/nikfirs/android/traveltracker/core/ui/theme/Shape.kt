@@ -7,7 +7,7 @@ import androidx.compose.ui.unit.dp
 val Shapes = Shapes()
 
 val Shapes.counter get() = RoundedCornerShape(12.dp)
-val Shapes.chip get() = RoundedCornerShape(199.dp)
+val Shapes.chip get() = RoundedCornerShape(8.dp)
 val Shapes.button get() = RoundedCornerShape(12.dp)
 val Shapes.dialog get() = RoundedCornerShape(22.dp)
 val Shapes.card get() = RoundedCornerShape(22.dp)

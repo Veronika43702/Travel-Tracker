@@ -51,6 +51,7 @@ import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTripSegm
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTripSegment.AddTripSegmentContract.Effect
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTripSegment.AddTripSegmentContract.State
 import java.time.LocalDate
+import java.time.YearMonth
 import java.util.Locale
 
 @Composable
@@ -239,6 +240,9 @@ private fun AddTripSegmentContent(
             onDateRangeSelected = { dateRange ->
                 onAction(Action.UpdateDateRange(dateRange))
             },
+            currentMonth = state.selectedDateRange.startDate?.let {
+                YearMonth.of(it.year, it.month)
+            } ?: YearMonth.of(state.tripStartDate.year, state.tripStartDate.month),
             onCancelClick = { onAction(Action.ShowDatePicker(false)) },
             onConfirmClick = { startDate, endDate ->
                 onAction(Action.ShowDatePicker(false))

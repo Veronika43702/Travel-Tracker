@@ -1,24 +1,20 @@
 package ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTrip
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ScrollState
-import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -26,7 +22,6 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedButton
@@ -46,8 +41,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
-import ru.nikfirs.android.traveltracker.core.data.model.TRANSIT
-import ru.nikfirs.android.traveltracker.core.domain.model.SchengenCountries
 import ru.nikfirs.android.traveltracker.core.domain.model.TripPurpose
 import ru.nikfirs.android.traveltracker.core.domain.model.Visa
 import ru.nikfirs.android.traveltracker.core.domain.model.VisaCategory
@@ -60,17 +53,15 @@ import ru.nikfirs.android.traveltracker.core.ui.component.CustomTextFieldButton
 import ru.nikfirs.android.traveltracker.core.ui.component.ErrorDialog
 import ru.nikfirs.android.traveltracker.core.ui.component.FullScreenLoadingIndicator
 import ru.nikfirs.android.traveltracker.core.ui.component.Screen
-import ru.nikfirs.android.traveltracker.core.ui.component.StatusChip
 import ru.nikfirs.android.traveltracker.core.ui.extension.asString
-import ru.nikfirs.android.traveltracker.core.ui.extension.clickableOnce
 import ru.nikfirs.android.traveltracker.core.ui.mvi.LaunchedEffectResolver
 import ru.nikfirs.android.traveltracker.core.ui.theme.AppTheme
 import ru.nikfirs.android.traveltracker.feature.home.domain.model.TripSegmentUi
+import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.components.SwipeableTripSegmentCard
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTrip.AddTripContract.Action
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTrip.AddTripContract.Effect
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTrip.AddTripContract.State
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
 @Composable
 fun AddTripScreen(
@@ -86,7 +77,11 @@ fun AddTripScreen(
     }
     LaunchedEffectResolver(flow = viewModel.effect) { effect ->
         when (effect) {
-            is Effect.NavigateBack -> navigateBack()
+            is Effect.NavigateBack -> {
+                viewModel.addTripHolder.clear()
+                navigateBack()
+            }
+
             is Effect.ScrollUp -> scope.launch { verticalScroll.scrollTo(0) }
             is Effect.ShowMessage -> {
                 // TODO: Показать snackbar
@@ -95,10 +90,16 @@ fun AddTripScreen(
             is Effect.OpenSegmentEditor -> navigateToTripSegment()
         }
     }
-
+    BackHandler {
+        viewModel.addTripHolder.clear()
+        navigateBack()
+    }
     Screen(
         topTitle = stringResource(R.string.add_trip_title),
-        navigateBack = navigateBack,
+        navigateBack = {
+            viewModel.addTripHolder.clear()
+            navigateBack()
+        },
     ) {
         AddTripScreenContent(
             state = state,
@@ -418,22 +419,18 @@ private fun AddTripScreenContent(
         Column(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-        if (state.validationErrors.segmentsError != null) {
-            Text(
-                text = state.validationErrors.segmentsError.asString() ?: "",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.error
-            )
-        }
-            state.segments.forEachIndexed { index, segment ->
-                TripSegmentCard(
+            if (state.validationErrors.segmentsError != null) {
+                Text(
+                    text = state.validationErrors.segmentsError.asString() ?: "",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
+            state.segments.forEach { segment ->
+                SwipeableTripSegmentCard(
                     segment = segment,
-                    onEdit = {
-                        onAction(Action.OpenEditSegmentEditor(index))
-                    },
-                    onDelete = {
-                        onAction(Action.RemoveSegment(index))
-                    },
+                    onEdit = { onAction(Action.OpenEditSegmentEditor(segment)) },
+                    onDelete = { onAction(Action.DeleteSegment(segment)) },
                     dateFormatter = state.dateFormatter,
                 )
             }
@@ -445,7 +442,7 @@ private fun AddTripScreenContent(
                 focusManager.clearFocus()
                 onAction(Action.OpenAddSegmentEditor)
             },
-            enabled = state.hasSelectedVisa,
+            enabled = state.hasSelectedVisa && state.hasSelectedDates,
             modifier = Modifier.fillMaxWidth()
         ) {
             Icon(Icons.Default.Add, contentDescription = null)
@@ -500,116 +497,6 @@ private fun AddTripScreenContent(
     FullScreenLoadingIndicator(state.isLoading)
 }
 
-@Composable
-private fun TripSegmentCard(
-    segment: TripSegmentUi,
-    onEdit: () -> Unit,
-    onDelete: () -> Unit,
-    dateFormatter: DateTimeFormatter,
-) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickableOnce { onEdit() },
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-    ) {
-        Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(16.dp)
-                            .background(
-                                color = segment.color,
-                                shape = CircleShape
-                            )
-                    )
-                    Text(
-                        text = if (segment.country == TRANSIT) {
-                            stringResource(R.string.segment_transit_option)
-                        } else {
-                            SchengenCountries.getCountryByCode(segment.country)?.nameRu
-                                ?: segment.country
-                        },
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-
-                    if (segment.isExempt) {
-                        StatusChip(
-                            text = stringResource(R.string.exempt_badge),
-                            backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
-                            contentColor = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                }
-
-                IconButton(onClick = onDelete) {
-                    Icon(
-                        imageVector = Icons.Default.Delete,
-                        contentDescription = stringResource(R.string.action_delete),
-                    )
-                }
-            }
-
-            Column(
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-
-                    Text(
-                        text = "${segment.startDate.format(dateFormatter)} - ${
-                            segment.endDate.format(
-                                dateFormatter
-                            )
-                        }",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-
-                    Spacer(modifier = Modifier.weight(1f))
-
-                    StatusChip(
-                        text = stringResource(R.string.days_count, segment.duration),
-                        backgroundColor = if (segment.isExempt) {
-                            MaterialTheme.colorScheme.surfaceVariant
-                        } else {
-                            MaterialTheme.colorScheme.primaryContainer
-                        },
-                        contentColor = if (segment.isExempt) {
-                            MaterialTheme.colorScheme.onSurfaceVariant
-                        } else {
-                            MaterialTheme.colorScheme.onPrimaryContainer
-                        }
-                    )
-                }
-
-                if (segment.cities.isNotEmpty()) {
-                    Text(
-                        text = segment.cities.joinToString(", "),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-            }
-        }
-    }
-}
-
 @Preview(showBackground = true)
 @Composable
 private fun AddTripScreenPreview() {
@@ -653,8 +540,9 @@ private fun AddTripScreenPreview() {
                         country = "Poland",
                         startDate = LocalDate.now().plusDays(3),
                         endDate = LocalDate.now().plusDays(7),
-                        cities = listOf("Warsaw"),
-                        color = Color.Magenta
+                        // cities = listOf("Warsaw"),
+                        color = Color.Magenta,
+                        isExempt = true
                     )
                 ),
                 daysAvailableAtStart = AddTripContract.DaysAvailableInfo(
