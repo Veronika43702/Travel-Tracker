@@ -36,7 +36,6 @@ sealed class AddTripContract {
 
         val segments: List<TripSegmentUi> = emptyList(),
         val notes: String = "",
-        val exemptCountries: Set<String> = emptySet(),
 
         val error: CustomString? = null,
         val validationErrors: ValidationErrors = ValidationErrors(),

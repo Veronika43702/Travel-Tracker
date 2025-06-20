@@ -8,7 +8,7 @@ data class TripSegmentUi(
     val startDate: LocalDate,
     val endDate: LocalDate,
     val cities: List<String> = emptyList(),
-    val isExempt: Boolean = false,
+    val isExempt: Boolean,
     val color: Color = Color.Blue
 ) {
     val duration: Long

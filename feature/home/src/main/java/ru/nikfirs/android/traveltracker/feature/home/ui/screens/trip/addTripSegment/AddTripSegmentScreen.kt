@@ -276,7 +276,8 @@ private fun AddTripSegmentScreenPreview() {
                         startDate = LocalDate.now().plusDays(4),
                         endDate = LocalDate.now().plusDays(6),
                         country = "",
-                        color = Color.Blue
+                        color = Color.Blue,
+                        isExempt = false
                     )
                 ),
                 showCalendar = false,
@@ -305,12 +306,14 @@ private fun EditTripSegmentScreenPreview() {
                         startDate = LocalDate.now(),
                         endDate = LocalDate.now().plusDays(2),
                         country = "",
-                        color = Color.Green
+                        color = Color.Green,
+                        isExempt = false
                     ),
                     TripSegmentUi(
                         startDate = LocalDate.now().plusDays(5),
                         endDate = LocalDate.now().plusDays(7),
                         country = "",
+                        isExempt = false
                     )
                 ),
                 showCalendar = false,

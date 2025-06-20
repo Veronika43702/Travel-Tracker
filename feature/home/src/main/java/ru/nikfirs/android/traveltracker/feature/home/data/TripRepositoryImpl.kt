@@ -26,20 +26,6 @@ class TripRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getTripsInPeriod(startDate: LocalDate, endDate: LocalDate): Flow<List<Trip>> {
-        return tripDao.getTripsInPeriodWithSegments(startDate, endDate).map { tripsWithSegments ->
-            tripsWithSegments.map { it.toModel() }
-        }
-    }
-
-    override fun getTripsByCountry(country: String): Flow<List<Trip>> {
-        return getAllTrips().map { trips ->
-            trips.filter { trip ->
-                trip.segments.any { it.country == country }
-            }
-        }
-    }
-
     override suspend fun getTripById(tripId: Long): Trip? {
         return tripDao.getTripByIdWithSegments(tripId)?.toModel()
     }
@@ -47,7 +33,6 @@ class TripRepositoryImpl @Inject constructor(
     override suspend fun insertTrip(trip: Trip): Long {
         val tripId = tripDao.insertTrip(trip.toEntity())
 
-        // Сохраняем сегменты
         val segments = trip.segments.map { it.toEntity(tripId) }
         tripSegmentDao.insertSegments(segments)
 
@@ -70,20 +55,13 @@ class TripRepositoryImpl @Inject constructor(
 
     override suspend fun calculateDaysInPeriod(
         periodEnd: LocalDate,
-        exemptCountries: Set<String>
     ): DaysCalculation {
         val periodStart = periodEnd.minusDays((PERIOD_DAYS-1).toLong())
 
-        // Получаем количество дней с учетом исключений
         val totalDaysUsed = tripDao.getDaysCountInPeriodWithExemptions(
             periodStart = periodStart,
             periodEnd = periodEnd,
-            exemptCountries = exemptCountries.toList()
         )
-
-        // Получаем статистику по странам
-        val countryStatisticsList = tripDao.getCountryStatistics(periodStart, periodEnd)
-        val daysPerCountry = countryStatisticsList.associate { it.country to it.days }
 
         val remainingDays = MAX_STAY_DAYS - totalDaysUsed
 

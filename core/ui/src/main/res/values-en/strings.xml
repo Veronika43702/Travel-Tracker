@@ -29,7 +29,7 @@
     <string name="trip_ongoing">Ongoing trip</string>
     <string name="trip_planned">Planned</string>
     <string name="trip_past">Past</string>
-    <string name="trip_dates">%1$s — %2$s</string>
+    <string name="trip_dates">%1$s\n%2$s</string>
 
     <!-- Days Counter -->
     <string name="days_counter_title">Days in EU</string>

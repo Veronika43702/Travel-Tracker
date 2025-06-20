@@ -10,8 +10,7 @@ class CalculateDaysInPeriodUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(
         periodEnd: LocalDate = LocalDate.now(),
-        exemptCountries: Set<String> = emptySet()
     ): DaysCalculation {
-        return tripRepository.calculateDaysInPeriod(periodEnd, exemptCountries)
+        return tripRepository.calculateDaysInPeriod(periodEnd)
     }
 }

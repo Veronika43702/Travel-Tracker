@@ -15,6 +15,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import ru.nikfirs.android.traveltracker.core.domain.MAX_STAY_DAYS
 import ru.nikfirs.android.traveltracker.core.ui.theme.*
 import ru.nikfirs.android.traveltracker.core.ui.R
 
@@ -22,7 +23,7 @@ import ru.nikfirs.android.traveltracker.core.ui.R
 fun DaysCounter(
     daysUsed: Int,
     modifier: Modifier = Modifier,
-    maxDays: Int = 90,
+    maxDays: Int = MAX_STAY_DAYS,
     showWarning: Boolean = false,
     isOverLimit: Boolean = false
 ) {

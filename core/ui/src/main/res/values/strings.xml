@@ -29,7 +29,7 @@
     <string name="trip_ongoing">Текущая поездка</string>
     <string name="trip_planned">Запланировано</string>
     <string name="trip_past">Прошедшая</string>
-    <string name="trip_dates">%1$s — %2$s</string>
+    <string name="trip_dates">%1$s\n%2$s</string>
 
     <!-- Days Counter -->
     <string name="days_counter_title">Дней в ЕС</string>

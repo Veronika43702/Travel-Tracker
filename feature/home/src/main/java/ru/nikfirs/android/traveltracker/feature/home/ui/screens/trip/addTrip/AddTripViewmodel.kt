@@ -14,7 +14,6 @@ import ru.nikfirs.android.traveltracker.core.ui.mvi.ViewModel
 import ru.nikfirs.android.traveltracker.core.ui.mvi.launch
 import ru.nikfirs.android.traveltracker.feature.home.domain.model.TripSegmentUi
 import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.CalculateDaysInPeriodUseCase
-import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.GetExemptCountriesUseCase
 import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.trip.GetAllTripsUseCase
 import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.trip.SaveTripUseCase
 import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.visa.GetActiveVisasUseCase
@@ -30,14 +29,13 @@ import ru.nikfirs.android.traveltracker.core.ui.R as uiR
 @HiltViewModel
 class AddTripViewModel @Inject constructor(
     private val getActiveVisasUseCase: GetActiveVisasUseCase,
-    private val getExemptCountriesUseCase: GetExemptCountriesUseCase,
     private val calculateDaysInPeriodUseCase: CalculateDaysInPeriodUseCase,
     private val getAllTripsUseCase: GetAllTripsUseCase,
     private val saveTripUseCase: SaveTripUseCase,
     val addTripHolder: AddTripHolder,
 ) : ViewModel<Action, Effect, State>() {
 
-    var daysOutOfSegments: Set<LocalDate> = emptySet()
+    private var daysOutOfSegments: Set<LocalDate> = emptySet()
 
     init {
         setAction(Action.LoadData)
@@ -78,14 +76,12 @@ class AddTripViewModel @Inject constructor(
             try {
                 combine(
                     getActiveVisasUseCase(),
-                    getExemptCountriesUseCase(),
                     getAllTripsUseCase()
-                ) { visas, exemptCountries, trips ->
+                ) { visas, trips ->
                     setState {
                         it.copy(
                             isLoading = false,
                             availableVisas = visas,
-                            exemptCountries = exemptCountries
                         )
                     }
 
@@ -104,7 +100,6 @@ class AddTripViewModel @Inject constructor(
                 val today = LocalDate.now()
                 val calculation = calculateDaysInPeriodUseCase(
                     periodEnd = today,
-                    exemptCountries = currentState.exemptCountries
                 )
 
                 val daysInfo = DaysAvailableInfo(
@@ -195,7 +190,12 @@ class AddTripViewModel @Inject constructor(
     }
 
     private fun updateSegmentList() {
-        setState { it.copy(segments = addTripHolder.segmentList) }
+        setState {
+            it.copy(
+                validationErrors = currentState.validationErrors.copy(segmentsError = null),
+                segments = addTripHolder.segmentList
+            )
+        }
         recalculateAvailableDays()
     }
 
@@ -256,7 +256,6 @@ class AddTripViewModel @Inject constructor(
             try {
                 val startCalculation = calculateDaysInPeriodUseCase(
                     periodEnd = currentState.startDate ?: LocalDate.now(),
-                    exemptCountries = currentState.exemptCountries
                 )
 
                 val startDaysInfo = DaysAvailableInfo(
@@ -373,7 +372,6 @@ class AddTripViewModel @Inject constructor(
 
         val setOfSegmentDays: Set<LocalDate> = buildSet {
             currentState.segments
-                .filter { !it.isExempt }
                 .forEach { segment ->
                     var date = segment.startDate
                     while (!date.isAfter(segment.endDate)) {
@@ -387,7 +385,8 @@ class AddTripViewModel @Inject constructor(
         if (daysOutOfSegments.isNotEmpty()) {
             setState {
                 it.copy(
-                    warningTextDaysOutSegments = CustomString.resource(uiR.string.error_segment_gap)
+                    warningTextDaysOutSegments =
+                    CustomString.resource(uiR.string.error_segment_gap)
                 )
             }
         }
@@ -535,7 +534,6 @@ class AddTripViewModel @Inject constructor(
             try {
                 val calculation = calculateDaysInPeriodUseCase(
                     periodEnd = checkDate,
-                    exemptCountries = currentState.exemptCountries
                 )
 
                 // Если на эту дату уже используется 90+ дней, блокируем ее

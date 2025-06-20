@@ -39,10 +39,6 @@ class VisaRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getExemptCountries(): Flow<Set<String>> {
-        return visaDao.getExemptCountries(LocalDate.now()).map { it.toSet() }
-    }
-
     override suspend fun getVisaById(visaId: Long): Visa? {
         return visaDao.getVisaById(visaId)?.toModel()
     }

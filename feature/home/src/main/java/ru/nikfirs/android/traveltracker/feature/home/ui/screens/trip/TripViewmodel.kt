@@ -34,18 +34,18 @@ class TripViewModel @Inject constructor(
         launch {
             setState { it.copy(isLoading = true, error = null) }
 
-            try {
-                tripRepository.getAllTrips().collectLatest { trips ->
-                    setState {
-                        it.copy(
-                            isLoading = false,
-                            trips = trips,
-                        )
-                    }
-                }
-            } catch (e: Exception) {
-                setError(CustomString.text(e.message))
-            }
+//            try {
+//                tripRepository.getAllTrips().collectLatest { trips ->
+//                    setState {
+//                        it.copy(
+//                            isLoading = false,
+//                            trips = trips,
+//                        )
+//                    }
+//                }
+//            } catch (e: Exception) {
+//                setError(CustomString.text(e.message))
+//            }
         }
     }
 

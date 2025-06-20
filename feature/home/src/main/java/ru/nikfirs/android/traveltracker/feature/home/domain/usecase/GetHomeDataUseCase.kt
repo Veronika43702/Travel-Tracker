@@ -10,18 +10,15 @@ import javax.inject.Inject
 class GetHomeDataUseCase @Inject constructor(
     private val getAllVisasUseCase: GetAllVisasUseCase,
     private val getAllTripsUseCase: GetAllTripsUseCase,
-    private val getExemptCountriesUseCase: GetExemptCountriesUseCase
 ) {
     operator fun invoke(): Flow<HomeData> {
         return combine(
             getAllVisasUseCase(),
             getAllTripsUseCase(),
-            getExemptCountriesUseCase()
-        ) { visas, trips, exemptCountries ->
+        ) { visas, trips ->
             HomeData(
                 allVisas = visas,
                 allTrips = trips,
-                exemptCountries = exemptCountries
             )
         }
     }

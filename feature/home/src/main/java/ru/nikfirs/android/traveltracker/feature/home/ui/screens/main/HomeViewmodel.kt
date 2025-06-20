@@ -77,8 +77,7 @@ class HomeViewModel @Inject constructor(
                             )
                         }
 
-                        // Обновляем подсчет дней
-                        updateDaysCalculation(homeData.exemptCountries)
+                        updateDaysCalculation()
                     }
             } catch (e: Exception) {
                 setError(CustomString.text(e.message))
@@ -86,16 +85,15 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private fun updateDaysCalculation(exemptCountries: Set<String>) {
+    private fun updateDaysCalculation() {
         launch {
             try {
                 val calculation = calculateDaysInPeriodUseCase(
                     periodEnd = LocalDate.now(),
-                    exemptCountries = exemptCountries
                 )
                 setState { it.copy(daysCalculation = calculation) }
             } catch (e: Exception) {
-                // Не показываем ошибку подсчета дней, просто логируем
+                // TODO
             }
         }
     }

@@ -275,6 +275,9 @@ private fun VisasTabContent(
                 onAction = onAction,
             )
         }
+       item {
+           Spacer(Modifier.height(70.dp))
+       }
     }
 }
 
@@ -360,6 +363,10 @@ private fun TripsTabContent(
                     onAction = onAction,
                 )
             }
+        }
+
+        item {
+            Spacer(Modifier.height(70.dp))
         }
     }
 }

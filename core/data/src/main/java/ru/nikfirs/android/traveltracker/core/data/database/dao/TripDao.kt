@@ -14,19 +14,6 @@ interface TripDao {
     fun getAllTripsWithSegments(): Flow<List<TripWithSegments>>
 
     @Transaction
-    @Query(
-        """
-        SELECT * FROM trips 
-        WHERE startDate <= :endDate AND endDate >= :startDate 
-        ORDER BY startDate
-    """
-    )
-    fun getTripsInPeriodWithSegments(
-        startDate: LocalDate,
-        endDate: LocalDate
-    ): Flow<List<TripWithSegments>>
-
-    @Transaction
     @Query("SELECT * FROM trips WHERE id = :tripId")
     suspend fun getTripByIdWithSegments(tripId: Long): TripWithSegments?
 
@@ -40,23 +27,34 @@ interface TripDao {
     suspend fun deleteTrip(trip: TripEntity)
 
     @Query("""
-            WITH RECURSIVE dates(day, segment_id) AS (
-            SELECT DATE(s.startDate) AS day, s.id
+        WITH RECURSIVE dates(day, segment_id) AS (
+            -- segments of all approprate trips with isExempt = false
+            SELECT
+                CASE
+                    WHEN DATE(s.startDate) < :periodStart THEN :periodStart
+                    ELSE DATE(s.startDate)
+                END AS day,
+                s.id
             FROM trip_segments s
             INNER JOIN trips t ON t.id = s.tripId
-            AND s.country NOT IN (:exemptCountries)
-            AND DATE(s.startDate) BETWEEN :periodStart AND :periodEnd
+            WHERE s.isExempt = 0
+            AND DATE(s.startDate) <= :periodEnd
+            AND DATE(s.endDate) >= :periodStart
 
             UNION ALL
 
+            -- segment days
             SELECT DATE(day, '+1 day'), segment_id
             FROM dates
             WHERE DATE(day, '+1 day') <= (
-                SELECT DATE(endDate)
+                SELECT
+                    CASE
+                        WHEN DATE(endDate) > :periodEnd THEN :periodEnd
+                        ELSE DATE(endDate)
+                    END
                 FROM trip_segments
                 WHERE id = segment_id
             )
-            AND DATE(day, '+1 day') <= :periodEnd
         )
 
         SELECT COUNT(DISTINCT day) AS dayCount
@@ -65,11 +63,11 @@ interface TripDao {
     suspend fun getDaysCountInPeriodWithExemptions(
         periodStart: LocalDate,
         periodEnd: LocalDate,
-        exemptCountries: List<String>
     ): Int
 
     // count days by countries for statistics
-    @Query("""
+    @Query(
+        """
         WITH RECURSIVE dates(day, country, segment_id) AS (
             SELECT DATE(s.startDate) AS day, s.country, s.id
             FROM trip_segments s
@@ -91,7 +89,8 @@ interface TripDao {
         SELECT country, COUNT(DISTINCT day) as days
         FROM dates
         GROUP BY country
-    """)
+    """
+    )
     suspend fun getCountryStatistics(
         periodStart: LocalDate,
         periodEnd: LocalDate

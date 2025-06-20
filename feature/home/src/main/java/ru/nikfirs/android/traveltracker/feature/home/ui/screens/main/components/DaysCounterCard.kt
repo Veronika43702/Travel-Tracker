@@ -39,7 +39,6 @@ fun DaysCounterCard(
     ) {
         DaysCounter(
             daysUsed = daysCalculation.totalDaysUsed,
-            maxDays = MAX_STAY_DAYS,
             showWarning = daysCalculation.isNearLimit,
             isOverLimit = daysCalculation.isOverLimit
         )

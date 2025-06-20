@@ -50,6 +50,7 @@ fun TripSegment.toEntity(tripId: Long): TripSegmentEntity {
     return TripSegmentEntity(
         tripId = tripId,
         country = country,
+        isExempt = isExempt,
         startDate = startDate,
         endDate = endDate,
         cities = cities.takeIf { it.isNotEmpty() }?.joinToString(", ")

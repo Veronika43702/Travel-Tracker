@@ -8,7 +8,6 @@ interface VisaRepository {
     fun getAllVisas(): Flow<List<Visa>>
     fun getActiveVisas(): Flow<List<Visa>>
     fun getVisasByType(type: VisaCategory): Flow<List<Visa>>
-    fun getExemptCountries(): Flow<Set<String>>
     suspend fun getVisaById(visaId: Long): Visa?
     suspend fun insertVisa(visa: Visa): Long
     suspend fun updateVisa(visa: Visa)

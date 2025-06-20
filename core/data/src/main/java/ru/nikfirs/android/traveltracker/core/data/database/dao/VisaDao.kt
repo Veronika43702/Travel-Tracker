@@ -17,15 +17,6 @@ interface VisaDao {
     @Query("SELECT * FROM visas WHERE visaCategory = :category ORDER BY expiryDate DESC")
     fun getVisasByCategory(category: VisaCategory): Flow<List<VisaEntity>>
 
-    @Query("""
-        SELECT DISTINCT country FROM visas 
-        WHERE (visaCategory = 'TYPE_D' OR visaCategory = 'RESIDENCE_PERMIT')
-        AND isActive = 1
-        AND expiryDate >= :currentDate
-        AND country IS NOT NULL
-    """)
-    fun getExemptCountries(currentDate: LocalDate): Flow<List<String>>
-
     @Query("SELECT * FROM visas WHERE id = :visaId")
     suspend fun getVisaById(visaId: Long): VisaEntity?
 
