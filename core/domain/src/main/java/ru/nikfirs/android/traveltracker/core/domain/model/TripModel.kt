@@ -10,17 +10,19 @@ data class Trip(
     val endDate: LocalDate? = null,
     val segments: List<TripSegment> = emptyList(),
     val purpose: TripPurpose = TripPurpose.TOURISM,
-    val isPlanned: Boolean = false,
     val notes: String? = null,
     val createdAt: LocalDate = LocalDate.now()
 ) {
     val duration: Long
         get() = ChronoUnit.DAYS.between(startDate, endDate) + 1
 
+    val isFuture: Boolean
+        get() = startDate?.isAfter(LocalDate.now()) == true
+
     val isOngoing: Boolean
         get() {
             val today = LocalDate.now()
-            return !isPlanned && today.isAfter(startDate?.minusDays(1)) && today.isBefore(
+            return !isFuture && today.isAfter(startDate?.minusDays(1)) && today.isBefore(
                 endDate?.plusDays(
                     1
                 )
@@ -28,10 +30,7 @@ data class Trip(
         }
 
     val isPast: Boolean
-        get() = !isPlanned && endDate?.isBefore(LocalDate.now()) == true
-
-    val isFuture: Boolean
-        get() = isPlanned || startDate?.isAfter(LocalDate.now()) == true
+        get() = !isFuture && endDate?.isBefore(LocalDate.now()) == true
 
     val countries: List<String>
         get() = segments

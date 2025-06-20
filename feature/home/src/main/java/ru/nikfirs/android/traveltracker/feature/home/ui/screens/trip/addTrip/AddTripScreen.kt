@@ -50,6 +50,7 @@ import ru.nikfirs.android.traveltracker.core.ui.component.CustomButton
 import ru.nikfirs.android.traveltracker.core.ui.component.CustomDateRangePicker
 import ru.nikfirs.android.traveltracker.core.ui.component.CustomTextField
 import ru.nikfirs.android.traveltracker.core.ui.component.CustomTextFieldButton
+import ru.nikfirs.android.traveltracker.core.ui.component.DialogTwoRowButton
 import ru.nikfirs.android.traveltracker.core.ui.component.ErrorDialog
 import ru.nikfirs.android.traveltracker.core.ui.component.FullScreenLoadingIndicator
 import ru.nikfirs.android.traveltracker.core.ui.component.Screen
@@ -61,6 +62,8 @@ import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.components.
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTrip.AddTripContract.Action
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTrip.AddTripContract.Effect
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTrip.AddTripContract.State
+import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.utils.VisaAction
+import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.visaDetails.VisaDetailsContract
 import java.time.LocalDate
 
 @Composable
@@ -492,6 +495,15 @@ private fun AddTripScreenContent(
     ErrorDialog(
         message = state.error,
         onDismiss = { onAction(Action.SetError()) }
+    )
+
+    DialogTwoRowButton(
+        message = state.warningTextDaysOutSegments,
+        onRightBtn = {
+            onAction(Action.SaveTripWithTransit)
+            onAction(Action.SetWarning(null))
+        },
+        onDismiss = { onAction(Action.SetWarning(null)) }
     )
 
     FullScreenLoadingIndicator(state.isLoading)

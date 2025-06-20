@@ -40,6 +40,7 @@ sealed class AddTripContract {
 
         val error: CustomString? = null,
         val validationErrors: ValidationErrors = ValidationErrors(),
+        val warningTextDaysOutSegments: CustomString? = null,
     ) : MviState {
 
         val totalDuration: Long
@@ -102,7 +103,9 @@ sealed class AddTripContract {
         data class OpenEditSegmentEditor(val segment: TripSegmentUi) : Action()
 
         data object SaveTrip : Action()
+        data object SaveTripWithTransit : Action()
         data class SetError(val error: CustomString? = null) : Action()
+        data class SetWarning(val value: CustomString? = null) : Action()
 
         data object RecalculateDays : Action()
     }

@@ -32,7 +32,7 @@ fun Trip.toEntity(): TripEntity {
         startDate = startDate ?: LocalDate.now(),
         endDate = endDate ?: LocalDate.now(),
         purpose = purpose.toEntityTripPurpose(),
-        isPlanned = isPlanned,
+        isPlanned = isFuture,
         notes = notes,
         createdAt = createdAt
     )

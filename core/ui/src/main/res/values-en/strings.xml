@@ -184,13 +184,9 @@
     <string name="cities_placeholder">e.g. Berlin, Munich</string>
 
     <!-- Validation Errors for Trip -->
-    <string name="error_start_date_required">Select trip start date</string>
-    <string name="error_end_date_required">Select trip end date</string>
-    <string name="error_end_date_before_start">End date must be after start date</string>
     <string name="error_visa_required">Select a visa for the trip</string>
     <string name="error_no_segments">Add at least one trip segment</string>
-    <string name="error_segment_overlap">Segments should not overlap</string>
-    <string name="error_segment_gap">There are gaps between segments. Add transit segments</string>
+    <string name="error_segment_gap">There are gaps between segments. For saving transit segments will be automatically added.</string>
     <string name="error_segment_country_required">Select country for segment</string>
     <string name="error_segment_dates_invalid">Invalid segment dates</string>
     <string name="error_visa_doesnt_cover_dates">Selected visa doesn\'t cover trip dates</string>

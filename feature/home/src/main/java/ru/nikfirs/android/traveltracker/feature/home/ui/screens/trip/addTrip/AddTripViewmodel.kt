@@ -2,6 +2,7 @@ package ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTrip
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.combine
+import ru.nikfirs.android.traveltracker.core.data.model.TRANSIT
 import ru.nikfirs.android.traveltracker.core.domain.MAX_STAY_DAYS
 import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
 import ru.nikfirs.android.traveltracker.core.domain.model.Trip
@@ -36,6 +37,8 @@ class AddTripViewModel @Inject constructor(
     val addTripHolder: AddTripHolder,
 ) : ViewModel<Action, Effect, State>() {
 
+    var daysOutOfSegments: Set<LocalDate> = emptySet()
+
     init {
         setAction(Action.LoadData)
     }
@@ -61,9 +64,10 @@ class AddTripViewModel @Inject constructor(
             is Action.OpenEditSegmentEditor -> openSegmentEditor(action.segment)
 
             is Action.SaveTrip -> saveTrip()
+            is Action.SaveTripWithTransit -> saveTripWithTransit()
             is Action.SetError -> setError(action.error)
+            is Action.SetWarning -> setWarning(action.value)
             is Action.RecalculateDays -> recalculateAvailableDays()
-
         }
     }
 
@@ -299,13 +303,12 @@ class AddTripViewModel @Inject constructor(
     }
 
     private fun saveTrip() {
-        // TODO if there are days not covered with segments - warning.
-        //  If "continue" - fill in segments with transit
         val validationErrors = validateForm()
 
         if (validationErrors.isEmpty()) {
-            setState { it.copy(isLoading = true) }
+            if (!checkDaysOutOfSegments()) return
 
+            setState { it.copy(isLoading = true) }
             launch {
                 try {
                     val trip = Trip(
@@ -322,7 +325,6 @@ class AddTripViewModel @Inject constructor(
                             )
                         },
                         purpose = currentState.purpose,
-                        isPlanned = currentState.startDate?.isAfter(LocalDate.now()) == true,
                         notes = currentState.notes.takeIf { it.isNotBlank() }
                     )
 
@@ -359,8 +361,109 @@ class AddTripViewModel @Inject constructor(
         )
     }
 
+    private fun checkDaysOutOfSegments(): Boolean {
+        val setOfTripDays: Set<LocalDate> = buildSet {
+            var date = currentState.startDate ?: return false
+            while (!date.isAfter(currentState.endDate)) {
+                add(date)
+                date = date.plusDays(1)
+            }
+        }
+
+        val setOfSegmentDays: Set<LocalDate> = buildSet {
+            currentState.segments
+                .filter { !it.isExempt }
+                .forEach { segment ->
+                    var date = segment.startDate
+                    while (!date.isAfter(segment.endDate)) {
+                        add(date)
+                        date = date.plusDays(1)
+                    }
+                }
+        }
+
+        daysOutOfSegments = setOfTripDays - setOfSegmentDays
+        if (daysOutOfSegments.isNotEmpty()) {
+            setState {
+                it.copy(
+                    warningTextDaysOutSegments = CustomString.resource(uiR.string.error_segment_gap)
+                )
+            }
+        }
+
+        return daysOutOfSegments.isEmpty()
+    }
+
+    private fun saveTripWithTransit() {
+        launch {
+            setState { it.copy(isLoading = true) }
+
+            try {
+                val segments: MutableList<TripSegment> = currentState.segments.map { segmentUi ->
+                    TripSegment(
+                        country = segmentUi.country,
+                        startDate = segmentUi.startDate,
+                        endDate = segmentUi.endDate,
+                        cities = segmentUi.cities
+                    )
+                }.toMutableList()
+
+                val groupedTransitSegments = daysOutOfSegments
+                    .sorted()
+                    .fold(mutableListOf<MutableList<LocalDate>>()) { acc, date ->
+                        if (acc.isEmpty() || acc.last().last().plusDays(1) != date) {
+                            // new group
+                            acc.add(mutableListOf(date))
+                        } else {
+                            // continue current group
+                            acc.last().add(date)
+                        }
+                        acc
+                    }
+
+                val transitSegments = groupedTransitSegments.map { group ->
+                    TripSegment(
+                        country = TRANSIT,
+                        startDate = group.first(),
+                        endDate = group.last(),
+                        cities = emptyList()
+                    )
+                }
+
+                segments.addAll(transitSegments)
+
+                val trip = Trip(
+                    id = 0,
+                    visaId = currentState.selectedVisa?.id,
+                    startDate = currentState.startDate,
+                    endDate = currentState.endDate,
+                    segments = segments,
+                    purpose = currentState.purpose,
+                    notes = currentState.notes.takeIf { it.isNotBlank() }
+                )
+
+                saveTripUseCase(trip)
+                daysOutOfSegments = emptySet()
+                setEffect { Effect.NavigateBack }
+
+            } catch (e: Exception) {
+                daysOutOfSegments = emptySet()
+                setState {
+                    it.copy(
+                        isLoading = false,
+                        error = CustomString.resource(uiR.string.error_saving_trip)
+                    )
+                }
+            }
+        }
+    }
+
     private fun setError(error: CustomString? = null) {
         setState { it.copy(isLoading = false, error = error) }
+    }
+
+    private fun setWarning(value: CustomString? = null) {
+        setState { it.copy(warningTextDaysOutSegments = value) }
     }
 
     private fun calculateBlockedDates(trips: List<Trip>) {

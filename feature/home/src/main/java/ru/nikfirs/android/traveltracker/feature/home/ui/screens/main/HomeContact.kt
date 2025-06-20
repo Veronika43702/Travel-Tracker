@@ -9,10 +9,7 @@ import ru.nikfirs.android.traveltracker.core.ui.mvi.MviEffect
 import ru.nikfirs.android.traveltracker.core.ui.mvi.MviState
 import ru.nikfirs.android.traveltracker.feature.home.domain.model.HomeItem
 import ru.nikfirs.android.traveltracker.feature.home.domain.model.HomeTab
-import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.utils.HomeAction
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.utils.HomeActionModel
-import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.utils.VisaAction
-import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.visaDetails.VisaDetailsContract.Action
 
 sealed class HomeContract {
     data class State(
