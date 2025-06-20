@@ -14,14 +14,6 @@ interface TripDao {
     fun getAllTripsWithSegments(): Flow<List<TripWithSegments>>
 
     @Transaction
-    @Query("SELECT * FROM trips WHERE isPlanned = 0 ORDER BY startDate DESC")
-    fun getPastTripsWithSegments(): Flow<List<TripWithSegments>>
-
-    @Transaction
-    @Query("SELECT * FROM trips WHERE isPlanned = 1 ORDER BY startDate ASC")
-    fun getPlannedTripsWithSegments(): Flow<List<TripWithSegments>>
-
-    @Transaction
     @Query(
         """
         SELECT * FROM trips 
@@ -52,7 +44,6 @@ interface TripDao {
             SELECT DATE(s.startDate) AS day, s.id
             FROM trip_segments s
             INNER JOIN trips t ON t.id = s.tripId
-            WHERE t.isPlanned = 0
             AND s.country NOT IN (:exemptCountries)
             AND DATE(s.startDate) BETWEEN :periodStart AND :periodEnd
 
@@ -83,7 +74,6 @@ interface TripDao {
             SELECT DATE(s.startDate) AS day, s.country, s.id
             FROM trip_segments s
             INNER JOIN trips t ON t.id = s.tripId
-            WHERE t.isPlanned = 0
             AND DATE(s.startDate) BETWEEN :periodStart AND :periodEnd
 
             UNION ALL
@@ -124,7 +114,6 @@ interface TripDao {
                 WHERE EXISTS (
                     SELECT 1 FROM trip_segments s
                     INNER JOIN trips t ON t.id = s.tripId
-                    WHERE t.isPlanned = 0
                     AND t.id != :excludeTripId
                     AND s.country NOT IN (:exemptCountries)
                     AND DATE(d.date) BETWEEN DATE(s.startDate) AND DATE(s.endDate)

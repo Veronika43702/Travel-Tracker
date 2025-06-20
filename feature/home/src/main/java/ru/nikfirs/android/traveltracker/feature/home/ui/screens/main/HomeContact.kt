@@ -18,7 +18,6 @@ sealed class HomeContract {
         val visas: List<Visa> = emptyList(),
         val trips: List<Trip> = emptyList(),
         val daysCalculation: DaysCalculation? = null,
-        val exemptCountries: Set<String> = emptySet(),
         val error: CustomString? = null,
         val dialogText: CustomString? = null,
         val action: HomeActionModel? = null,
@@ -36,7 +35,7 @@ sealed class HomeContract {
         val filteredItems: List<HomeItem>
             get() = when (selectedTab) {
                 HomeTab.VISAS -> visas.map { HomeItem.VisaItem(it) }
-                HomeTab.TRIPS -> trips.map { HomeItem.TripItem(it, isExempt(it)) }
+                HomeTab.TRIPS -> trips.map { HomeItem.TripItem(it) }
             }
 
         val ongoingTrips: List<Trip>
@@ -47,12 +46,6 @@ sealed class HomeContract {
 
         val pastTrips: List<Trip>
             get() = trips.filter { it.isPast }
-
-        private fun isExempt(trip: Trip): Boolean {
-            return trip.segments.any { segment ->
-                segment.country in exemptCountries
-            }
-        }
     }
 
     sealed class Action : MviAction {

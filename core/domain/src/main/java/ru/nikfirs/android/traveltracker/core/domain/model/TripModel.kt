@@ -11,7 +11,8 @@ data class Trip(
     val segments: List<TripSegment> = emptyList(),
     val purpose: TripPurpose = TripPurpose.TOURISM,
     val notes: String? = null,
-    val createdAt: LocalDate = LocalDate.now()
+    val createdAt: LocalDate = LocalDate.now(),
+    val countableDays: Int = calculateCountableDays(segments)
 ) {
     val duration: Long
         get() = ChronoUnit.DAYS.between(startDate, endDate) + 1
@@ -37,15 +38,32 @@ data class Trip(
             .map { it.country }
             .distinct()
 
+    val hasExemptSegment: Boolean
+        get() = segments.any { it.isExempt }
+
     val primaryCountry: String?
         get() = segments.maxByOrNull { it.endDate.toEpochDay() - it.startDate.toEpochDay() }?.country
 
-    val isMultiCountry: Boolean
-        get() = countries.size > 1
+    companion object {
+        private fun calculateCountableDays(segments: List<TripSegment>): Int {
+            return buildSet {
+                segments
+                    .filter { !it.isExempt }
+                    .forEach { segment ->
+                        var date = segment.startDate
+                        while (!date.isAfter(segment.endDate)) {
+                            add(date)
+                            date = date.plusDays(1)
+                        }
+                    }
+            }.size
+        }
+    }
 }
 
 data class TripSegment(
     val country: String,
+    val isExempt: Boolean,
     val startDate: LocalDate,
     val endDate: LocalDate,
     val cities: List<String> = emptyList(),

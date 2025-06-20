@@ -67,7 +67,6 @@ import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.HomeContrac
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.components.DaysCounterCard
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.components.SwipeableTripCard
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.components.SwipeableVisaCard
-import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.components.TripCard
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.utils.HomeAction
 import java.time.LocalDate
 
@@ -191,7 +190,6 @@ private fun HomeContent(
                 DaysCounterCard(
                     daysCalculation = calculation,
                     currentVisa = state.currentSchengenVisa,
-                    exemptCountries = state.exemptCountries
                 )
             }
         }
@@ -306,10 +304,8 @@ private fun TripsTabContent(
             ) { trip ->
                 SwipeableTripCard(
                     trip = trip,
-                    isExempt = state.exemptCountries.any { country ->
-                        trip.segments.any { it.country == country }
-                    },
-                    countableDuration = 0, // TODO
+                    isExempt = trip.hasExemptSegment,
+                    countableDuration = trip.countableDays,
                     onAction = onAction,
                 )
             }
@@ -331,13 +327,11 @@ private fun TripsTabContent(
                 items = state.plannedTrips,
                 key = { "trip_${it.id}" }
             ) { trip ->
-                TripCard(
+                SwipeableTripCard(
                     trip = trip,
-                    isExempt = state.exemptCountries.any { country ->
-                        trip.segments.any { it.country == country }
-                    },
-                    countableDuration = 0, // TODO
-                    onClick = { onAction(Action.NavigateToEditTrip(trip)) }
+                    isExempt = trip.hasExemptSegment,
+                    countableDuration = trip.countableDays,
+                    onAction = onAction,
                 )
             }
         }
@@ -359,13 +353,11 @@ private fun TripsTabContent(
                 items = recentPastTrips,
                 key = { "trip_${it.id}" }
             ) { trip ->
-                TripCard(
+                SwipeableTripCard(
                     trip = trip,
-                    isExempt = state.exemptCountries.any { country ->
-                        trip.segments.any { it.country == country }
-                    },
-                    countableDuration = 0, // TODO
-                    onClick = { onAction(Action.NavigateToEditTrip(trip)) }
+                    isExempt = trip.hasExemptSegment,
+                    countableDuration = trip.countableDays,
+                    onAction = onAction,
                 )
             }
         }
@@ -483,15 +475,16 @@ private fun HomeScreenWithDataPreview() {
                                 country = "Germany",
                                 startDate = LocalDate.now().minusDays(5),
                                 endDate = LocalDate.now(),
+                                isExempt = false
                             ),
                             TripSegment(
                                 country = "Poland",
                                 startDate = LocalDate.now(),
                                 endDate = LocalDate.now().plusDays(5),
+                                isExempt = false
                             )
                         ),
                         purpose = TripPurpose.TOURISM,
-                        isPlanned = false
                     ),
                     Trip(
                         id = 2,
@@ -502,17 +495,18 @@ private fun HomeScreenWithDataPreview() {
                                 country = "France",
                                 startDate = LocalDate.now().plusDays(30),
                                 endDate = LocalDate.now().plusDays(33),
-                                cities = listOf("Paris")
+                                cities = listOf("Paris"),
+                                isExempt = true
                             ),
                             TripSegment(
                                 country = "Spain",
                                 startDate = LocalDate.now().plusDays(33),
                                 endDate = LocalDate.now().plusDays(37),
-                                cities = listOf("Madrid", "Barcelona")
+                                cities = listOf("Madrid", "Barcelona"),
+                                isExempt = false
                             )
                         ),
                         purpose = TripPurpose.BUSINESS,
-                        isPlanned = true
                     )
                 ),
                 daysCalculation = DaysCalculation(
@@ -521,7 +515,6 @@ private fun HomeScreenWithDataPreview() {
                     periodStart = LocalDate.now().minusDays(179),
                     periodEnd = LocalDate.now(),
                 ),
-                exemptCountries = setOf("Germany"),
                 selectedTab = HomeTab.TRIPS
             ),
             onAction = {},
@@ -557,11 +550,11 @@ private fun HomeScreenNearLimitPreview() {
                                 country = "Spain",
                                 startDate = LocalDate.now().minusDays(10),
                                 endDate = LocalDate.now().minusDays(3),
-                                cities = listOf("Madrid")
+                                cities = listOf("Madrid"),
+                                isExempt = true
                             )
                         ),
                         purpose = TripPurpose.TOURISM,
-                        isPlanned = false
                     )
                 ),
                 daysCalculation = DaysCalculation(
@@ -606,15 +599,16 @@ private fun HomeScreenTripsTabPreview() {
                                 country = "Italy",
                                 startDate = LocalDate.now().minusDays(90),
                                 endDate = LocalDate.now().minusDays(85),
+                                isExempt = true,
                             ),
                             TripSegment(
                                 country = "France",
                                 startDate = LocalDate.now().minusDays(85),
                                 endDate = LocalDate.now().minusDays(80),
+                                isExempt = false,
                             )
                         ),
                         purpose = TripPurpose.TOURISM,
-                        isPlanned = false
                     ),
                     Trip(
                         id = 2,
@@ -625,10 +619,10 @@ private fun HomeScreenTripsTabPreview() {
                                 country = "Poland",
                                 startDate = LocalDate.now().minusDays(60),
                                 endDate = LocalDate.now().minusDays(45),
+                                isExempt = false
                             )
                         ),
                         purpose = TripPurpose.FAMILY,
-                        isPlanned = false
                     ),
                     Trip(
                         id = 3,
@@ -639,15 +633,16 @@ private fun HomeScreenTripsTabPreview() {
                                 country = "Germany",
                                 startDate = LocalDate.now().plusDays(10),
                                 endDate = LocalDate.now().plusDays(15),
+                                isExempt = false
                             ),
                             TripSegment(
                                 country = "Czech Republic",
                                 startDate = LocalDate.now().plusDays(15),
                                 endDate = LocalDate.now().plusDays(20),
+                                isExempt = false
                             )
                         ),
                         purpose = TripPurpose.EDUCATION,
-                        isPlanned = true
                     )
                 ),
                 daysCalculation = DaysCalculation(
@@ -656,7 +651,6 @@ private fun HomeScreenTripsTabPreview() {
                     periodStart = LocalDate.now().minusDays(179),
                     periodEnd = LocalDate.now(),
                 ),
-                exemptCountries = setOf("Poland"),
                 selectedTab = HomeTab.TRIPS
             ),
             onAction = {},

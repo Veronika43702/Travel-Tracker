@@ -231,11 +231,13 @@ private fun TripCardPreview() {
                             country = "Germany",
                             startDate = LocalDate.now().minusDays(5),
                             endDate = LocalDate.now(),
+                            isExempt = false
                         ),
                         TripSegment(
                             country = "Poland",
                             startDate = LocalDate.now(),
                             endDate = LocalDate.now().plusDays(5),
+                            isExempt = false
                         )
                     ),
                     purpose = TripPurpose.TOURISM,
@@ -255,19 +257,22 @@ private fun TripCardPreview() {
                             country = "France",
                             startDate = LocalDate.now().plusDays(30),
                             endDate = LocalDate.now().plusDays(32),
-                            cities = listOf("Paris", "Lyon")
+                            cities = listOf("Paris", "Lyon"),
+                            isExempt = false
                         ),
                         TripSegment(
                             country = "Spain",
                             startDate = LocalDate.now().plusDays(32),
                             endDate = LocalDate.now().plusDays(35),
-                            cities = listOf("Barcelona")
+                            cities = listOf("Barcelona"),
+                            isExempt = true
                         ),
                         TripSegment(
                             country = "Italy",
                             startDate = LocalDate.now().plusDays(35),
                             endDate = LocalDate.now().plusDays(37),
-                            cities = listOf("Milan")
+                            cities = listOf("Milan"),
+                            isExempt = false
                         )
                     ),
                     purpose = TripPurpose.BUSINESS,

@@ -10,7 +10,7 @@ enum class HomeTab {
 
 sealed class HomeItem {
     data class VisaItem(val visa: Visa) : HomeItem()
-    data class TripItem(val trip: Trip, val isExempt: Boolean) : HomeItem()
+    data class TripItem(val trip: Trip) : HomeItem()
 }
 
 data class HomeData(

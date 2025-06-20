@@ -321,7 +321,8 @@ class AddTripViewModel @Inject constructor(
                                 country = segmentUi.country,
                                 startDate = segmentUi.startDate,
                                 endDate = segmentUi.endDate,
-                                cities = segmentUi.cities
+                                cities = segmentUi.cities,
+                                isExempt = segmentUi.isExempt
                             )
                         },
                         purpose = currentState.purpose,
@@ -404,7 +405,8 @@ class AddTripViewModel @Inject constructor(
                         country = segmentUi.country,
                         startDate = segmentUi.startDate,
                         endDate = segmentUi.endDate,
-                        cities = segmentUi.cities
+                        cities = segmentUi.cities,
+                        isExempt = segmentUi.isExempt,
                     )
                 }.toMutableList()
 
@@ -426,7 +428,8 @@ class AddTripViewModel @Inject constructor(
                         country = TRANSIT,
                         startDate = group.first(),
                         endDate = group.last(),
-                        cities = emptyList()
+                        cities = emptyList(),
+                        isExempt = true,
                     )
                 }
 

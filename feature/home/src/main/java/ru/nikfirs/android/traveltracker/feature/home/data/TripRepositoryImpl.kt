@@ -26,18 +26,6 @@ class TripRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getPastTrips(): Flow<List<Trip>> {
-        return tripDao.getPastTripsWithSegments().map { tripsWithSegments ->
-            tripsWithSegments.map { it.toModel() }
-        }
-    }
-
-    override fun getPlannedTrips(): Flow<List<Trip>> {
-        return tripDao.getPlannedTripsWithSegments().map { tripsWithSegments ->
-            tripsWithSegments.map { it.toModel() }
-        }
-    }
-
     override fun getTripsInPeriod(startDate: LocalDate, endDate: LocalDate): Flow<List<Trip>> {
         return tripDao.getTripsInPeriodWithSegments(startDate, endDate).map { tripsWithSegments ->
             tripsWithSegments.map { it.toModel() }

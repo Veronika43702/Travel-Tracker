@@ -29,7 +29,6 @@ data class TripEntity(
     val startDate: LocalDate,
     val endDate: LocalDate,
     val purpose: TripPurpose = TripPurpose.TOURISM,
-    val isPlanned: Boolean = false,
     val notes: String? = null,
     val createdAt: LocalDate = LocalDate.now()
 )
@@ -53,7 +52,8 @@ data class TripSegmentEntity(
     val country: String,
     val startDate: LocalDate,
     val endDate: LocalDate,
-    val cities: String? = null
+    val cities: String? = null,
+    val isExempt: Boolean = false,
 )
 
 enum class TripPurpose {

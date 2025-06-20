@@ -19,7 +19,6 @@ fun TripWithSegments.toModel(): Trip {
         endDate = trip.endDate,
         segments = segments.map { it.toModel() },
         purpose = trip.purpose.toDomainTripPurpose(),
-        isPlanned = trip.isPlanned,
         notes = trip.notes,
         createdAt = trip.createdAt
     )
@@ -32,7 +31,6 @@ fun Trip.toEntity(): TripEntity {
         startDate = startDate ?: LocalDate.now(),
         endDate = endDate ?: LocalDate.now(),
         purpose = purpose.toEntityTripPurpose(),
-        isPlanned = isFuture,
         notes = notes,
         createdAt = createdAt
     )
@@ -41,9 +39,10 @@ fun Trip.toEntity(): TripEntity {
 fun TripSegmentEntity.toModel(): TripSegment {
     return TripSegment(
         country = country,
+        isExempt = isExempt,
         startDate = startDate,
         endDate = endDate,
-        cities = cities?.split(", ") ?: emptyList()
+        cities = cities?.split(", ") ?: emptyList(),
     )
 }
 

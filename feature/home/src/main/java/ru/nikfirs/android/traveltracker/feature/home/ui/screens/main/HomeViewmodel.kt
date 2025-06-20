@@ -72,7 +72,6 @@ class HomeViewModel @Inject constructor(
                             it.copy(
                                 visas = homeData.allVisas,
                                 trips = homeData.allTrips,
-                                exemptCountries = homeData.exemptCountries,
                                 isLoading = false,
                                 error = null
                             )

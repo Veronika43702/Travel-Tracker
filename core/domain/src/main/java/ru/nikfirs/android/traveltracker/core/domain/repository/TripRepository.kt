@@ -8,8 +8,6 @@ import java.time.LocalDate
 
 interface TripRepository {
     fun getAllTrips(): Flow<List<Trip>>
-    fun getPastTrips(): Flow<List<Trip>>
-    fun getPlannedTrips(): Flow<List<Trip>>
     fun getTripsInPeriod(startDate: LocalDate, endDate: LocalDate): Flow<List<Trip>>
     fun getTripsByCountry(country: String): Flow<List<Trip>>
     suspend fun getTripById(tripId: Long): Trip?

@@ -31,7 +31,6 @@ import java.time.LocalDate
 fun DaysCounterCard(
     daysCalculation: DaysCalculation,
     currentVisa: Visa?,
-    exemptCountries: Set<String>,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -45,37 +44,37 @@ fun DaysCounterCard(
             isOverLimit = daysCalculation.isOverLimit
         )
 
-        if (exemptCountries.isNotEmpty()) {
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.5f)
-                )
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(12.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Info,
-                        contentDescription = null,
-                        modifier = Modifier.size(16.dp),
-                        tint = MaterialTheme.colorScheme.onTertiaryContainer
-                    )
-                    Text(
-                        text = stringResource(
-                            R.string.exempt_countries_info,
-                            exemptCountries.joinToString(", ")
-                        ),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onTertiaryContainer
-                    )
-                }
-            }
-        }
+//        if (exemptCountries.isNotEmpty()) {
+//            Card(
+//                modifier = Modifier.fillMaxWidth(),
+//                colors = CardDefaults.cardColors(
+//                    containerColor = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.5f)
+//                )
+//            ) {
+//                Row(
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .padding(12.dp),
+//                    verticalAlignment = Alignment.CenterVertically,
+//                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+//                ) {
+//                    Icon(
+//                        imageVector = Icons.Default.Info,
+//                        contentDescription = null,
+//                        modifier = Modifier.size(16.dp),
+//                        tint = MaterialTheme.colorScheme.onTertiaryContainer
+//                    )
+//                    Text(
+//                        text = stringResource(
+//                            R.string.exempt_countries_info,
+//                            exemptCountries.joinToString(", ")
+//                        ),
+//                        style = MaterialTheme.typography.bodySmall,
+//                        color = MaterialTheme.colorScheme.onTertiaryContainer
+//                    )
+//                }
+//            }
+//        }
 
         currentVisa?.let { visa ->
             if (visa.daysUntilExpiry in 1..30) {
@@ -112,7 +111,6 @@ private fun DaysCounterCardPreview() {
                 periodEnd = LocalDate.now(),
             ),
             currentVisa = null,
-            exemptCountries = setOf("Germany", "Poland")
         )
     }
 }
