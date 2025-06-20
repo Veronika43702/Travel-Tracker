@@ -40,6 +40,7 @@ import java.time.format.DateTimeFormatter
 fun SwipeableTripCard(
     trip: Trip,
     isExempt: Boolean,
+    countableDuration: Int,
     onAction: (Action) -> Unit,
 ) {
     SwipeableCard(
@@ -47,6 +48,7 @@ fun SwipeableTripCard(
             TripCard(
                 trip = trip,
                 isExempt = isExempt,
+                countableDuration = countableDuration,
                 onClick = {
                     onPrimaryClick?.let { it() }
                         ?: onAction(Action.NavigateToEditTrip(trip))
@@ -72,6 +74,7 @@ fun SwipeableTripCard(
 fun TripCard(
     trip: Trip,
     isExempt: Boolean,
+    countableDuration: Int,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -130,17 +133,14 @@ fun TripCard(
                         backgroundColor = MaterialTheme.colorScheme.secondary,
                         contentColor = MaterialTheme.colorScheme.onSecondary
                     )
-
-                    trip.isFuture -> StatusChip(
-                        text = stringResource(R.string.trip_planned),
-                        backgroundColor = MaterialTheme.colorScheme.tertiary,
-                        contentColor = MaterialTheme.colorScheme.onTertiary
-                    )
                 }
 
                 if (isExempt) {
                     StatusChip(
-                        text = stringResource(R.string.trip_exempt),
+                        text = stringResource(
+                            R.string.countable_days_count,
+                            countableDuration
+                        ),
                         backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
                         contentColor = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -240,6 +240,7 @@ private fun TripCardPreview() {
                     isPlanned = false
                 ),
                 isExempt = false,
+                countableDuration = 0,
                 onClick = {}
             )
 
@@ -272,6 +273,7 @@ private fun TripCardPreview() {
                     isPlanned = true
                 ),
                 isExempt = true,
+                countableDuration = 3,
                 onClick = {}
             )
         }

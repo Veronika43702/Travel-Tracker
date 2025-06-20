@@ -9,7 +9,6 @@
     <string name="nav_settings">Настройки</string>
 
     <!-- Home Screen -->
-    <string name="home_tab_all">Все</string>
     <string name="home_tab_visas">Визы</string>
     <string name="home_tab_trips">Поездки</string>
     <string name="home_empty_state">Нет данных для отображения</string>
@@ -85,7 +84,7 @@
     <string name="segment_transit">Транзит</string>
 
     <!-- Empty states -->
-    <string name="home_empty_all">Нет данных для отображения.\nДобавьте визу или поездку!</string>
+    <string name="home_empty_all">Нет данных для отображения.\nДобавьте первую визу!</string>
     <string name="home_empty_visas">У вас пока нет активных виз.\nДобавьте первую визу!</string>
     <string name="home_empty_trips">У вас пока нет поездок.\nДобавьте первую поездку!</string>
 

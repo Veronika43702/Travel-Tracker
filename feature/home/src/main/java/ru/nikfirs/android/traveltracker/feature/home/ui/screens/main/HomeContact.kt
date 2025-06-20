@@ -17,7 +17,7 @@ import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.visaDetails
 sealed class HomeContract {
     data class State(
         val isLoading: Boolean = true,
-        val selectedTab: HomeTab = HomeTab.ALL,
+        val selectedTab: HomeTab = HomeTab.TRIPS,
         val visas: List<Visa> = emptyList(),
         val trips: List<Trip> = emptyList(),
         val daysCalculation: DaysCalculation? = null,
@@ -38,18 +38,6 @@ sealed class HomeContract {
 
         val filteredItems: List<HomeItem>
             get() = when (selectedTab) {
-                HomeTab.ALL -> {
-                    val items = mutableListOf<HomeItem>()
-                    items.addAll(visas.map { HomeItem.VisaItem(it) })
-                    items.addAll(trips.map { HomeItem.TripItem(it, isExempt(it)) })
-                    items.sortedByDescending {
-                        when (it) {
-                            is HomeItem.VisaItem -> it.visa.expiryDate
-                            is HomeItem.TripItem -> it.trip.startDate
-                        }
-                    }
-                }
-
                 HomeTab.VISAS -> visas.map { HomeItem.VisaItem(it) }
                 HomeTab.TRIPS -> trips.map { HomeItem.TripItem(it, isExempt(it)) }
             }

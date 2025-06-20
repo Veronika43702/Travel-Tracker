@@ -4,9 +4,8 @@ import ru.nikfirs.android.traveltracker.core.domain.model.Trip
 import ru.nikfirs.android.traveltracker.core.domain.model.Visa
 
 enum class HomeTab {
-    ALL,
+    TRIPS,
     VISAS,
-    TRIPS
 }
 
 sealed class HomeItem {

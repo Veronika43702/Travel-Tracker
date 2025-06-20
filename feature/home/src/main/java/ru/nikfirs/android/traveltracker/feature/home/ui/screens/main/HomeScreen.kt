@@ -44,7 +44,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
 import ru.nikfirs.android.traveltracker.core.domain.model.DaysCalculation
-import ru.nikfirs.android.traveltracker.core.domain.model.SegmentType
 import ru.nikfirs.android.traveltracker.core.domain.model.Trip
 import ru.nikfirs.android.traveltracker.core.domain.model.TripPurpose
 import ru.nikfirs.android.traveltracker.core.domain.model.TripSegment
@@ -61,7 +60,6 @@ import ru.nikfirs.android.traveltracker.core.ui.mvi.LaunchedEffectResolver
 import ru.nikfirs.android.traveltracker.core.ui.navigation.BottomNavBarRoute
 import ru.nikfirs.android.traveltracker.core.ui.theme.AppTheme
 import ru.nikfirs.android.traveltracker.core.ui.theme.tab
-import ru.nikfirs.android.traveltracker.feature.home.domain.model.HomeItem
 import ru.nikfirs.android.traveltracker.feature.home.domain.model.HomeTab
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.HomeContract.Action
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.HomeContract.Effect
@@ -116,7 +114,6 @@ fun HomeScreen(
                         when (state.selectedTab) {
                             HomeTab.VISAS -> viewModel.setAction(Action.NavigateToAddVisa)
                             HomeTab.TRIPS -> viewModel.setAction(Action.NavigateToAddTrip)
-                            HomeTab.ALL -> viewModel.setAction(Action.NavigateToAddTrip)
                         }
                     },
                     modifier = Modifier.padding(16.dp),
@@ -132,7 +129,6 @@ fun HomeScreen(
                         text = when (state.selectedTab) {
                             HomeTab.VISAS -> stringResource(R.string.action_add_visa)
                             HomeTab.TRIPS -> stringResource(R.string.action_add_trip)
-                            HomeTab.ALL -> stringResource(R.string.action_add_trip)
                         }
                     )
                 }
@@ -212,7 +208,6 @@ private fun HomeContent(
                     text = {
                         Text(
                             text = when (tab) {
-                                HomeTab.ALL -> stringResource(R.string.home_tab_all)
                                 HomeTab.VISAS -> stringResource(R.string.home_tab_visas)
                                 HomeTab.TRIPS -> stringResource(R.string.home_tab_trips)
                             }
@@ -241,11 +236,13 @@ private fun HomeContent(
                 state.filteredItems.isEmpty() -> {
                     EmptyState(
                         tab = state.selectedTab,
+                        isVisaListEmpty = state.visas.isEmpty(),
                         onAddClick = {
                             when (state.selectedTab) {
                                 HomeTab.VISAS -> onAction(Action.NavigateToAddVisa)
-                                HomeTab.TRIPS -> onAction(Action.NavigateToAddTrip)
-                                HomeTab.ALL -> onAction(Action.NavigateToAddTrip)
+                                HomeTab.TRIPS -> if (state.visas.isEmpty()) {
+                                    onAction(Action.NavigateToAddVisa)
+                                } else onAction(Action.NavigateToAddTrip)
                             }
                         }
                     )
@@ -253,47 +250,10 @@ private fun HomeContent(
 
                 else -> {
                     when (state.selectedTab) {
-                        HomeTab.ALL -> AllTabContent(state, onAction)
                         HomeTab.VISAS -> VisasTabContent(state, onAction)
                         HomeTab.TRIPS -> TripsTabContent(state, onAction)
                     }
                 }
-            }
-        }
-    }
-}
-
-@Composable
-private fun AllTabContent(
-    state: State,
-    onAction: (Action) -> Unit
-) {
-    LazyColumn(
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        items(
-            items = state.filteredItems,
-            key = { item ->
-                when (item) {
-                    is HomeItem.VisaItem -> "visa_${item.visa.id}"
-                    is HomeItem.TripItem -> "trip_${item.trip.id}"
-                }
-            }
-        ) { item ->
-            when (item) {
-                is HomeItem.VisaItem ->
-                    SwipeableVisaCard(
-                        visa = item.visa,
-                        onAction = onAction,
-                    )
-
-                is HomeItem.TripItem ->
-                    SwipeableTripCard(
-                        trip = item.trip,
-                        isExempt = item.isExempt,
-                        onAction = onAction,
-                    )
             }
         }
     }
@@ -349,6 +309,7 @@ private fun TripsTabContent(
                     isExempt = state.exemptCountries.any { country ->
                         trip.segments.any { it.country == country }
                     },
+                    countableDuration = 0, // TODO
                     onAction = onAction,
                 )
             }
@@ -375,6 +336,7 @@ private fun TripsTabContent(
                     isExempt = state.exemptCountries.any { country ->
                         trip.segments.any { it.country == country }
                     },
+                    countableDuration = 0, // TODO
                     onClick = { onAction(Action.NavigateToEditTrip(trip)) }
                 )
             }
@@ -402,6 +364,7 @@ private fun TripsTabContent(
                     isExempt = state.exemptCountries.any { country ->
                         trip.segments.any { it.country == country }
                     },
+                    countableDuration = 0, // TODO
                     onClick = { onAction(Action.NavigateToEditTrip(trip)) }
                 )
             }
@@ -412,6 +375,7 @@ private fun TripsTabContent(
 @Composable
 private fun EmptyState(
     tab: HomeTab,
+    isVisaListEmpty: Boolean,
     onAddClick: () -> Unit
 ) {
     Column(
@@ -425,7 +389,6 @@ private fun EmptyState(
             painter = when (tab) {
                 HomeTab.VISAS -> painterResource(R.drawable.ic_badge)
                 HomeTab.TRIPS -> painterResource(R.drawable.ic_luggage)
-                HomeTab.ALL -> painterResource(R.drawable.ic_travel_explore)
             },
             contentDescription = null,
             modifier = Modifier.size(64.dp),
@@ -437,8 +400,11 @@ private fun EmptyState(
         Text(
             text = when (tab) {
                 HomeTab.VISAS -> stringResource(R.string.home_empty_visas)
-                HomeTab.TRIPS -> stringResource(R.string.home_empty_trips)
-                HomeTab.ALL -> stringResource(R.string.home_empty_all)
+                HomeTab.TRIPS -> if (isVisaListEmpty) {
+                    stringResource(R.string.home_empty_all)
+                } else {
+                    stringResource(R.string.home_empty_trips)
+                }
             },
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -450,8 +416,11 @@ private fun EmptyState(
         CustomButton(
             text = when (tab) {
                 HomeTab.VISAS -> stringResource(R.string.action_add_visa)
-                HomeTab.TRIPS -> stringResource(R.string.action_add_trip)
-                HomeTab.ALL -> stringResource(R.string.action_add_trip)
+                HomeTab.TRIPS -> if (isVisaListEmpty) {
+                    stringResource(R.string.action_add_visa)
+                } else {
+                    stringResource(R.string.action_add_trip)
+                }
             },
             iconImage = Icons.Default.Add,
             onClick = onAddClick,
@@ -467,7 +436,7 @@ private fun HomeScreenEmptyPreview() {
         HomeContent(
             state = State(
                 isLoading = false,
-                selectedTab = HomeTab.ALL
+                selectedTab = HomeTab.TRIPS
             ),
             onAction = {},
         )
@@ -556,7 +525,7 @@ private fun HomeScreenWithDataPreview() {
                     exemptCountries = setOf("Germany")
                 ),
                 exemptCountries = setOf("Germany"),
-                selectedTab = HomeTab.ALL
+                selectedTab = HomeTab.TRIPS
             ),
             onAction = {},
         )
@@ -606,7 +575,7 @@ private fun HomeScreenNearLimitPreview() {
                     isNearLimit = true,
                     isOverLimit = false
                 ),
-                selectedTab = HomeTab.ALL
+                selectedTab = HomeTab.VISAS
             ),
             onAction = {},
         )
@@ -703,7 +672,7 @@ private fun HomeScreenTripsTabPreview() {
                     )
                 ),
                 exemptCountries = setOf("Poland"),
-                selectedTab = HomeTab.ALL
+                selectedTab = HomeTab.TRIPS
             ),
             onAction = {},
         )
