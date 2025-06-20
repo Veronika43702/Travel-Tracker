@@ -1,5 +1,7 @@
 package ru.nikfirs.android.traveltracker.core.domain.model
 
+import ru.nikfirs.android.traveltracker.core.domain.MAX_STAY_DAYS
+import ru.nikfirs.android.traveltracker.core.domain.WARNING_THRESHOLD
 import java.time.LocalDate
 
 data class DaysCalculation(
@@ -7,11 +9,10 @@ data class DaysCalculation(
     val remainingDays: Int,
     val periodStart: LocalDate,
     val periodEnd: LocalDate,
-    val isNearLimit: Boolean = false,
-    val isOverLimit: Boolean = false,
-    val exemptCountries: Set<String> = emptySet(),
-    val daysPerCountry: Map<String, Int> = emptyMap(),
-)
+) {
+    val isNearLimit = totalDaysUsed > WARNING_THRESHOLD
+    val isOverLimit = totalDaysUsed > MAX_STAY_DAYS
+}
 
 data class CalendarDay(
     val date: LocalDate,

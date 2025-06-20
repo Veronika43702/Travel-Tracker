@@ -28,16 +28,14 @@ class AddTripHolder @Inject constructor() {
 
     companion object {
         private val SEGMENT_COLORS = listOf(
-            Color(0xFF2196F3), // Blue
-            Color(0xFF4CAF50), // Green
             Color(0xFFFF9800), // Orange
             Color(0xFF9C27B0), // Purple
-            Color(0xFFF44336), // Red
             Color(0xFF00BCD4), // Cyan
-            Color(0xFF8BC34A), // Light Green
-            Color(0xFFFF5722), // Deep Orange
-            Color(0xFF673AB7), // Deep Purple
+            Color(0xFFF44336), // Red
             Color(0xFF607D8B), // Blue Grey
+            Color(0xFFF527FF), // Pink
+            Color(0xFF8BC34A), // Light Green
+            Color(0xFF2196F3), // Blue
         )
     }
 

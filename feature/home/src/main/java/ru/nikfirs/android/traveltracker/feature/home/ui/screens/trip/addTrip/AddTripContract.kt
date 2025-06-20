@@ -1,11 +1,11 @@
 package ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTrip
 
 import ru.nikfirs.android.traveltracker.core.domain.MAX_STAY_DAYS
+import ru.nikfirs.android.traveltracker.core.domain.WARNING_THRESHOLD
 import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
 import ru.nikfirs.android.traveltracker.core.domain.model.TripPurpose
 import ru.nikfirs.android.traveltracker.core.domain.model.Visa
 import ru.nikfirs.android.traveltracker.core.domain.model.VisaCategory
-import ru.nikfirs.android.traveltracker.core.ui.component.ExistingRange
 import ru.nikfirs.android.traveltracker.core.ui.mvi.MviAction
 import ru.nikfirs.android.traveltracker.core.ui.mvi.MviEffect
 import ru.nikfirs.android.traveltracker.core.ui.mvi.MviState
@@ -29,6 +29,7 @@ sealed class AddTripContract {
         val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy"),
         val daysAvailableAtStart: DaysAvailableInfo? = null,
         val daysAvailableAtEnd: DaysAvailableInfo? = null,
+        val countableDuration: Int = 1,
 
         val purpose: TripPurpose = TripPurpose.TOURISM,
         val isPurposeDropdownExpanded: Boolean = false,
@@ -46,9 +47,6 @@ sealed class AddTripContract {
                 java.time.temporal.ChronoUnit.DAYS.between(startDate, endDate) + 1
             } else 0
 
-        val countableDuration: Long
-            get() = segments.filter { !it.isExempt }.sumOf { it.duration }
-
         val hasExemptSegments: Boolean
             get() = segments.any { it.isExempt }
 
@@ -62,28 +60,15 @@ sealed class AddTripContract {
             get() = if (selectedVisa?.visaType != VisaCategory.TYPE_C) {
                 selectedVisa?.country
             } else null
-
-        /**
-         * Преобразование в TripSegmentDisplay для календаря
-         */
-        val segmentsForDisplay: List<ExistingRange>
-            get() = segments.mapIndexed { index, segment ->
-                ExistingRange(
-                    startDate = segment.startDate,
-                    endDate = segment.endDate,
-                    color = segment.color,
-                )
-            }
     }
 
     data class DaysAvailableInfo(
         val used: Int,
         val remaining: Int,
-        val total: Int = MAX_STAY_DAYS,
-        val isNearLimit: Boolean = false,
-        val isOverLimit: Boolean = false
     ) {
-        val displayText: String get() = "$remaining / $total"
+        val displayText: String get() = "$remaining / $MAX_STAY_DAYS"
+        val isNearLimit = used > WARNING_THRESHOLD
+        val isOverLimit = used > MAX_STAY_DAYS
     }
 
     data class ValidationErrors(

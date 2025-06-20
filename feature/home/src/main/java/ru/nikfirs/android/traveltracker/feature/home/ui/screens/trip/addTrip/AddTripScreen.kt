@@ -547,13 +547,11 @@ private fun AddTripScreenPreview() {
                 ),
                 daysAvailableAtStart = AddTripContract.DaysAvailableInfo(
                     used = 60,
-                    total = 90,
                     remaining = 30
                 ),
                 daysAvailableAtEnd = AddTripContract.DaysAvailableInfo(
                     used = 64,
-                    total = 90,
-                    remaining = 26
+                    remaining = 26,
                 )
             ),
             onAction = {}
@@ -570,12 +568,10 @@ private fun AddTripScreenNoVisaPreview() {
                 availableVisas = emptyList(),
                 daysAvailableAtStart = AddTripContract.DaysAvailableInfo(
                     used = 0,
-                    total = 90,
                     remaining = 90
                 ),
                 daysAvailableAtEnd = AddTripContract.DaysAvailableInfo(
                     used = 0,
-                    total = 90,
                     remaining = 90
                 )
             ),

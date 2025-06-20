@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.combine
 import ru.nikfirs.android.traveltracker.core.domain.MAX_STAY_DAYS
 import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
 import ru.nikfirs.android.traveltracker.core.domain.model.Trip
+import ru.nikfirs.android.traveltracker.core.domain.model.TripPurpose
 import ru.nikfirs.android.traveltracker.core.domain.model.TripSegment
 import ru.nikfirs.android.traveltracker.core.domain.model.Visa
 import ru.nikfirs.android.traveltracker.core.domain.model.VisaCategory
@@ -61,7 +62,7 @@ class AddTripViewModel @Inject constructor(
 
             is Action.SaveTrip -> saveTrip()
             is Action.SetError -> setError(action.error)
-            is Action.RecalculateDays -> recalculateDays()
+            is Action.RecalculateDays -> recalculateAvailableDays()
 
         }
     }
@@ -105,15 +106,11 @@ class AddTripViewModel @Inject constructor(
                 val daysInfo = DaysAvailableInfo(
                     used = calculation.totalDaysUsed,
                     remaining = calculation.remainingDays,
-                    isNearLimit = calculation.isNearLimit,
-                    isOverLimit = calculation.isOverLimit
                 )
 
                 val daysInfoEnd = DaysAvailableInfo(
                     used = 1,
                     remaining = calculation.remainingDays - 1,
-                    isNearLimit = calculation.isNearLimit,
-                    isOverLimit = calculation.isOverLimit
                 )
 
                 setState {
@@ -157,12 +154,12 @@ class AddTripViewModel @Inject constructor(
             )
         }
 
-        // Пересчитать сегменты с учетом новой визы
+        // update segment list and available days
         recalculateSegmentsExemption()
-        recalculateDays()
+        recalculateAvailableDays()
 
         // Пересчитать заблокированные даты с учетом диапазона новой визы
-        recalculateBlockedDatesForExistingTrips()
+        recalculateBlockedDatesForExistingTrips() // TODO
     }
 
     private fun updateStartDate(startDate: LocalDate, endDate: LocalDate) {
@@ -175,7 +172,7 @@ class AddTripViewModel @Inject constructor(
             )
         }
 
-        recalculateDays()
+        recalculateAvailableDays()
         recalculateBlockedDatesForExistingTrips()
     }
 
@@ -189,13 +186,13 @@ class AddTripViewModel @Inject constructor(
         setState { it.copy(isPurposeDropdownExpanded = expanded) }
     }
 
-    private fun updatePurpose(purpose: ru.nikfirs.android.traveltracker.core.domain.model.TripPurpose) {
+    private fun updatePurpose(purpose: TripPurpose) {
         setState { it.copy(purpose = purpose, isPurposeDropdownExpanded = false) }
     }
 
     private fun updateSegmentList() {
         setState { it.copy(segments = addTripHolder.segmentList) }
-        recalculateDays()
+        recalculateAvailableDays()
     }
 
     private fun openSegmentEditor(segment: TripSegmentUi? = null) {
@@ -206,7 +203,7 @@ class AddTripViewModel @Inject constructor(
             addTripHolder.prepareForEditSegment(
                 tripStartDate = currentState.startDate,
                 tripEndDate = currentState.endDate,
-                existingSegments = currentState.segments.filter { it != segment },
+                existingSegments = currentState.segments,
                 exemptCountry = currentState.exemptVisaCountry,
                 segment = segment,
                 segmentIndex = currentState.segments.indexOf(segment),
@@ -227,7 +224,7 @@ class AddTripViewModel @Inject constructor(
     private fun removeSegment(segment: TripSegmentUi) {
         addTripHolder.deleteSegmentFromList(segment)
         setState { it.copy(segments = addTripHolder.segmentList) }
-        recalculateDays() // TODO
+        recalculateAvailableDays()
     }
 
     private fun updateNotes(notes: String) {
@@ -242,24 +239,40 @@ class AddTripViewModel @Inject constructor(
         setState { it.copy(segments = updatedSegments) }
     }
 
-    private fun recalculateDays() {
+    private fun isCountryExempt(country: String): Boolean {
+        val visa = currentState.selectedVisa ?: return false
+
+        return (visa.visaType == VisaCategory.TYPE_D
+                || visa.visaType == VisaCategory.RESIDENCE_PERMIT) &&
+                visa.country == country
+    }
+
+    private fun recalculateAvailableDays() {
         launch {
             try {
                 val startCalculation = calculateDaysInPeriodUseCase(
-                    periodEnd = LocalDate.now(),
+                    periodEnd = currentState.startDate ?: LocalDate.now(),
                     exemptCountries = currentState.exemptCountries
                 )
 
                 val startDaysInfo = DaysAvailableInfo(
                     used = startCalculation.totalDaysUsed,
-                    total = 90,
                     remaining = startCalculation.remainingDays,
-                    isNearLimit = startCalculation.isNearLimit,
-                    isOverLimit = startCalculation.isOverLimit
                 )
 
                 val countableDays = if (currentState.segments.isNotEmpty()) {
-                    currentState.segments.filter { !it.isExempt }.sumOf { it.duration }.toInt()
+                    val countedDays: Set<LocalDate> = buildSet {
+                        currentState.segments
+                            .filter { !it.isExempt }
+                            .forEach { segment ->
+                                var date = segment.startDate
+                                while (!date.isAfter(segment.endDate)) {
+                                    add(date)
+                                    date = date.plusDays(1)
+                                }
+                            }
+                    }
+                    countedDays.size
                 } else {
                     currentState.totalDuration.toInt()
                 }
@@ -268,16 +281,14 @@ class AddTripViewModel @Inject constructor(
 
                 val endDaysInfo = DaysAvailableInfo(
                     used = endUsed,
-                    total = 90,
                     remaining = endRemaining,
-                    isNearLimit = endUsed >= 75,
-                    isOverLimit = endUsed > 90
                 )
 
                 setState {
                     it.copy(
                         daysAvailableAtStart = startDaysInfo,
-                        daysAvailableAtEnd = endDaysInfo
+                        daysAvailableAtEnd = endDaysInfo,
+                        countableDuration = countableDays,
                     )
                 }
 
@@ -287,17 +298,9 @@ class AddTripViewModel @Inject constructor(
         }
     }
 
-    private fun isCountryExempt(country: String): Boolean {
-        val visa = currentState.selectedVisa ?: return false
-
-        // Страна считается exempt если:
-        // 1. Виза типа D или ВНЖ
-        // 2. Страна совпадает со страной выдавшей визу
-        return (visa.visaType == VisaCategory.TYPE_D || visa.visaType == VisaCategory.RESIDENCE_PERMIT) &&
-                visa.country == country
-    }
-
     private fun saveTrip() {
+        // TODO if there are days not covered with segments - warning.
+        //  If "continue" - fill in segments with transit
         val validationErrors = validateForm()
 
         if (validationErrors.isEmpty()) {
@@ -342,8 +345,6 @@ class AddTripViewModel @Inject constructor(
     }
 
     private fun validateForm(): AddTripContract.ValidationErrors {
-        val startDate = currentState.startDate
-        val endDate = currentState.endDate
         val selectedVisa = currentState.selectedVisa
         val segments = currentState.segments
         val daysAtEnd = currentState.daysAvailableAtEnd

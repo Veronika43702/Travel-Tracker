@@ -8,7 +8,6 @@ import ru.nikfirs.android.traveltracker.core.data.mapper.toEntity
 import ru.nikfirs.android.traveltracker.core.data.mapper.toModel
 import ru.nikfirs.android.traveltracker.core.domain.MAX_STAY_DAYS
 import ru.nikfirs.android.traveltracker.core.domain.PERIOD_DAYS
-import ru.nikfirs.android.traveltracker.core.domain.WARNING_THRESHOLD
 import ru.nikfirs.android.traveltracker.core.domain.model.DaysCalculation
 import ru.nikfirs.android.traveltracker.core.domain.model.Trip
 import ru.nikfirs.android.traveltracker.core.domain.model.TripSegment
@@ -105,10 +104,6 @@ class TripRepositoryImpl @Inject constructor(
             remainingDays = remainingDays.coerceAtLeast(0),
             periodStart = periodStart,
             periodEnd = periodEnd,
-            isNearLimit = totalDaysUsed >= WARNING_THRESHOLD,
-            isOverLimit = totalDaysUsed > MAX_STAY_DAYS,
-            exemptCountries = exemptCountries,
-            daysPerCountry = daysPerCountry
         )
     }
 

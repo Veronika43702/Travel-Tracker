@@ -67,7 +67,9 @@ class AddTripSegmentViewModel @Inject constructor(
             it.copy(
                 tripStartDate = tripStartDate,
                 tripEndDate = tripEndDate,
-                segmentList = addTripHolder.segmentList,
+                segmentList = addTripHolder.segmentList.filter { segment ->
+                    segment != addTripHolder.currentSegment
+                },
                 isEditMode = isEditMode,
                 country = addTripHolder.currentSegment?.country ?: "",
                 startDate = startDate,

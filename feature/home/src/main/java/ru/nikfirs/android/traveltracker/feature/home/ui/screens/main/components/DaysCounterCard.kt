@@ -110,7 +110,6 @@ private fun DaysCounterCardPreview() {
                 remainingDays = 45,
                 periodStart = LocalDate.now().minusDays(179),
                 periodEnd = LocalDate.now(),
-                exemptCountries = setOf("Germany")
             ),
             currentVisa = null,
             exemptCountries = setOf("Germany", "Poland")

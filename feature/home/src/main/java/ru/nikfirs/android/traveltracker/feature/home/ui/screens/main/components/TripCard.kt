@@ -127,14 +127,6 @@ fun TripCard(
                     contentColor = MaterialTheme.colorScheme.onPrimaryContainer
                 )
 
-                when {
-                    trip.isOngoing -> StatusChip(
-                        text = stringResource(R.string.trip_ongoing),
-                        backgroundColor = MaterialTheme.colorScheme.secondary,
-                        contentColor = MaterialTheme.colorScheme.onSecondary
-                    )
-                }
-
                 if (isExempt) {
                     StatusChip(
                         text = stringResource(
@@ -143,6 +135,16 @@ fun TripCard(
                         ),
                         backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
                         contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                } else {
+                    Spacer(Modifier.height(24.dp))
+                }
+
+                when {
+                    trip.isOngoing -> StatusChip(
+                        text = stringResource(R.string.trip_ongoing),
+                        backgroundColor = MaterialTheme.colorScheme.secondary,
+                        contentColor = MaterialTheme.colorScheme.onSecondary
                     )
                 }
             }
@@ -239,7 +241,7 @@ private fun TripCardPreview() {
                     purpose = TripPurpose.TOURISM,
                     isPlanned = false
                 ),
-                isExempt = false,
+                isExempt = true,
                 countableDuration = 0,
                 onClick = {}
             )
@@ -273,6 +275,75 @@ private fun TripCardPreview() {
                     isPlanned = true
                 ),
                 isExempt = true,
+                countableDuration = 3,
+                onClick = {}
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun TripCardPreview2() {
+    AppTheme {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            TripCard(
+                trip = Trip(
+                    id = 1,
+                    startDate = LocalDate.now().minusDays(5),
+                    endDate = LocalDate.now().plusDays(5),
+                    segments = listOf(
+                        TripSegment(
+                            country = "Germany",
+                            startDate = LocalDate.now().minusDays(5),
+                            endDate = LocalDate.now(),
+                        ),
+                        TripSegment(
+                            country = "Poland",
+                            startDate = LocalDate.now(),
+                            endDate = LocalDate.now().plusDays(5),
+                        )
+                    ),
+                    purpose = TripPurpose.TOURISM,
+                    isPlanned = false
+                ),
+                isExempt = true,
+                countableDuration = 0,
+                onClick = {}
+            )
+
+            TripCard(
+                trip = Trip(
+                    id = 2,
+                    startDate = LocalDate.now().plusDays(30),
+                    endDate = LocalDate.now().plusDays(37),
+                    segments = listOf(
+                        TripSegment(
+                            country = "France",
+                            startDate = LocalDate.now().plusDays(30),
+                            endDate = LocalDate.now().plusDays(32),
+                            cities = listOf("Paris", "Lyon")
+                        ),
+                        TripSegment(
+                            country = "Spain",
+                            startDate = LocalDate.now().plusDays(32),
+                            endDate = LocalDate.now().plusDays(35),
+                            cities = listOf("Barcelona")
+                        ),
+                        TripSegment(
+                            country = "Italy",
+                            startDate = LocalDate.now().plusDays(35),
+                            endDate = LocalDate.now().plusDays(37),
+                            cities = listOf("Milan")
+                        )
+                    ),
+                    purpose = TripPurpose.BUSINESS,
+                    isPlanned = true
+                ),
+                isExempt = false,
                 countableDuration = 3,
                 onClick = {}
             )

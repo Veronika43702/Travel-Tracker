@@ -61,8 +61,8 @@ fun TravelCard(
 
             trailingContent?.let { trailing ->
                 Box(
-                    modifier = Modifier.padding(start = 16.dp),
-                    content = trailing
+                    modifier = Modifier.padding(start = 16.dp).align(Alignment.Top),
+                    content = trailing,
                 )
             }
         }

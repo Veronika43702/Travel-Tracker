@@ -520,9 +520,6 @@ private fun HomeScreenWithDataPreview() {
                     remainingDays = 45,
                     periodStart = LocalDate.now().minusDays(179),
                     periodEnd = LocalDate.now(),
-                    isNearLimit = false,
-                    isOverLimit = false,
-                    exemptCountries = setOf("Germany")
                 ),
                 exemptCountries = setOf("Germany"),
                 selectedTab = HomeTab.TRIPS
@@ -572,8 +569,6 @@ private fun HomeScreenNearLimitPreview() {
                     remainingDays = 12,
                     periodStart = LocalDate.now().minusDays(179),
                     periodEnd = LocalDate.now(),
-                    isNearLimit = true,
-                    isOverLimit = false
                 ),
                 selectedTab = HomeTab.VISAS
             ),
@@ -660,16 +655,6 @@ private fun HomeScreenTripsTabPreview() {
                     remainingDays = 74,
                     periodStart = LocalDate.now().minusDays(179),
                     periodEnd = LocalDate.now(),
-                    isNearLimit = false,
-                    isOverLimit = false,
-                    exemptCountries = setOf("Poland"),
-                    daysPerCountry = mapOf(
-                        "Italy" to 6,
-                        "France" to 6,
-                        "Poland" to 16,
-                        "Germany" to 0,
-                        "Czech Republic" to 0
-                    )
                 ),
                 exemptCountries = setOf("Poland"),
                 selectedTab = HomeTab.TRIPS
