@@ -62,8 +62,6 @@ import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.components.
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTrip.AddTripContract.Action
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTrip.AddTripContract.Effect
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTrip.AddTripContract.State
-import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.utils.VisaAction
-import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.visaDetails.VisaDetailsContract
 import java.time.LocalDate
 
 @Composable
@@ -488,7 +486,10 @@ private fun AddTripScreenContent(
             onCancelClick = { onAction(Action.ShowDatePicker(false)) },
             startDateToChoose = state.selectedVisa?.startDate,
             endDateToChoose = state.selectedVisa?.expiryDate,
-            blockedDays = state.blockedDates,
+            blockedPeriod = state.blockedDates,
+            onStartChooseClick = {
+                onAction(Action.CalculateBlockDaysByStartDate(it))
+            }
         )
     }
 

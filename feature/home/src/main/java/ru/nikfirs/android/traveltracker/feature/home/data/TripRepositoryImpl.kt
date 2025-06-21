@@ -30,6 +30,10 @@ class TripRepositoryImpl @Inject constructor(
         return tripDao.getTripByIdWithSegments(tripId)?.toModel()
     }
 
+    override suspend fun getTripsByDates(startDate: LocalDate, endDate: LocalDate): List<Trip> {
+        return tripDao.getTripsByDates(startDate, endDate).map { it.toModel() }
+    }
+
     override suspend fun insertTrip(trip: Trip): Long {
         val tripId = tripDao.insertTrip(trip.toEntity())
 
@@ -56,7 +60,7 @@ class TripRepositoryImpl @Inject constructor(
     override suspend fun calculateDaysInPeriod(
         periodEnd: LocalDate,
     ): DaysCalculation {
-        val periodStart = periodEnd.minusDays((PERIOD_DAYS-1).toLong())
+        val periodStart = periodEnd.minusDays((PERIOD_DAYS - 1).toLong())
 
         val totalDaysUsed = tripDao.getDaysCountInPeriodWithExemptions(
             periodStart = periodStart,

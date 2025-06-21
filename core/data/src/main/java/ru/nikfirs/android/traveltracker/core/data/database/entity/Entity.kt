@@ -13,7 +13,7 @@ data class VisaEntity(
     val visaNumber: String,
     val visaCategory: VisaCategory,
     val country: String = "",
-    val issueDate: LocalDate,
+    val startDate: LocalDate,
     val expiryDate: LocalDate,
     val durationOfStay: Int = 90,
     val entries: VisaType = VisaType.MULTI,

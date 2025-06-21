@@ -10,6 +10,10 @@ import java.time.LocalDate
 @Dao
 interface TripDao {
     @Transaction
+    @Query("SELECT * FROM trips WHERE startDate <= :endDate AND endDate >= :startDate")
+    fun getTripsByDates(startDate: LocalDate, endDate: LocalDate): List<TripWithSegments>
+
+    @Transaction
     @Query("SELECT * FROM trips ORDER BY startDate DESC")
     fun getAllTripsWithSegments(): Flow<List<TripWithSegments>>
 

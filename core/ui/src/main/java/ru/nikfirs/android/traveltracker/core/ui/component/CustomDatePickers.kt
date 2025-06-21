@@ -31,6 +31,7 @@ import ru.nikfirs.android.traveltracker.core.ui.R
 import ru.nikfirs.android.traveltracker.core.ui.extension.epochMilliToLocalDate
 import ru.nikfirs.android.traveltracker.core.ui.extension.localDateToEpochMilli
 import ru.nikfirs.android.traveltracker.core.ui.extension.toMonthDayFormat
+import ru.nikfirs.android.traveltracker.core.ui.model.BlockDateModel
 import ru.nikfirs.android.traveltracker.core.ui.theme.AppTheme
 import java.time.LocalDate
 
@@ -45,7 +46,20 @@ fun CustomDateRangePicker(
     startDateToChoose: LocalDate? = null,
     endDateToChoose: LocalDate? = null,
     blockedDays: Set<LocalDate> = emptySet(),
+    blockedPeriod: Set<BlockDateModel> = emptySet(),
+    onStartChooseClick: (LocalDate?) -> Unit = {},
 ) {
+    val blockDaysFromPeriod = remember(blockedPeriod) {
+        val dates: MutableSet<LocalDate> = mutableSetOf()
+        blockedPeriod.forEach { period ->
+            var day = period.startDate
+            while (!day.isAfter(period.endDate)) {
+                dates.add(day)
+                day = day.plusDays(1)
+            }
+        }
+        dates
+    }
     val state = rememberDateRangePickerState(
         initialSelectedStartDateMillis = dateStart.localDateToEpochMilli(),
         initialSelectedEndDateMillis = dateEnd.localDateToEpochMilli(),
@@ -64,6 +78,7 @@ fun CustomDateRangePicker(
                     utcTimeMillis.epochMilliToLocalDate()?.isAfter(endDateToChoose)
                 } ?: false)
                         && !blockedDays.contains(utcTimeMillis.epochMilliToLocalDate())
+                        && !blockDaysFromPeriod.contains(utcTimeMillis.epochMilliToLocalDate())
             }
 
             override fun isSelectableYear(year: Int): Boolean {
@@ -96,6 +111,7 @@ fun CustomDateRangePicker(
                 previousStartDate = startDate
             }
         }
+        onStartChooseClick(state.selectedStartDateMillis.epochMilliToLocalDate())
     }
     LaunchedEffect(state.selectedEndDateMillis) {
         if (state.selectedEndDateMillis != null) {
@@ -194,6 +210,7 @@ private fun CustomCalendarPreview() {
             dateEnd = LocalDate.now().plusDays(20),
             onConfirmClick = { _, _ -> },
             onCancelClick = {},
+            onStartChooseClick = {},
         )
     }
 }

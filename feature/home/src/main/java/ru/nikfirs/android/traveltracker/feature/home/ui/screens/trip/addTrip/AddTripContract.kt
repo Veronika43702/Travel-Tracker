@@ -6,6 +6,7 @@ import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
 import ru.nikfirs.android.traveltracker.core.domain.model.TripPurpose
 import ru.nikfirs.android.traveltracker.core.domain.model.Visa
 import ru.nikfirs.android.traveltracker.core.domain.model.VisaCategory
+import ru.nikfirs.android.traveltracker.core.ui.model.BlockDateModel
 import ru.nikfirs.android.traveltracker.core.ui.mvi.MviAction
 import ru.nikfirs.android.traveltracker.core.ui.mvi.MviEffect
 import ru.nikfirs.android.traveltracker.core.ui.mvi.MviState
@@ -24,7 +25,7 @@ sealed class AddTripContract {
         val startDate: LocalDate? = null,
         val endDate: LocalDate? = null,
         val showDatePicker: Boolean = false,
-        val blockedDates: Set<LocalDate> = emptySet(),
+        val blockedDates: Set<BlockDateModel> = emptySet(),
 
         val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy"),
         val daysAvailableAtStart: DaysAvailableInfo? = null,
@@ -89,13 +90,14 @@ sealed class AddTripContract {
 
         data class SetVisaDropdownExpanded(val expanded: Boolean) : Action()
         data class UpdateSelectedVisa(val visa: Visa?) : Action()
+
         data class UpdateDates(val startDate: LocalDate, val endDate: LocalDate) : Action()
+        data class CalculateBlockDaysByStartDate(val startDate: LocalDate?) : Action()
         data class ShowDatePicker(val value: Boolean) : Action()
+
         data class SetPurposeDropdownExpanded(val expanded: Boolean) : Action()
         data class UpdatePurpose(val purpose: TripPurpose) : Action()
-
         data class UpdateNotes(val notes: String) : Action()
-
 
         data class DeleteSegment(val segment: TripSegmentUi) : Action()
         data object OpenAddSegmentEditor : Action()
@@ -105,8 +107,6 @@ sealed class AddTripContract {
         data object SaveTripWithTransit : Action()
         data class SetError(val error: CustomString? = null) : Action()
         data class SetWarning(val value: CustomString? = null) : Action()
-
-        data object RecalculateDays : Action()
     }
 
     sealed class Effect : MviEffect {
