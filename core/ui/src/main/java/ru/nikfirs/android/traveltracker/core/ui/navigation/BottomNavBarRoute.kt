@@ -14,17 +14,22 @@ sealed class BottomNavBarRoute {
     @Serializable
     data object Home : BottomNavBarRoute()
 
+    @Serializable
+    data object Calendar : BottomNavBarRoute()
+
 }
 
 fun BottomNavBarRoute.getSelectedIcon(): IconType {
     return when (this) {
         BottomNavBarRoute.Home -> IconType.VectorIcon(Icons.Outlined.Home)
+        BottomNavBarRoute.Calendar -> TODO()
     }
 }
 
 fun BottomNavBarRoute.getUnselectedIcon(): IconType {
     return when (this) {
         BottomNavBarRoute.Home -> IconType.VectorIcon(Icons.Filled.Home)
+        BottomNavBarRoute.Calendar -> TODO()
     }
 }
 
