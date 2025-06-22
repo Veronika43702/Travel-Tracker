@@ -7,6 +7,7 @@ import ru.nikfirs.android.traveltracker.core.ui.component.ExistingRange
 import ru.nikfirs.android.traveltracker.core.ui.mvi.MviAction
 import ru.nikfirs.android.traveltracker.core.ui.mvi.MviEffect
 import ru.nikfirs.android.traveltracker.core.ui.mvi.MviState
+import java.time.LocalDate
 
 sealed class CalendarContract {
     data class State(
@@ -14,7 +15,8 @@ sealed class CalendarContract {
         val error: CustomString? = null,
         val dateList: List<DayCalculation> = emptyList(),
         val trips: List<Trip> = emptyList(),
-        val tripRanges: List<ExistingRange> = emptyList()
+        val tripRanges: List<ExistingRange> = emptyList(),
+        val availableDateRange: ClosedRange<LocalDate>? = null
     ) : MviState
 
     sealed class Action : MviAction {

@@ -26,7 +26,7 @@ fun CalendarScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     Screen(
-        bottomNavRouteRoute = BottomNavBarRoute.Home,
+        bottomNavRouteRoute = BottomNavBarRoute.Calendar,
         navigateRoute = navigateRoute,
     ) {
         CalendarContent(
@@ -50,8 +50,8 @@ private fun CalendarContent(
 ) {
     CustomCalendar(
         existingRangeList = state.tripRanges,
+        availableDateRange = state.availableDateRange,
         dateList = state.dateList,
-
     )
 }
 
