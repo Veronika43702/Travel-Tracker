@@ -51,7 +51,7 @@ fun SwipeableTripCard(
                 countableDuration = countableDuration,
                 onClick = {
                     onPrimaryClick?.let { it() }
-                        ?: onAction(Action.NavigateToEditTrip(trip))
+                        ?: onAction(Action.NavigateToTripDetails(trip.id))
                 }
             )
         },
@@ -59,7 +59,7 @@ fun SwipeableTripCard(
             EditAndDeleteRow(
                 onEditIconClick = {
                     setDefaultState()
-                    onAction(Action.NavigateToEditTrip(trip))
+                    onAction(Action.NavigateToEditTrip(trip.id))
 
                 },
                 onDeleteIconClick = {

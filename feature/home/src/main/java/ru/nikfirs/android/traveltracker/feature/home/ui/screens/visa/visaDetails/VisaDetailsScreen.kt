@@ -45,6 +45,7 @@ import ru.nikfirs.android.traveltracker.core.ui.R as uiR
 @Composable
 fun VisaDetailsScreen(
     visaId: Long,
+    isEditable: Boolean,
     navigateToEdit: () -> Unit,
     navigateBack: () -> Unit,
     viewModel: VisaDetailsViewModel = hiltViewModel(),
@@ -65,6 +66,7 @@ fun VisaDetailsScreen(
         AddVisaScreenContent(
             state = state,
             onAction = viewModel::setAction,
+            isEditable = isEditable,
             navigateToEdit = navigateToEdit,
             navigateBack = navigateBack
         )
@@ -75,6 +77,7 @@ fun VisaDetailsScreen(
 private fun AddVisaScreenContent(
     state: State,
     onAction: (Action) -> Unit,
+    isEditable: Boolean,
     navigateToEdit: () -> Unit,
     navigateBack: () -> Unit,
     verticalScroll: ScrollState = rememberScrollState(),
@@ -87,34 +90,36 @@ private fun AddVisaScreenContent(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         VisaInfoBox(state.visa, state.dateFormatter)
-        Spacer(Modifier.weight(1f))
-        Column(
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 20.dp)
-        ) {
-            CustomButton(
-                text = stringResource(uiR.string.action_edit),
-                onClick = navigateToEdit,
+        if (isEditable) {
+            Spacer(Modifier.weight(1f))
+            Column(
+                verticalArrangement = Arrangement.spacedBy(12.dp),
                 modifier = Modifier
                     .fillMaxWidth()
-            )
-            if (state.visa?.isActive == true && !state.visa.isExpired) {
+                    .padding(bottom = 20.dp)
+            ) {
                 CustomButton(
-                    text = stringResource(uiR.string.action_annul),
-                    onClick = { onAction(Action.ShowAnnulDialog) },
+                    text = stringResource(uiR.string.action_edit),
+                    onClick = navigateToEdit,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                )
+                if (state.visa?.isActive == true && !state.visa.isExpired) {
+                    CustomButton(
+                        text = stringResource(uiR.string.action_annul),
+                        onClick = { onAction(Action.ShowAnnulDialog) },
+                        secondaryBtn = true,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+                CustomButton(
+                    text = stringResource(uiR.string.action_delete),
+                    onClick = { onAction(Action.ShowDeleteDialog) },
                     secondaryBtn = true,
+                    contentColor = MaterialTheme.colorScheme.error,
                     modifier = Modifier.fillMaxWidth()
                 )
             }
-            CustomButton(
-                text = stringResource(uiR.string.action_delete),
-                onClick = { onAction(Action.ShowDeleteDialog) },
-                secondaryBtn = true,
-                contentColor = MaterialTheme.colorScheme.error,
-                modifier = Modifier.fillMaxWidth()
-            )
         }
     }
 
@@ -224,6 +229,7 @@ private fun AddVisaScreenPreview1() {
                 )
             ),
             onAction = {},
+            isEditable = false,
             navigateToEdit = {},
             navigateBack = {},
         )
@@ -247,6 +253,7 @@ private fun AddVisaScreenPreview2() {
                 dialogText = CustomString.resource(uiR.string.visa_annul_dialog)
             ),
             onAction = {},
+            isEditable = true,
             navigateToEdit = {},
             navigateBack = {},
         )

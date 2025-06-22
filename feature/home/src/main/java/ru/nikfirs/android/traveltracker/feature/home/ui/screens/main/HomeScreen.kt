@@ -77,6 +77,7 @@ fun HomeScreen(
     navigateToEditVisa: (Long) -> Unit,
     navigateToEditTrip: (Long) -> Unit,
     navigateToVisaDetails: (visaId: Long) -> Unit,
+    navigateToTripDetails: (tripId: Long) -> Unit,
     navigateRoute: (Any) -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
@@ -90,6 +91,7 @@ fun HomeScreen(
             is Effect.NavigateToAddVisa -> navigateToAddVisa()
             is Effect.NavigateToAddTrip -> navigateToAddTrip()
             is Effect.NavigateToVisaDetails -> navigateToVisaDetails(effect.visaId)
+            is Effect.NavigateToTripDetails -> navigateToTripDetails(effect.tripId)
             is Effect.NavigateToEditVisa -> navigateToEditVisa(effect.visaId)
             is Effect.NavigateToEditTrip -> navigateToEditTrip(effect.tripId)
             is Effect.ShowMessage -> {

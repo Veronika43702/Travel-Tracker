@@ -45,7 +45,7 @@ fun SwipeableVisaCard(
             EditAndDeleteRow(
                 onEditIconClick = {
                     setDefaultState()
-                    onAction(Action.NavigateToEditVisa(visa))
+                    onAction(Action.NavigateToEditVisa(visa.id))
                 },
                 onDeleteIconClick = {
                     onAction(Action.ShowDeleteVisaDialog(visa))

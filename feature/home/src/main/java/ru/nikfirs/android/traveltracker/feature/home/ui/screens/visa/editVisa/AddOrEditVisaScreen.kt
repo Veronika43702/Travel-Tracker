@@ -40,7 +40,7 @@ import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.editVisa.Ed
 import ru.nikfirs.android.traveltracker.core.ui.R as uiR
 
 @Composable
-fun EditVisaScreen(
+fun AddOrEditVisaScreen(
     navigateBack: () -> Unit,
     visaId: Long? = null,
     viewModel: EditVisaViewModel = hiltViewModel(),

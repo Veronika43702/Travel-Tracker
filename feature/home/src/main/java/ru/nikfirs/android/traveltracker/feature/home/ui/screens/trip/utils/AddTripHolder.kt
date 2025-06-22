@@ -26,26 +26,9 @@ class AddTripHolder @Inject constructor() {
     var segmentIndex: Int? = null
         private set
 
-    companion object {
-        private val SEGMENT_COLORS = listOf(
-            Color(0xFFFF9800), // Orange
-            Color(0xFF9C27B0), // Purple
-            Color(0xFF00BCD4), // Cyan
-            Color(0xFFF44336), // Red
-            Color(0xFF607D8B), // Blue Grey
-            Color(0xFFF527FF), // Pink
-            Color(0xFF8BC34A), // Light Green
-            Color(0xFF2196F3), // Blue
-        )
-    }
-
     fun getSegmentColor(): Color {
-        return segmentIndex?.let { SEGMENT_COLORS[it % SEGMENT_COLORS.size] }
-            ?: segmentList.lastIndex.let { SEGMENT_COLORS[(it + 1) % SEGMENT_COLORS.size] }
-    }
-
-    fun getSegmentColorByIndex(index: Int): Color {
-        return SEGMENT_COLORS[index % SEGMENT_COLORS.size]
+        return segmentIndex?.let { getTripSegmentColorByIndex(it) }
+            ?: getTripSegmentColorByIndex(segmentList.lastIndex + 1)
     }
 
     fun addSegmentToList(segment: TripSegmentUi? = currentSegment) {
@@ -53,7 +36,7 @@ class AddTripHolder @Inject constructor() {
         currentSegment?.let { newList.remove(it) }
         segment?.let { newList.add(it) }
         segmentList = newList.sortedBy { it.startDate }.mapIndexed { index, item ->
-            item.copy(color = getSegmentColorByIndex(index))
+            item.copy(color = getTripSegmentColorByIndex(index))
         }
     }
 
@@ -63,7 +46,7 @@ class AddTripHolder @Inject constructor() {
 
     fun deleteSegmentFromList(segment: TripSegmentUi? = currentSegment) {
         segmentList = segmentList.filter { it != segment }.mapIndexed { index, item ->
-            item.copy(color = getSegmentColorByIndex(index))
+            item.copy(color = getTripSegmentColorByIndex(index))
         }
     }
 

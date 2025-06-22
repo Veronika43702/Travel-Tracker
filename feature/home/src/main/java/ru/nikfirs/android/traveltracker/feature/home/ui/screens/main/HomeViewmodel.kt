@@ -19,7 +19,6 @@ import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.HomeContrac
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.HomeContract.Effect
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.utils.HomeAction
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.utils.HomeActionModel
-import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.utils.VisaAction
 import java.time.LocalDate
 import javax.inject.Inject
 import ru.nikfirs.android.traveltracker.core.ui.R as UiR
@@ -46,8 +45,9 @@ class HomeViewModel @Inject constructor(
             is Action.NavigateToAddVisa -> navigateToAddVisa()
             is Action.NavigateToAddTrip -> navigateToAddTrip()
             is Action.NavigateToVisaDetails -> navigateToVisaDetails(action.visaId)
-            is Action.NavigateToEditVisa -> navigateToEditVisa(action.visa)
-            is Action.NavigateToEditTrip -> navigateToEditTrip(action.trip)
+            is Action.NavigateToTripDetails -> navigateToTripDetails(action.tripId)
+            is Action.NavigateToEditVisa -> navigateToEditVisa(action.visaId)
+            is Action.NavigateToEditTrip -> navigateToEditTrip(action.tripId)
             is Action.DeleteTrip -> deleteTrip(action.trip)
             is Action.DeleteVisa -> deleteVisa(action.visa)
             is Action.SetError -> setError(action.error)
@@ -114,12 +114,16 @@ class HomeViewModel @Inject constructor(
         setEffect { Effect.NavigateToVisaDetails(visaId) }
     }
 
-    private fun navigateToEditVisa(visa: Visa) {
-        setEffect { Effect.NavigateToEditVisa(visa.id) }
+    private fun navigateToTripDetails(tripId: Long) {
+        setEffect { Effect.NavigateToVisaDetails(tripId) }
     }
 
-    private fun navigateToEditTrip(trip: Trip) {
-        setEffect { Effect.NavigateToEditTrip(trip.id) }
+    private fun navigateToEditVisa(visaId: Long) {
+        setEffect { Effect.NavigateToEditVisa(visaId) }
+    }
+
+    private fun navigateToEditTrip(tripId: Long) {
+        setEffect { Effect.NavigateToEditTrip(tripId) }
     }
 
     private fun deleteTrip(trip: Trip) {

@@ -14,7 +14,7 @@ interface VisaDao {
     @Query("""
         SELECT * FROM visas 
         WHERE isActive = 1
-        AND expiryDate > startDate 
+        AND expiryDate > :startDate 
         ORDER BY startDate DESC
     """)
     fun getVisasByDate(startDate: LocalDate): Flow<List<VisaEntity>>

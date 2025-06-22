@@ -13,6 +13,5 @@ fun CustomString?.asString(): String? {
     return when (this) {
         is CustomString.Text -> value ?: internal
         is CustomString.Resource -> context.getString(resId, *args)
-        else -> internal
     }
 }

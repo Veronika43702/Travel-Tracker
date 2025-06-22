@@ -1,2 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources></resources>
+<resources>
+    <!-- Trip Details Screen -->
+    <string name="trip_details_title">Детали поездки</string>
+    <string name="trip_details_dates">Даты поездки</string>
+    <string name="trip_duration_info">Продолжительность</string>
+    <string name="trip_purpose">Цель поездки</string>
+    <string name="linked_visa">Связанная виза</string>
+    <string name="trip_segments">Сегменты поездки</string>
+    <string name="days_total_counted">%1$d дн. всего, %2$d дн. учитывается</string>
+    <string name="days_total_only">%1$d дн. всего</string>
+    <string name="no_linked_visa">Виза не указана</string>
+    <string name="segment_cities">Города: %1$s</string>
+
+    <!-- Trip Status -->
+    <string name="trip_status_ongoing_details">Текущая</string>
+    <string name="trip_status_planned_details">Запланированная</string>
+    <string name="trip_status_completed_details">Завершенная</string>
+
+    <!-- Error Messages for Trip Details -->
+    <string name="error_trip_not_found">Поездка не найдена</string>
+    <string name="error_loading_trip">Ошибка загрузки поездки</string>
+    <string name="error_deleting_trip">Ошибка удаления поездки</string>
+
+    <!-- Success Messages -->
+    <string name="trip_deleted_successfully">Поездка успешно удалена</string>
+</resources>
