@@ -33,4 +33,4 @@ val Shapes.calendarEnd
         bottomEnd = calendar,
     )
 
-val cardElevation = 2.dp
+val cardElevation = 4.dp

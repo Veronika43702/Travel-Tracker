@@ -8,6 +8,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import ru.nikfirs.android.traveltracker.core.ui.navigation.BottomNavBarRoute
 import ru.nikfirs.android.traveltracker.core.ui.navigation.DeepRoute
+import ru.nikfirs.android.traveltracker.feature.calendar.calendarNavigationGraph
 import ru.nikfirs.android.traveltracker.feature.home.homeNavigationGraph
 
 @Composable
@@ -22,6 +23,10 @@ fun NavigationHost(
         popEnterTransition = { fadeIn(animationSpec = tween(300)) },
         popExitTransition = { fadeOut(animationSpec = tween(300)) }) {
         homeNavigationGraph(
+            navController = navController,
+            navigateDeepRoute = { deepRoute -> deepRoute.resolve(navController) }
+        )
+        calendarNavigationGraph(
             navController = navController,
             navigateDeepRoute = { deepRoute -> deepRoute.resolve(navController) }
         )

@@ -9,7 +9,7 @@ import javax.inject.Inject
 class GetVisasByDateUseCase @Inject constructor(
     private val visaRepository: VisaRepository
 ) {
-    operator fun invoke(startDate: LocalDate): Flow<List<Visa>> {
-        return visaRepository.getVisasByDate(startDate)
+    operator fun invoke(startDate: LocalDate, onlyActive: Boolean = false): Flow<List<Visa>> {
+        return visaRepository.getVisasByDate(startDate, onlyActive)
     }
 }

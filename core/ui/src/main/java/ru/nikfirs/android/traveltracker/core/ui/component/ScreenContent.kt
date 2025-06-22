@@ -25,8 +25,6 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,8 +35,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -52,6 +48,7 @@ import ru.nikfirs.android.traveltracker.core.ui.navigation.getBottomNavBarItems
 import ru.nikfirs.android.traveltracker.core.ui.navigation.getSelectedIcon
 import ru.nikfirs.android.traveltracker.core.ui.navigation.getUnselectedIcon
 import ru.nikfirs.android.traveltracker.core.ui.theme.AppTheme
+import ru.nikfirs.android.traveltracker.core.ui.theme.button
 
 @Composable
 fun Screen(
@@ -66,7 +63,7 @@ fun Screen(
 ) {
     Scaffold(
         topBar = {
-            if (topTitle.isNotBlank()) {
+            if (topTitle.isNotBlank() || navigateBack != null || actions.isNotEmpty()) {
                 TopBar(topTitle, navigateBack, actions)
             }
         },
@@ -113,8 +110,7 @@ private fun TopBar(
         modifier = Modifier
             .fillMaxWidth()
             .height(56.dp)
-            .background(MaterialTheme.colorScheme.surface)
-            .shadow(4.dp)
+            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.05f))
     ) {
         if (navigateBack != null) {
             Box(
@@ -243,19 +239,40 @@ private fun BottomBar(
     val items = getBottomNavBarItems()
 
     NavigationBar(
-        containerColor = MaterialTheme.colorScheme.surfaceContainer,
-        contentColor = MaterialTheme.colorScheme.primary,
+        modifier = Modifier.height(68.dp),
+        containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.05f),
+        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
     ) {
-        items.forEach { item ->
-            val icon = if (selectedRoute == item) {
-                item.getSelectedIcon()
-            } else {
-                item.getUnselectedIcon()
-            }
-            NavigationBarItem(
-                selected = selectedRoute == item,
-                onClick = { onRouteClick(item) },
-                icon = {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            items.forEach { item ->
+                val icon = if (selectedRoute == item) {
+                    item.getSelectedIcon()
+                } else {
+                    item.getUnselectedIcon()
+                }
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(56.dp)
+                        .padding(horizontal = 16.dp)
+                        .then(
+                            if (selectedRoute == item) {
+                                Modifier.background(
+                                    MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                                    shape = MaterialTheme.shapes.button
+                                )
+                            } else {
+                                Modifier
+                            }
+                        )
+                        .clip(MaterialTheme.shapes.button)
+                        .clickableOnce { onRouteClick(item) },
+                    contentAlignment = Alignment.Center
+                ) {
                     when (icon) {
                         is IconType.DrawableRes -> Icon(
                             painter = painterResource(id = icon.resId),
@@ -264,14 +281,11 @@ private fun BottomBar(
 
                         is IconType.VectorIcon -> Icon(
                             imageVector = icon.imageVector,
-                            contentDescription = null
+                            contentDescription = null,
                         )
                     }
-                },
-                colors = NavigationBarItemDefaults.colors(indicatorColor = Color.Transparent),
-                alwaysShowLabel = false,
-                modifier = Modifier.height(72.dp)
-            )
+                }
+            }
         }
     }
 }
