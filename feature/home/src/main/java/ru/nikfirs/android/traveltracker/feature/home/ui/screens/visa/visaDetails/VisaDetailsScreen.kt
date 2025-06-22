@@ -100,7 +100,7 @@ private fun AddVisaScreenContent(
                 modifier = Modifier
                     .fillMaxWidth()
             )
-            if (state.visa?.isActive == true) {
+            if (state.visa?.isActive == true && !state.visa.isExpired) {
                 CustomButton(
                     text = stringResource(uiR.string.action_annul),
                     onClick = { onAction(Action.ShowAnnulDialog) },

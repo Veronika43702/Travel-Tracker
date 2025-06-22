@@ -41,8 +41,8 @@ import ru.nikfirs.android.traveltracker.core.ui.R as uiR
 
 @Composable
 fun EditVisaScreen(
-    visaId: Long,
     navigateBack: () -> Unit,
+    visaId: Long? = null,
     viewModel: EditVisaViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -118,7 +118,7 @@ private fun AddVisaScreenContent(
         Spacer(Modifier.weight(1f))
         CustomButton(
             text = stringResource(uiR.string.action_save),
-            onClick = { onAction(Action.UpdateVisa) },
+            onClick = { onAction(Action.SaveOrUpdateVisa) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 20.dp)
@@ -151,7 +151,7 @@ private fun AddVisaScreenPreview1() {
 private fun AddVisaScreenPreview2() {
     AppTheme {
         AddVisaScreenContent(
-            state = State(visaType = VisaCategory.TYPE_D),
+            state = State(visaId = 1, visaType = VisaCategory.TYPE_D),
             onAction = {},
         )
     }

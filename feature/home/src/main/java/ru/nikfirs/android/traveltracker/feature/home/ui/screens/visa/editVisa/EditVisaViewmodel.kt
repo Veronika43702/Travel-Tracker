@@ -8,6 +8,7 @@ import ru.nikfirs.android.traveltracker.core.domain.model.VisaEntries
 import ru.nikfirs.android.traveltracker.core.ui.mvi.ViewModel
 import ru.nikfirs.android.traveltracker.core.ui.mvi.launch
 import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.visa.GetVisaByIdUseCase
+import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.visa.SaveVisaUseCase
 import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.visa.UpdateVisaUseCase
 import ru.nikfirs.android.traveltracker.core.ui.R as uiR
 import java.time.LocalDate
@@ -21,6 +22,7 @@ import java.time.temporal.ChronoUnit
 class EditVisaViewModel @Inject constructor(
     private val getVisaByIdUseCase: GetVisaByIdUseCase,
     private val updateVisaUseCase: UpdateVisaUseCase,
+    private val saveVisaUseCase: SaveVisaUseCase,
 ) : ViewModel<Action, Effect, State>() {
 
     override fun createInitialState(): State = State()
@@ -37,12 +39,13 @@ class EditVisaViewModel @Inject constructor(
             is Action.UpdateEntries -> updateEntries(action.entries)
             is Action.UpdateNotes -> updateNotes(action.notes)
             is Action.SetCountryDropdownExpanded -> setCountryDropdownExpanded(action.expanded)
-            is Action.UpdateVisa -> updateVisa()
+            is Action.SaveOrUpdateVisa -> saveOrUpdateVisa()
             is Action.SetError -> setError(error = action.error)
         }
     }
 
-    private fun loadVisa(visaId: Long) {
+    private fun loadVisa(visaId: Long?) {
+        visaId ?: return
         launch {
             setState { it.copy(isLoading = true) }
             try {
@@ -169,8 +172,8 @@ class EditVisaViewModel @Inject constructor(
         setState { it.copy(isCountryDropdownExpanded = expanded) }
     }
 
-    private fun updateVisa() {
-        val id = currentState.visaId ?: return
+    private fun saveOrUpdateVisa() {
+        val id = currentState.visaId
         val validationErrors = validateForm()
 
         if (validationErrors.isEmpty()) {
@@ -179,7 +182,7 @@ class EditVisaViewModel @Inject constructor(
             launch {
                 try {
                     val visa = Visa(
-                        id = id,
+                        id = id ?: 0,
                         visaNumber = currentState.visaNumber,
                         visaType = currentState.visaType,
                         country = currentState.selectedCountry,
@@ -189,8 +192,11 @@ class EditVisaViewModel @Inject constructor(
                         entries = currentState.entries,
                         notes = currentState.notes
                     )
-
-                    updateVisaUseCase.invoke(visa)
+                    if (id == null) {
+                        saveVisaUseCase.invoke(visa)
+                    } else {
+                        updateVisaUseCase.invoke(visa)
+                    }
 
                     setEffect { Effect.NavigateBack }
 

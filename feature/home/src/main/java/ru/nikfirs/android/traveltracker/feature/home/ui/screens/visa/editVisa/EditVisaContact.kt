@@ -42,7 +42,7 @@ sealed class EditVisaContract {
     }
 
     sealed class Action : MviAction {
-        data class LoadData(val visaId: Long) : Action()
+        data class LoadData(val visaId: Long?) : Action()
         data class UpdateVisaNumber(val number: String) : Action()
         data class UpdateVisaType(val type: VisaCategory) : Action()
         data class UpdateCountry(val country: String) : Action()
@@ -52,7 +52,7 @@ sealed class EditVisaContract {
         data class UpdateEntries(val entries: VisaEntries) : Action()
         data class UpdateNotes(val notes: String) : Action()
         data class SetCountryDropdownExpanded(val expanded: Boolean) : Action()
-        data object UpdateVisa : Action()
+        data object SaveOrUpdateVisa : Action()
         data class SetError(val error: CustomString? = null) : Action()
     }
 

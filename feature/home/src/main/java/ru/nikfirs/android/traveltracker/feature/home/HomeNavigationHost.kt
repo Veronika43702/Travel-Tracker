@@ -10,7 +10,6 @@ import ru.nikfirs.android.traveltracker.core.ui.navigation.navigateBottomNavBarR
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.HomeScreen
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTrip.AddTripScreen
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTripSegment.AddTripSegmentScreen
-import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.addVisa.AddVisaScreen
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.editVisa.EditVisaScreen
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.visaDetails.VisaDetailsScreen
 
@@ -20,18 +19,20 @@ fun NavGraphBuilder.homeNavigationGraph(
 ) {
     composable<BottomNavBarRoute.Home> {
         HomeScreen(
-            navigateToAddVisa = { navController.navigate(HomeRoute.AddVisa) },
+            navigateToAddVisa = { navController.navigate(HomeRoute.SaveOrEditVisa()) },
             navigateToAddTrip = { navController.navigate(HomeRoute.AddTrip) },
-            navigateToEditVisa = { navController.navigate(HomeRoute.EditVisa(it)) },
+            navigateToEditVisa = { navController.navigate(HomeRoute.SaveOrEditVisa(it)) },
             navigateToEditTrip = {},
             navigateToVisaDetails = { navController.navigate(HomeRoute.VisaDetails(it)) },
             navigateRoute = { navController.navigateBottomNavBarRoute(it) },
         )
     }
     // Visa
-    composable<HomeRoute.AddVisa> {
-        AddVisaScreen(
-            onNavigateBack = { navController.popBackStack() },
+    composable<HomeRoute.SaveOrEditVisa> { backStack ->
+        val route = backStack.toRoute<HomeRoute.SaveOrEditVisa>()
+        EditVisaScreen(
+            visaId = route.visaId,
+            navigateBack = { navController.popBackStack() },
         )
     }
     composable<HomeRoute.VisaDetails> { backStack ->
@@ -39,14 +40,7 @@ fun NavGraphBuilder.homeNavigationGraph(
         VisaDetailsScreen(
             visaId = route.visaId,
             navigateBack = { navController.popBackStack() },
-            navigateToEdit = { navController.navigate(HomeRoute.EditVisa(route.visaId)) }
-        )
-    }
-    composable<HomeRoute.EditVisa> { backStack ->
-        val route = backStack.toRoute<HomeRoute.EditVisa>()
-        EditVisaScreen(
-            visaId = route.visaId,
-            navigateBack = { navController.popBackStack() },
+            navigateToEdit = { navController.navigate(HomeRoute.SaveOrEditVisa(route.visaId)) }
         )
     }
     // Trip

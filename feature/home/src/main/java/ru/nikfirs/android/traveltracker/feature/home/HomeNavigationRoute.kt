@@ -8,13 +8,10 @@ sealed class HomeRoute {
 
     // Visa
     @Serializable
-    data object AddVisa
+    data class SaveOrEditVisa(val visaId: Long? = null)
 
     @Serializable
     data class VisaDetails(val visaId: Long)
-
-    @Serializable
-    data class EditVisa(val visaId: Long)
 
     // Trip
     @Serializable
