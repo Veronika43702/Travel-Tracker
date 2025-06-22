@@ -32,6 +32,9 @@ internal fun DeepRoute.resolve(
     navController: NavHostController,
 ) {
     when (this) {
-        DeepRoute.Home -> navController.navigate(BottomNavBarRoute.Home) // example
+        DeepRoute.Home -> navController.navigate(BottomNavBarRoute.Home) {
+            popUpTo(BottomNavBarRoute.Home) { inclusive = true }
+            launchSingleTop = true
+        }
     }
 }

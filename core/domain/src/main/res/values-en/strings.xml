@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Error Messages -->
+    <string name="error_unknown">An unknown error occurred</string>
+</resources>
