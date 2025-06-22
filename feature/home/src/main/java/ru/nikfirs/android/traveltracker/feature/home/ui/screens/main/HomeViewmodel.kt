@@ -41,6 +41,7 @@ class HomeViewModel @Inject constructor(
         when (action) {
             is Action.LoadData -> loadData()
             is Action.RefreshData -> loadData()
+            Action.UpdateDaysCalculation -> updateDaysCalculation()
             is Action.SelectTab -> selectTab(action.tab)
             is Action.NavigateToAddVisa -> navigateToAddVisa()
             is Action.NavigateToAddTrip -> navigateToAddTrip()
@@ -115,7 +116,7 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun navigateToTripDetails(tripId: Long) {
-        setEffect { Effect.NavigateToVisaDetails(tripId) }
+        setEffect { Effect.NavigateToTripDetails(tripId) }
     }
 
     private fun navigateToEditVisa(visaId: Long) {

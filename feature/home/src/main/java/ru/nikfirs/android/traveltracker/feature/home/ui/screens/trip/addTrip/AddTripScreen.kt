@@ -35,6 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -256,7 +257,7 @@ private fun AddTripScreenContent(
         )
 
         // Duration Info
-        if (state.hasSelectedVisa) {
+        if (state.hasSelectedVisa && state.hasSelectedDates) {
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
@@ -286,7 +287,11 @@ private fun AddTripScreenContent(
                         )
                         Column(horizontalAlignment = Alignment.End) {
                             Text(
-                                text = stringResource(R.string.days_count, state.totalDuration),
+                                text = pluralStringResource(
+                                    R.plurals.days_count,
+                                    state.totalDuration.toInt(),
+                                    state.totalDuration
+                                ),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onTertiaryContainer
                             )

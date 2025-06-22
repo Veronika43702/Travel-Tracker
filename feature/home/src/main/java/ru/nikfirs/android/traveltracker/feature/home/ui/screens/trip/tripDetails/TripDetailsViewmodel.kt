@@ -9,6 +9,7 @@ import ru.nikfirs.android.traveltracker.feature.home.R
 import ru.nikfirs.android.traveltracker.feature.home.domain.model.TripSegmentUi
 import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.trip.DeleteTripUseCase
 import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.trip.GetTripByIdUseCase
+import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.visa.GetVisaByIdUseCase
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.tripDetails.TripDetailsContract.Action
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.tripDetails.TripDetailsContract.Effect
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.tripDetails.TripDetailsContract.State
@@ -18,6 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class TripDetailsViewModel @Inject constructor(
     private val getTripByIdUseCase: GetTripByIdUseCase,
+    private val getVisaByIdUseCase: GetVisaByIdUseCase,
     private val deleteTripUseCase: DeleteTripUseCase,
 ) : ViewModel<Action, Effect, State>() {
 
@@ -41,26 +43,31 @@ class TripDetailsViewModel @Inject constructor(
             setState { it.copy(isLoading = true) }
             try {
                 val trip = getTripByIdUseCase.invoke(tripId)
-                val segments = trip?.segments?.mapIndexed { index, segment ->
+                if (trip == null) {
+                    setError(CustomString.resource(R.string.error_trip_not_found))
+                    return@launch
+                }
+
+                val visa = trip.visaId?.let { getVisaByIdUseCase.invoke(it) }
+                val segments = trip.segments.mapIndexed { index, segment ->
                     TripSegmentUi(
                         country = segment.country,
                         startDate = segment.startDate,
                         endDate = segment.endDate,
                         isExempt = segment.isExempt,
+                        cities = segment.cities,
                         color = getTripSegmentColorByIndex(index)
                     )
-                } ?: emptyList()
-                trip?.let {
-                    setState {
-                        it.copy(
-                            isLoading = false,
-                            trip = trip,
-                            segmentsForView = segments
-                        )
-                    }
-                } ?: setError(
-                    CustomString.resource(R.string.error_trip_not_found)
-                )
+                }
+
+                setState {
+                    it.copy(
+                        isLoading = false,
+                        trip = trip,
+                        visa = visa,
+                        segmentsForView = segments,
+                    )
+                }
             } catch (e: Exception) {
                 setError(CustomString.resource(R.string.error_loading_trip))
             }

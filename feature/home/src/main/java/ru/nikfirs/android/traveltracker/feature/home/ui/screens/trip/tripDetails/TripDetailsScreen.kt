@@ -43,6 +43,8 @@ import ru.nikfirs.android.traveltracker.core.data.model.TRANSIT
 import ru.nikfirs.android.traveltracker.core.domain.model.Trip
 import ru.nikfirs.android.traveltracker.core.domain.model.TripPurpose
 import ru.nikfirs.android.traveltracker.core.domain.model.TripSegment
+import ru.nikfirs.android.traveltracker.core.domain.model.Visa
+import ru.nikfirs.android.traveltracker.core.domain.model.VisaCategory
 import ru.nikfirs.android.traveltracker.core.ui.component.CustomButton
 import ru.nikfirs.android.traveltracker.core.ui.component.DarkENScreenPreview
 import ru.nikfirs.android.traveltracker.core.ui.component.DialogTwoRowButton
@@ -125,6 +127,7 @@ private fun TripDetailsContent(
             // Main Trip Info
             TripInfoSection(
                 trip = trip,
+                visa = state.visa,
                 dateFormatter = state.dateFormatter,
                 onVisaClick = { navigateToVisaDetails(it) },
             )
@@ -214,6 +217,7 @@ private fun TripStatusSection(
 @Composable
 private fun TripInfoSection(
     trip: Trip,
+    visa: Visa?,
     dateFormatter: DateTimeFormatter,
     onVisaClick: (Long) -> Unit
 ) {
@@ -254,10 +258,15 @@ private fun TripInfoSection(
         )
 
         // Linked Visa (if exists)
-        trip.visaId?.let { visaId ->
+        visa?.id?.let { visaId ->
+            val typeText = when (visa.visaType) {
+                VisaCategory.TYPE_C -> stringResource(ru.nikfirs.android.traveltracker.core.ui.R.string.visa_type_c_short)
+                VisaCategory.TYPE_D -> stringResource(ru.nikfirs.android.traveltracker.core.ui.R.string.visa_type_d_short)
+                VisaCategory.RESIDENCE_PERMIT -> stringResource(ru.nikfirs.android.traveltracker.core.ui.R.string.visa_type_residence_short)
+            }
             InfoDataBox(
                 header = stringResource(R.string.linked_visa),
-                data = "Visa #$visaId", // This should be populated with actual visa data
+                data = "$typeText (${visa.visaNumber}) ${visa.country}",
                 dataColor = MaterialTheme.colorScheme.primary,
                 onDataClick = { onVisaClick(visaId) }
             )
@@ -296,7 +305,8 @@ private fun TripSegmentsSection(
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
                 text = stringResource(R.string.trip_segments),
@@ -364,6 +374,15 @@ private fun TripDetailsScreenPreview() {
                     endDate = LocalDate.now().plusDays(12),
                     purpose = TripPurpose.TOURISM,
                     notes = "Summer vacation trip to Europe"
+                ),
+                visa = Visa(
+                    id = 1,
+                    visaNumber = "123",
+                    country = "DE",
+                    startDate = LocalDate.now(),
+                    expiryDate = LocalDate.now(),
+                    durationOfStay = 8,
+                    isActive = true,
                 ),
                 segmentsForView = listOf(
                     TripSegmentUi(

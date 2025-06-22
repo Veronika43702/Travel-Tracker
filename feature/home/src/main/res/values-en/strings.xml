@@ -10,7 +10,6 @@
     <string name="days_total_counted">%1$d days total, %2$d days counted</string>
     <string name="days_total_only">%1$d days total</string>
     <string name="no_linked_visa">No visa linked</string>
-    <string name="segment_cities">Cities: %1$s</string>
 
     <!-- Trip Status -->
     <string name="trip_status_ongoing_details">Ongoing</string>

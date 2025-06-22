@@ -2,6 +2,7 @@ package ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.tripDetail
 
 import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
 import ru.nikfirs.android.traveltracker.core.domain.model.Trip
+import ru.nikfirs.android.traveltracker.core.domain.model.Visa
 import ru.nikfirs.android.traveltracker.core.ui.mvi.MviAction
 import ru.nikfirs.android.traveltracker.core.ui.mvi.MviEffect
 import ru.nikfirs.android.traveltracker.core.ui.mvi.MviState
@@ -12,6 +13,7 @@ sealed class TripDetailsContract {
     data class State(
         val isLoading: Boolean = false,
         val trip: Trip? = null,
+        val visa: Visa? = null,
         val segmentsForView: List<TripSegmentUi> = emptyList(),
         val expandSegments: Boolean = false,
         val error: CustomString? = null,

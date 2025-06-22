@@ -35,7 +35,10 @@
     <string name="days_counter_title">Days in EU</string>
     <string name="days_counter_format">%1$d / %2$d</string>
     <string name="days_counter_period">In the last 180 days</string>
-    <string name="days_remaining">%1$d days remaining</string>
+    <plurals name="days_remaining">
+        <item quantity="one">%1$d day remaining</item>
+        <item quantity="other">%1$d days remaining</item>
+    </plurals>
     <string name="days_limit_warning">Approaching the limit!</string>
     <string name="days_limit_exceeded">Limit exceeded!</string>
 
@@ -63,7 +66,10 @@
     <string name="trip_status_completed">Completed</string>
 
     <!-- Trip card -->
-    <string name="days_count">%d days</string>
+    <plurals name="days_count">
+        <item quantity="one">%d day</item>
+        <item quantity="other">%d days</item>
+    </plurals>
     <string name="delete_trip">Delete trip</string>
     <string name="exempt_badge">Exempt</string>
 
@@ -102,7 +108,10 @@
 
     <!-- Days counter info -->
     <string name="exempt_countries_info">Days not counted in: %1$s</string>
-    <string name="visa_expiring_soon">Visa expires in %1$d days</string>
+    <plurals name="visa_expiring_soon">
+        <item quantity="one">Visa expires in %1$d day</item>
+        <item quantity="other">Visa expires in %1$d days</item>
+    </plurals>
 
     <!-- Success messages -->
     <string name="trip_deleted_successfully">Trip deleted</string>
@@ -179,7 +188,7 @@
     <string name="add_segment">Add Segment</string>
     <string name="segment_country">Country</string>
     <string name="segment_dates">Dates of Stay</string>
-    <string name="segment_cities">Cities (optional)</string>
+    <string name="add_segment_cities">Cities (optional)</string>
     <string name="segment_type">Type of Stay</string>
     <string name="cities_placeholder">e.g. Berlin, Munich</string>
 

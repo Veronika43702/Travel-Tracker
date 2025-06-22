@@ -10,6 +10,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -137,7 +138,11 @@ fun DaysCounter(
                         val remaining = maxDays - daysUsed
                         if (remaining > 0) {
                             Text(
-                                text = stringResource(id = R.string.days_remaining, remaining),
+                                text = pluralStringResource(
+                                    id = R.plurals.days_remaining,
+                                    remaining,
+                                    remaining
+                                ),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
@@ -156,7 +161,11 @@ fun DaysCounter(
                     if (remaining > 0) {
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = stringResource(id = R.string.days_remaining, remaining),
+                            text = pluralStringResource(
+                                id = R.plurals.days_remaining,
+                                remaining,
+                                remaining
+                            ),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )

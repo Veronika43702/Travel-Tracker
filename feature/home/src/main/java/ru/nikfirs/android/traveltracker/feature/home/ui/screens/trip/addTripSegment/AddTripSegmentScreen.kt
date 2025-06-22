@@ -192,7 +192,7 @@ private fun AddTripSegmentContent(
         CustomTextField(
             value = state.cities,
             onValueChange = { onAction(Action.UpdateCities(it)) },
-            label = stringResource(R.string.segment_cities),
+            label = stringResource(R.string.add_segment_cities),
             modifier = Modifier.fillMaxWidth(),
             minLines = 3,
             maxLines = 4,

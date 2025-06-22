@@ -10,7 +10,6 @@
     <string name="days_total_counted">%1$d дн. всего, %2$d дн. учитывается</string>
     <string name="days_total_only">%1$d дн. всего</string>
     <string name="no_linked_visa">Виза не указана</string>
-    <string name="segment_cities">Города: %1$s</string>
 
     <!-- Trip Status -->
     <string name="trip_status_ongoing_details">Текущая</string>

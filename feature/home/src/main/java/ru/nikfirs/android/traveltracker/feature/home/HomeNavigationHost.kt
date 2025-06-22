@@ -12,14 +12,14 @@ import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTripSegm
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.tripDetails.TripDetailsScreen
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.editVisa.AddOrEditVisaScreen
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.visaDetails.VisaDetailsScreen
-import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.HomeScreen as HomeScreen1
+import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.HomeScreen
 
 fun NavGraphBuilder.homeNavigationGraph(
     navController: NavHostController,
     navigateDeepRoute: (DeepRoute) -> Unit,
 ) {
     composable<BottomNavBarRoute.Home> {
-        HomeScreen1(
+        HomeScreen(
             navigateToAddVisa = { navController.navigate(HomeRoute.SaveOrEditVisa()) },
             navigateToAddTrip = { navController.navigate(HomeRoute.AddTrip()) },
             navigateToEditVisa = { navController.navigate(HomeRoute.SaveOrEditVisa(it)) },

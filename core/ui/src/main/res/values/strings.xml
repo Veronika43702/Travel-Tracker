@@ -35,7 +35,11 @@
     <string name="days_counter_title">Дней в ЕС</string>
     <string name="days_counter_format">%1$d / %2$d</string>
     <string name="days_counter_period">За последние 180 дней</string>
-    <string name="days_remaining">Осталось %1$d дней</string>
+    <plurals name="days_remaining">
+        <item quantity="one">Осталося %d день</item>
+        <item quantity="few">Осталось %d дня</item>
+        <item quantity="many">Осталось %d дней</item>
+    </plurals>
     <string name="days_limit_warning">Приближаетесь к лимиту!</string>
     <string name="days_limit_exceeded">Лимит превышен!</string>
 
@@ -66,7 +70,11 @@
     <string name="trip_status_completed">Завершено</string>
 
     <!-- Trip card -->
-    <string name="days_count">%d дней</string>
+    <plurals name="days_count">
+        <item quantity="one">%d день</item>
+        <item quantity="few">%d дня</item>
+        <item quantity="many">%d дней</item>
+    </plurals>
     <string name="delete_trip">Удалить поездку</string>
     <string name="exempt_badge">Не учитывается</string>
 
@@ -105,7 +113,11 @@
 
     <!-- Days counter info -->
     <string name="exempt_countries_info">Не учитываются дни в: %1$s</string>
-    <string name="visa_expiring_soon">Виза истекает через %1$d дней</string>
+    <plurals name="visa_expiring_soon">
+        <item quantity="one">Виза истекает через %1$d день</item>
+        <item quantity="few">Виза истекает через %1$d дня</item>
+        <item quantity="many">Виза истекает через %1$d дней</item>
+    </plurals>
 
     <!-- Success messages -->
     <string name="trip_deleted_successfully">Поездка удалена</string>
@@ -178,7 +190,7 @@
     <string name="add_segment">Добавить сегмент</string>
     <string name="segment_country">Страна</string>
     <string name="segment_dates">Даты пребывания</string>
-    <string name="segment_cities">Города (опционально)</string>
+    <string name="add_segment_cities">Города (опционально)</string>
     <string name="segment_type">Тип пребывания</string>
     <string name="cities_placeholder">Например: Берлин, Мюнхен</string>
 

@@ -27,6 +27,7 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -85,7 +86,9 @@ fun HomeScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
-
+    LaunchedEffect(Unit) {
+        viewModel.setAction(Action.UpdateDaysCalculation)
+    }
     LaunchedEffectResolver(flow = viewModel.effect) { effect ->
         when (effect) {
             is Effect.NavigateToAddVisa -> navigateToAddVisa()
@@ -277,9 +280,9 @@ private fun VisasTabContent(
                 onAction = onAction,
             )
         }
-       item {
-           Spacer(Modifier.height(70.dp))
-       }
+        item {
+            Spacer(Modifier.height(70.dp))
+        }
     }
 }
 

@@ -108,15 +108,10 @@ class AddTripViewModel @Inject constructor(
                     remaining = calculation.remainingDays,
                 )
 
-                val daysInfoEnd = DaysAvailableInfo(
-                    used = calculation.totalDaysUsed + 1,
-                    remaining = calculation.remainingDays - 1,
-                )
-
                 setState {
                     it.copy(
                         daysAvailableAtStart = daysInfo,
-                        daysAvailableAtEnd = daysInfoEnd
+                        daysAvailableAtEnd = daysInfo
                     )
                 }
             } catch (e: Exception) {
@@ -124,14 +119,10 @@ class AddTripViewModel @Inject constructor(
                     used = 0,
                     remaining = MAX_STAY_DAYS
                 )
-                val defaultDaysInfoEnd = DaysAvailableInfo(
-                    used = 1,
-                    remaining = MAX_STAY_DAYS - 1
-                )
                 setState {
                     it.copy(
                         daysAvailableAtStart = defaultDaysInfo,
-                        daysAvailableAtEnd = defaultDaysInfoEnd,
+                        daysAvailableAtEnd = defaultDaysInfo,
                     )
                 }
             }
@@ -515,7 +506,7 @@ class AddTripViewModel @Inject constructor(
                 visa.expiryDate,
                 currentState.blockedDates
                     .filter { it.startDate.isAfter(startDate) }
-                    .minOf { it.startDate }
+                    .minOfOrNull { it.startDate } ?: visa.expiryDate
             )
 
             var checkDate = visa.startDate
