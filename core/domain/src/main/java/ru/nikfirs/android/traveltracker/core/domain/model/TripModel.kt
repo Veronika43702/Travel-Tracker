@@ -12,7 +12,8 @@ data class Trip(
     val purpose: TripPurpose = TripPurpose.TOURISM,
     val notes: String? = null,
     val createdAt: LocalDate = LocalDate.now(),
-    val countableDays: Int = calculateCountableDays(segments)
+    val countableDays: Int = calculateCountableDays(segments),
+    val hasOverLimitDay: Boolean = false,
 ) {
     val duration: Long
         get() = ChronoUnit.DAYS.between(startDate, endDate) + 1

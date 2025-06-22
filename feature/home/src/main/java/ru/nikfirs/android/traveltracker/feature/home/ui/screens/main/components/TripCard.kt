@@ -148,14 +148,20 @@ fun TripCard(
                     )
                 }
             }
-        }
+        },
+        warning = if (trip.hasOverLimitDay) {
+            {
+                StatusChip(
+                    text = "Warning", // TODO
+                    backgroundColor = MaterialTheme.colorScheme.error
+                )
+            }
+        } else null,
     ) {
-        // Страны
         CountriesRow(trip = trip)
 
         Spacer(modifier = Modifier.height(4.dp))
 
-        // Даты
         if (trip.startDate != null && trip.endDate != null) {
             Text(
                 text = stringResource(
@@ -180,36 +186,19 @@ private fun CountriesRow(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        val countries = trip.countries
-        val displayCountries = countries.take(2)
-
-        displayCountries.forEachIndexed { index, country ->
-            if (index > 0) {
-                Text(
-                    text = "→",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-
-            Text(
-                text = country,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Medium,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.weight(1f, fill = false)
-            )
-        }
-
-        if (countries.size > 2) {
-            Icon(
-                painter = painterResource(R.drawable.ic_more_horiz),
-                contentDescription = stringResource(R.string.more_countries),
-                modifier = Modifier.size(16.dp),
-                tint = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
+        Text(
+            text = (trip.primaryCountry ?: trip.countries.firstOrNull() ?: "") +
+                    (if (trip.countries.size >= 2) {
+                        ", " + (trip.countries.firstOrNull { it != trip.primaryCountry }
+                            ?: "")
+                    } else "")
+                    + if (trip.countries.size > 2) "..." else "",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Medium,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.weight(1f, fill = false)
+        )
     }
 }
 
@@ -241,6 +230,7 @@ private fun TripCardPreview() {
                         )
                     ),
                     purpose = TripPurpose.TOURISM,
+                    hasOverLimitDay = true,
                 ),
                 isExempt = true,
                 countableDuration = 0,
