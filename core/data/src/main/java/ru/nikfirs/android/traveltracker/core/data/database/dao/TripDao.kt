@@ -14,6 +14,10 @@ interface TripDao {
     fun getTripsByDates(startDate: LocalDate, endDate: LocalDate): List<TripWithSegments>
 
     @Transaction
+    @Query("SELECT * FROM trips WHERE ( :endDate IS NULL OR startDate <= :endDate ) AND endDate >= :startDate")
+    fun getTripsByDatesFlow(startDate: LocalDate, endDate: LocalDate?): Flow<List<TripWithSegments>>
+
+    @Transaction
     @Query("SELECT * FROM trips ORDER BY startDate DESC")
     fun getAllTripsWithSegments(): Flow<List<TripWithSegments>>
 

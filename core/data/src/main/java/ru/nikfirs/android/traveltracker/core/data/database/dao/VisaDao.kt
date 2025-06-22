@@ -13,11 +13,11 @@ interface VisaDao {
 
     @Query("""
         SELECT * FROM visas 
-        WHERE isActive = 1
+        WHERE (:onlyActive = 0 OR isActive = 1)
         AND expiryDate > :startDate 
         ORDER BY startDate DESC
     """)
-    fun getVisasByDate(startDate: LocalDate): Flow<List<VisaEntity>>
+    fun getVisasByDate(startDate: LocalDate, onlyActive: Boolean): Flow<List<VisaEntity>>
 
     @Query("SELECT * FROM visas WHERE visaCategory = :category ORDER BY expiryDate DESC")
     fun getVisasByCategory(category: VisaCategory): Flow<List<VisaEntity>>

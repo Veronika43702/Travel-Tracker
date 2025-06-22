@@ -23,15 +23,15 @@ sealed class BottomNavBarRoute {
 
 fun BottomNavBarRoute.getSelectedIcon(): IconType {
     return when (this) {
-        BottomNavBarRoute.Home -> IconType.VectorIcon(Icons.Outlined.Home)
-        BottomNavBarRoute.Calendar -> IconType.VectorIcon(Icons.Outlined.DateRange)
+        BottomNavBarRoute.Home -> IconType.VectorIcon(Icons.Filled.Home)
+        BottomNavBarRoute.Calendar -> IconType.VectorIcon(Icons.Filled.DateRange)
     }
 }
 
 fun BottomNavBarRoute.getUnselectedIcon(): IconType {
     return when (this) {
-        BottomNavBarRoute.Home -> IconType.VectorIcon(Icons.Filled.Home)
-        BottomNavBarRoute.Calendar -> IconType.VectorIcon(Icons.Filled.DateRange)
+        BottomNavBarRoute.Home -> IconType.VectorIcon(Icons.Outlined.Home)
+        BottomNavBarRoute.Calendar -> IconType.VectorIcon(Icons.Outlined.DateRange)
     }
 }
 

@@ -10,6 +10,7 @@ interface TripRepository {
     fun getAllTrips(): Flow<List<Trip>>
     suspend fun getTripById(tripId: Long): Trip?
     suspend fun getTripsByDates(startDate: LocalDate, endDate: LocalDate): List<Trip>
+    fun getTripsFlowByDates(startDate: LocalDate, endDate: LocalDate?): Flow<List<Trip>>
     suspend fun insertTrip(trip: Trip): Long
     suspend fun updateTrip(trip: Trip)
     suspend fun deleteTrip(trip: Trip)
@@ -28,4 +29,5 @@ interface TripRepository {
         startDate: LocalDate? = null,
         endDate: LocalDate? = null
     ): Map<String, Int>
+
 }

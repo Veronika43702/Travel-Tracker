@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Calendar Filters -->
+    <string name="calendar_filters_title">Фильтры календаря</string>
+    <string name="filter_remaining_days">Оставшиеся дни</string>
+    <string name="filter_remaining_days_desc">Показать количество оставшихся дней</string>
+    <string name="filter_day_change_indicators">Индикаторы изменения</string>
+    <string name="filter_day_change_indicators_desc">Показать точки изменения количества дней</string>
+    <string name="filter_visa_ranges">Визовые периоды</string>
+    <string name="filter_visa_ranges_desc">Показать периоды действия виз</string>
+    <string name="filter_trip_ranges">Поездки</string>
+    <string name="filter_trip_ranges_desc">Показать периоды поездок</string>
+</resources>

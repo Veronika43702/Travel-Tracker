@@ -2,10 +2,11 @@ package ru.nikfirs.android.traveltracker.feature.calendar.ui.main
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import ru.nikfirs.android.traveltracker.core.domain.PERIOD_DAYS
 import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
 import ru.nikfirs.android.traveltracker.core.domain.model.Trip
-import ru.nikfirs.android.traveltracker.core.domain.repository.TripRepository
+import ru.nikfirs.android.traveltracker.core.domain.model.Visa
 import ru.nikfirs.android.traveltracker.core.ui.component.DayCalculation
 import ru.nikfirs.android.traveltracker.core.ui.component.ExistingRange
 import ru.nikfirs.android.traveltracker.core.ui.mvi.ViewModel
@@ -13,16 +14,22 @@ import ru.nikfirs.android.traveltracker.core.ui.mvi.launch
 import ru.nikfirs.android.traveltracker.core.ui.theme.CalendarGray
 import ru.nikfirs.android.traveltracker.core.ui.theme.Primary
 import ru.nikfirs.android.traveltracker.core.ui.theme.SuccessGreen
-import javax.inject.Inject
+import ru.nikfirs.android.traveltracker.core.ui.theme.VisaCalendar
+import ru.nikfirs.android.traveltracker.feature.calendar.domain.usecase.CalculateDaysInPeriodUseCase
+import ru.nikfirs.android.traveltracker.feature.calendar.domain.usecase.GetTripsFlowByDatesUseCase
+import ru.nikfirs.android.traveltracker.feature.calendar.domain.usecase.GetVisaFlowByDateUseCase
 import ru.nikfirs.android.traveltracker.feature.calendar.ui.main.CalendarContract.Action
 import ru.nikfirs.android.traveltracker.feature.calendar.ui.main.CalendarContract.Effect
+import ru.nikfirs.android.traveltracker.feature.calendar.ui.main.CalendarContract.Filters
 import ru.nikfirs.android.traveltracker.feature.calendar.ui.main.CalendarContract.State
 import java.time.LocalDate
-
+import javax.inject.Inject
 
 @HiltViewModel
 class CalendarViewmodel @Inject constructor(
-    private val tripRepository: TripRepository
+    private val getTripsFlowByDatesUseCase: GetTripsFlowByDatesUseCase,
+    private val getVisaFlowByDateUseCase: GetVisaFlowByDateUseCase,
+    private val calculateDaysInPeriodUseCase: CalculateDaysInPeriodUseCase,
 ) : ViewModel<Action, Effect, State>() {
 
     init {
@@ -35,6 +42,8 @@ class CalendarViewmodel @Inject constructor(
         when (action) {
             Action.LoadData -> loadData()
             is Action.SetError -> setError(action.error)
+            is Action.ShowFilters -> showFilters(action.value)
+            is Action.UpdateFilters -> updateFilters(action.filters)
         }
     }
 
@@ -43,27 +52,25 @@ class CalendarViewmodel @Inject constructor(
             setState { it.copy(isLoading = true, error = null) }
 
             try {
-                tripRepository.getAllTrips().collectLatest { allTrips ->
-                    val today = LocalDate.now()
-                    val dateRange = calculateAvailableDateRange(allTrips, today)
+                val startDate = LocalDate.now().minusDays(PERIOD_DAYS.toLong())
 
-                    // Фильтруем поездки в нужном диапазоне
-                    val filteredTrips = allTrips.filter { trip ->
-                        trip.startDate != null && trip.endDate != null &&
-                                isTripsOverlapWithRange(trip, dateRange)
-                    }
-
-                    // Создаем tripRanges с цветами
-                    val tripRanges = createTripRanges(filteredTrips)
-
-                    // Создаем dateList с расчетом remaining дней
-                    val dateList = createDateList(filteredTrips, dateRange, today)
+                combine(
+                    getTripsFlowByDatesUseCase(startDate),
+                    getVisaFlowByDateUseCase(startDate, true)
+                ) { trips, visas ->
+                    Pair(trips, visas)
+                }.collectLatest { (trips, visas) ->
+                    val dateRange = calculateAvailableDateRange(trips)
+                    val tripRanges = createTripRanges(trips)
+                    val visaRanges = createVisaRanges(visas)
+                    val dateList = createDateList(trips, dateRange)
 
                     setState {
                         it.copy(
                             isLoading = false,
-                            trips = filteredTrips,
+                            trips = trips,
                             tripRanges = tripRanges,
+                            visaRanges = visaRanges,
                             dateList = dateList,
                             availableDateRange = dateRange,
                         )
@@ -76,18 +83,18 @@ class CalendarViewmodel @Inject constructor(
     }
 
     /**
-     * Определяет доступные даты для календаря:
-     * - Самый ранний день: либо 180 дней от текущего, либо начало поездки если попадает в этот диапазон
-     * - Самый поздний день: либо конец последней поездки в будущем, либо +1 месяц от текущей даты
+     * Defines available range for calendar:
+     * - startDate - first day of month when there's trip that crosses 180 days from now
+     * (or 180 days before now if now such trip)
+     * - endDate - the last day of month of last future trip (or plus 1 month from now)
      */
     private fun calculateAvailableDateRange(
         trips: List<Trip>,
-        today: LocalDate
     ): ClosedRange<LocalDate> {
+        val today = LocalDate.now()
         val defaultStartDate = today.minusDays(PERIOD_DAYS.toLong())
         val defaultEndDate = today.plusMonths(1)
 
-        // Находим самую раннюю поездку в диапазоне 180 дней
         val earliestTripInRange = trips
             .filter {
                 it.endDate != null
@@ -97,31 +104,20 @@ class CalendarViewmodel @Inject constructor(
 
         val startDate = minOf(earliestTripInRange?.startDate ?: defaultStartDate, defaultStartDate)
 
-        // Находим самую позднюю запланированную поездку
         val latestFutureTrip = trips
             .filter { it.isFuture && it.endDate != null }
             .maxByOrNull { it.endDate ?: defaultEndDate }
 
         val endDate = maxOf(latestFutureTrip?.endDate ?: defaultEndDate, defaultEndDate)
 
-        return startDate..endDate
+        return startDate.withDayOfMonth(1)..endDate.withDayOfMonth(endDate.lengthOfMonth())
     }
 
     /**
-     * Проверяет, пересекается ли поездка с заданным диапазоном дат
-     */
-    private fun isTripsOverlapWithRange(trip: Trip, dateRange: ClosedRange<LocalDate>): Boolean {
-        val tripStart = trip.startDate ?: return false
-        val tripEnd = trip.endDate ?: return false
-
-        return tripEnd >= dateRange.start && tripStart <= dateRange.endInclusive
-    }
-
-    /**
-     * Создает список ExistingRange с цветами:
-     * - Прошедшие поездки: SuccessGreen
-     * - Текущая поездка: WarningAmber
-     * - Будущие поездки: DangerRed
+     * Creates trip list of ExistingRange with colors:
+     * - Past trips: CalendarGray
+     * - Ongoing trip: SuccessGreen
+     * - Future trips: Primary
      */
     private fun createTripRanges(trips: List<Trip>): List<ExistingRange> {
         return trips.mapNotNull { trip ->
@@ -132,7 +128,7 @@ class CalendarViewmodel @Inject constructor(
                 trip.isPast -> CalendarGray
                 trip.isOngoing -> SuccessGreen
                 trip.isFuture -> Primary
-                else -> Primary // fallback
+                else -> CalendarGray
             }
 
             ExistingRange(
@@ -145,16 +141,30 @@ class CalendarViewmodel @Inject constructor(
     }
 
     /**
-     * Создает список DayCalculation с информацией о днях:
-     * - isUsed = true если поездка приходится на этот день
-     * - isIncreased = true если ровно 180 дней назад была поездка
-     * - remaining = количество дней оставшихся на этот день
-     * Добавляет только дни где есть изменения в remaining или специальные флаги
+     * Creates visa list of ExistingRange with color
+     */
+    private fun createVisaRanges(visas: List<Visa>): List<ExistingRange> {
+        val color = VisaCalendar
+        return visas.map { visa ->
+            ExistingRange(
+                startDate = visa.startDate,
+                endDate = visa.expiryDate,
+                color = color,
+                id = visa.id
+            )
+        }
+    }
+
+    /**
+     * Create list of DayCalculation with visa usage data:
+     * - isUsed = true, when during this day there's a segment with isExempt = false of any trip
+     * - isIncreased = true, when 180 days ago there was a segment with isExempt = false of any trip
+     * - remaining = days remaining from 90
+     * Add days only if isUsed or isIncreased = true (changes in remaining days)
      */
     private suspend fun createDateList(
         trips: List<Trip>,
         dateRange: ClosedRange<LocalDate>,
-        today: LocalDate
     ): List<DayCalculation> {
         val dateList = mutableListOf<DayCalculation>()
         var currentDate = dateRange.start
@@ -172,7 +182,6 @@ class CalendarViewmodel @Inject constructor(
 
             }
 
-            // Проверяем, была ли поездка ровно 180 дней назад
             val dateMinusPeriod = currentDate.minusDays(PERIOD_DAYS.toLong())
             val isIncreased = trips.any { trip ->
                 val startDate = trip.startDate ?: return@any false
@@ -185,17 +194,13 @@ class CalendarViewmodel @Inject constructor(
                         }
             }
 
-            // Рассчитываем remaining дни для этого дня
-            val daysCalculation = tripRepository.calculateDaysInPeriod(
+            // calculate remaining days
+            val daysCalculation = calculateDaysInPeriodUseCase.invoke(
                 periodEnd = currentDate,
-                tripId = null
             )
             val remaining = daysCalculation.remainingDays
 
-            // Добавляем день в список только если есть изменения или специальные флаги
-            val shouldInclude = isUsed || isIncreased
-
-            if (shouldInclude) {
+            if (isUsed || isIncreased) {
                 dateList.add(
                     DayCalculation(
                         date = currentDate,
@@ -212,6 +217,13 @@ class CalendarViewmodel @Inject constructor(
         return dateList
     }
 
+    private fun showFilters(value: Boolean) {
+        setState { it.copy(showFilters = value) }
+    }
+
+    private fun updateFilters(filters: Filters) {
+        setState { it.copy(filters = filters) }
+    }
 
     private fun setError(error: CustomString?) {
         setState { it.copy(isLoading = false, error = error) }

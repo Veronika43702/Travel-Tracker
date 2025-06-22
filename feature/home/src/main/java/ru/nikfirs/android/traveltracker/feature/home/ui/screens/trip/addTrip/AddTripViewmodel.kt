@@ -85,7 +85,8 @@ class AddTripViewModel @Inject constructor(
 
             try {
                 val visas = getVisasByDateUseCase(
-                    LocalDate.now().minusMonths(6)
+                    LocalDate.now().minusMonths(6),
+                    true
                 ).first()
                 setState { it.copy(availableVisas = visas) }
 
@@ -93,9 +94,6 @@ class AddTripViewModel @Inject constructor(
                     tripId?.let {
                         loadTripData(tripId)
                         setDataForHolder()
-
-                        println("start date" + currentState.startDate)
-                        println("end date" + currentState.endDate)
                         recalculateAvailableDays()
                     }
                 }
@@ -138,9 +136,6 @@ class AddTripViewModel @Inject constructor(
                     notes = trip.notes ?: "",
                 )
             }
-
-            println("start date2" + currentState.startDate + trip.startDate)
-            println("end date2" + currentState.endDate + trip.endDate)
         } catch (e: Exception) {
             setError(CustomString.resource(R.string.error_loading_trip))
         }
@@ -346,9 +341,6 @@ class AddTripViewModel @Inject constructor(
                     used = endCalculation.totalDaysUsed + countableDays,
                     remaining = endCalculation.remainingDays - countableDays,
                 )
-                println(endCalculation.toString())
-                println(endDaysInfo.toString())
-
                 setState {
                     it.copy(
                         daysAvailableAtStart = startDaysInfo,

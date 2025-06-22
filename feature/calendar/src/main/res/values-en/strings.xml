@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Calendar Filters -->
+    <string name="calendar_filters_title">Calendar Filters</string>
+    <string name="filter_remaining_days">Remaining Days</string>
+    <string name="filter_remaining_days_desc">Show remaining days count</string>
+    <string name="filter_day_change_indicators">Change Indicators</string>
+    <string name="filter_day_change_indicators_desc">Show day count change dots</string>
+    <string name="filter_visa_ranges">Visa Ranges</string>
+    <string name="filter_visa_ranges_desc">Show visa validity periods</string>
+    <string name="filter_trip_ranges">Trips</string>
+    <string name="filter_trip_ranges_desc">Show trip periods</string>
+</resources>

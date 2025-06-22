@@ -16,16 +16,27 @@ sealed class CalendarContract {
         val dateList: List<DayCalculation> = emptyList(),
         val trips: List<Trip> = emptyList(),
         val tripRanges: List<ExistingRange> = emptyList(),
-        val availableDateRange: ClosedRange<LocalDate>? = null
+        val visaRanges: List<ExistingRange> = emptyList(),
+        val availableDateRange: ClosedRange<LocalDate>? = null,
+        val showFilters: Boolean = false,
+        val filters: Filters = Filters(),
     ) : MviState
 
     sealed class Action : MviAction {
         data object LoadData : Action()
         data class SetError(val error: CustomString? = null) : Action()
-
+        data class ShowFilters(val value: Boolean) : Action()
+        data class UpdateFilters(val filters: Filters) : Action()
     }
 
     sealed class Effect : MviEffect {
 
     }
+
+    data class Filters(
+        val showRemainingDays: Boolean = false,
+        val showDayChangeDot: Boolean = false,
+        val showVisaRange: Boolean = false,
+        val showTripRange: Boolean = true,
+    )
 }

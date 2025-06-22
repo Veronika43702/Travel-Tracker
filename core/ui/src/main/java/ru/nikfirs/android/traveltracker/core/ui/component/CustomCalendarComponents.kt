@@ -122,6 +122,8 @@ internal fun MonthCalendar(
     onDateClick: (LocalDate) -> Unit,
     isDatePicker: Boolean,
     dateList: List<DayCalculation> = emptyList(),
+    showDots: Boolean = true,
+    showRemainingDays: Boolean = true,
 ) {
     Column {
         // Month header
@@ -147,6 +149,8 @@ internal fun MonthCalendar(
             onDateClick = onDateClick,
             isDatePicker = isDatePicker,
             dateList = dateList,
+            showDots = showDots,
+            showRemainingDays = showRemainingDays,
         )
     }
 }
@@ -190,6 +194,8 @@ internal fun CalendarMonthGrid(
     onDateClick: (LocalDate) -> Unit,
     isDatePicker: Boolean,
     dateList: List<DayCalculation> = emptyList(),
+    showDots: Boolean = true,
+    showRemainingDays: Boolean = true,
 ) {
     val weekFields = WeekFields.of(Locale.getDefault())
     val firstDayOfWeek = weekFields.firstDayOfWeek
@@ -241,6 +247,8 @@ internal fun CalendarMonthGrid(
                     },
                     isDatePicker = isDatePicker,
                     dateList = dateList,
+                    showDots = showDots,
+                    showRemainingDays = showRemainingDays
                 )
             } else {
                 // Empty cell for dates from previous/next month
@@ -262,6 +270,8 @@ internal fun CalendarRangeDay(
     onClick: () -> Unit,
     isDatePicker: Boolean,
     dateList: List<DayCalculation> = emptyList(),
+    showDots: Boolean = true,
+    showRemainingDays: Boolean = true,
 ) {
     val today = LocalDate.now()
     val isToday = date == today
@@ -382,47 +392,51 @@ internal fun CalendarRangeDay(
         if (!isDatePicker) {
             val specificDate = dateList.find { date == it.date }
             specificDate ?: return
-            Box(
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .size(labelSize)
-                    .background(
-                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.1f),
-                        shape = CircleShape
+            if (showRemainingDays) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .size(labelSize)
+                        .background(
+                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.1f),
+                            shape = CircleShape
+                        )
+                        .padding(paddingInForLabels),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        text = specificDate.remaining.toString(),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        textAlign = TextAlign.Center,
                     )
-                    .padding(paddingInForLabels),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(
-                    text = specificDate.remaining.toString(),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    textAlign = TextAlign.Center,
-                )
+                }
             }
-            if (specificDate.isIncreased) {
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(end = paddingOutForLabels, bottom = paddingOutForLabels)
-                        .size(labelSmallSize)
-                        .background(
-                            color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f),
-                            shape = CircleShape
-                        )
-                )
-            }
-            if (specificDate.isUsed) {
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.BottomStart)
-                        .padding(start = paddingOutForLabels, bottom = paddingOutForLabels)
-                        .size(labelSmallSize)
-                        .background(
-                            color = MaterialTheme.colorScheme.error.copy(alpha = 0.2f),
-                            shape = CircleShape
-                        )
-                )
+            if (showDots) {
+                if (specificDate.isIncreased) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .padding(end = paddingOutForLabels, bottom = paddingOutForLabels)
+                            .size(labelSmallSize)
+                            .background(
+                                color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f),
+                                shape = CircleShape
+                            )
+                    )
+                }
+                if (specificDate.isUsed) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.BottomStart)
+                            .padding(start = paddingOutForLabels, bottom = paddingOutForLabels)
+                            .size(labelSmallSize)
+                            .background(
+                                color = MaterialTheme.colorScheme.error.copy(alpha = 0.2f),
+                                shape = CircleShape
+                            )
+                    )
+                }
             }
         }
     }

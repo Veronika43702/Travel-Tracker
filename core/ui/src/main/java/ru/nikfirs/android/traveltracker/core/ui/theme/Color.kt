@@ -23,7 +23,8 @@ val OnError = Color(0xFFFFFFFF)
 val ErrorContainer = Color(0xFFFEE2E2)
 val OnErrorContainer = Color(0xFF410002)
 
-val Background = Color(0xFFF8FAFC) // Very light gray
+val Background = Color(0xFFFAFAFA) // Very light gray
+//val Background = Color(0xFFF8FAFC) // Very light gray
 val OnBackground = Color(0xFF1E293B)
 val Surface = Color(0xFFFFFFFF)
 val OnSurface = Color(0xFF1E293B)
@@ -65,6 +66,7 @@ val DarkOutline = Color(0xFF64748B)
 val DarkOutlineVariant = Color(0xFF475569)
 
 // Custom Colors for specific use cases
+val VisaCalendar = Color(0xFFFFE100)
 val SuccessGreen = Color(0xFF10B981)
 val WarningAmber = Color(0xFFF59E0B)
 val DangerRed = Color(0xFFEF4444)

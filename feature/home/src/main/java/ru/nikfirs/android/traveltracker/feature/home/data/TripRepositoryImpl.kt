@@ -30,6 +30,12 @@ class TripRepositoryImpl @Inject constructor(
         return tripDao.getTripByIdWithSegments(tripId)?.toModel()
     }
 
+    override fun getTripsFlowByDates(startDate: LocalDate, endDate: LocalDate?): Flow<List<Trip>> {
+        return tripDao.getTripsByDatesFlow(startDate, endDate).map { tripsWithSegments ->
+            tripsWithSegments.map { it.toModel() }
+        }
+    }
+
     override suspend fun getTripsByDates(startDate: LocalDate, endDate: LocalDate): List<Trip> {
         return tripDao.getTripsByDates(startDate, endDate).map { it.toModel() }
     }
