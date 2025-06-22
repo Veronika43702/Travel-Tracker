@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import ru.nikfirs.android.traveltracker.core.ui.theme.card
+import ru.nikfirs.android.traveltracker.core.ui.theme.cardElevation
 import kotlin.math.roundToInt
 
 
@@ -78,7 +79,6 @@ fun SwipeableCard(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .clip(MaterialTheme.shapes.card)
             .anchoredDraggable(
                 state = state,
                 orientation = Orientation.Horizontal,
@@ -87,9 +87,9 @@ fun SwipeableCard(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = cardElevation)
     ) {
-        Box {
+        Box(Modifier.clip(MaterialTheme.shapes.card)) {
             Box(
                 modifier = Modifier
                     .align(Alignment.CenterEnd)

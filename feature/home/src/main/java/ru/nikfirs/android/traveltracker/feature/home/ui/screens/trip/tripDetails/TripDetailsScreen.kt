@@ -81,7 +81,6 @@ fun TripDetailsScreen(
     LaunchedEffect(tripId) {
         viewModel.setAction(Action.LoadData(tripId))
     }
-
     LaunchedEffectResolver(flow = viewModel.effect) { effect ->
         when (effect) {
             is Effect.NavigateBack -> navigateBack()

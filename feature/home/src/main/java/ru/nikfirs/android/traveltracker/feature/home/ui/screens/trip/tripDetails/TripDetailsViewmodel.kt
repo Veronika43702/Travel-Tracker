@@ -2,7 +2,6 @@ package ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.tripDetail
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
-import ru.nikfirs.android.traveltracker.core.ui.R as uiR
 import ru.nikfirs.android.traveltracker.core.ui.mvi.ViewModel
 import ru.nikfirs.android.traveltracker.core.ui.mvi.launch
 import ru.nikfirs.android.traveltracker.feature.home.R
@@ -15,6 +14,7 @@ import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.tripDetails
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.tripDetails.TripDetailsContract.State
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.utils.getTripSegmentColorByIndex
 import javax.inject.Inject
+import ru.nikfirs.android.traveltracker.core.ui.R as uiR
 
 @HiltViewModel
 class TripDetailsViewModel @Inject constructor(
@@ -49,16 +49,18 @@ class TripDetailsViewModel @Inject constructor(
                 }
 
                 val visa = trip.visaId?.let { getVisaByIdUseCase.invoke(it) }
-                val segments = trip.segments.mapIndexed { index, segment ->
-                    TripSegmentUi(
-                        country = segment.country,
-                        startDate = segment.startDate,
-                        endDate = segment.endDate,
-                        isExempt = segment.isExempt,
-                        cities = segment.cities,
-                        color = getTripSegmentColorByIndex(index)
-                    )
-                }
+                val segments = trip.segments
+                    .sortedWith(compareBy({ it.startDate }, { it.endDate }))
+                    .mapIndexed { index, segment ->
+                        TripSegmentUi(
+                            country = segment.country,
+                            startDate = segment.startDate,
+                            endDate = segment.endDate,
+                            isExempt = segment.isExempt,
+                            cities = segment.cities,
+                            color = getTripSegmentColorByIndex(index)
+                        )
+                    }
 
                 setState {
                     it.copy(

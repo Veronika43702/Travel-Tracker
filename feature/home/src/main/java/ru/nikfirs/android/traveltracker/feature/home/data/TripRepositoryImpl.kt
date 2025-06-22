@@ -59,12 +59,14 @@ class TripRepositoryImpl @Inject constructor(
 
     override suspend fun calculateDaysInPeriod(
         periodEnd: LocalDate,
+        tripId: Long?,
     ): DaysCalculation {
         val periodStart = periodEnd.minusDays((PERIOD_DAYS - 1).toLong())
 
         val totalDaysUsed = tripDao.getDaysCountInPeriodWithExemptions(
             periodStart = periodStart,
             periodEnd = periodEnd,
+            tripId = tripId,
         )
 
         val remainingDays = MAX_STAY_DAYS - totalDaysUsed

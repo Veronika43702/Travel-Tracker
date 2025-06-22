@@ -17,6 +17,7 @@ import java.time.format.DateTimeFormatter
 sealed class AddTripContract {
     data class State(
         val isLoading: Boolean = false,
+        val tripId: Long? = null,
 
         val selectedVisa: Visa? = null,
         val isVisaDropdownExpanded: Boolean = false,
@@ -85,7 +86,7 @@ sealed class AddTripContract {
     }
 
     sealed class Action : MviAction {
-        data object LoadData : Action()
+        data class LoadData(val tripId: Long?) : Action()
         data object UpdateSegmentList : Action()
 
         data class SetVisaDropdownExpanded(val expanded: Boolean) : Action()

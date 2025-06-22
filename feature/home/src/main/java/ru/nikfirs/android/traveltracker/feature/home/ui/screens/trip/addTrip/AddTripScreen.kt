@@ -67,6 +67,7 @@ import java.time.LocalDate
 
 @Composable
 fun AddTripScreen(
+    tripId: Long?,
     navigateBack: () -> Unit,
     navigateToTripSegment: () -> Unit,
     viewModel: AddTripViewModel = hiltViewModel(),
@@ -74,6 +75,9 @@ fun AddTripScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
     val verticalScroll = rememberScrollState()
+    LaunchedEffect(tripId) {
+        viewModel.setAction(Action.LoadData(tripId))
+    }
     LaunchedEffect(viewModel.addTripHolder.segmentList) {
         viewModel.setAction(Action.UpdateSegmentList)
     }

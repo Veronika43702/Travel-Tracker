@@ -9,6 +9,8 @@ import javax.inject.Singleton
 @Singleton
 class AddTripHolder @Inject constructor() {
 
+//    var segmentsUpdated = false
+
     var tripStartDate: LocalDate? = null
         private set
 
@@ -35,9 +37,12 @@ class AddTripHolder @Inject constructor() {
         val newList = segmentList.toMutableList()
         currentSegment?.let { newList.remove(it) }
         segment?.let { newList.add(it) }
-        segmentList = newList.sortedBy { it.startDate }.mapIndexed { index, item ->
-            item.copy(color = getTripSegmentColorByIndex(index))
-        }
+        segmentList = newList
+            .sortedWith(compareBy({ it.startDate }, { it.endDate }))
+            .mapIndexed { index, item ->
+                item.copy(color = getTripSegmentColorByIndex(index))
+            }
+//        segmentsUpdated = true
     }
 
     fun getSegmentCities(): String {
@@ -48,6 +53,25 @@ class AddTripHolder @Inject constructor() {
         segmentList = segmentList.filter { it != segment }.mapIndexed { index, item ->
             item.copy(color = getTripSegmentColorByIndex(index))
         }
+//        segmentsUpdated = true
+    }
+
+    /**
+     * Preparing holder data during trip editing
+     */
+    fun prepareHolderForTripEdit(
+        tripStartDate: LocalDate?,
+        tripEndDate: LocalDate?,
+        existingSegments: List<TripSegmentUi>,
+        exemptCountry: String? = null,
+    ) {
+        tripStartDate ?: return
+        tripEndDate ?: return
+
+        this.tripStartDate = tripStartDate
+        this.tripEndDate = tripEndDate
+        this.segmentList = existingSegments.sortedWith(compareBy({ it.startDate }, { it.endDate }))
+        this.visaExemptCountry = exemptCountry
     }
 
     /**
@@ -64,7 +88,7 @@ class AddTripHolder @Inject constructor() {
 
         this.tripStartDate = tripStartDate
         this.tripEndDate = tripEndDate
-        this.segmentList = existingSegments.sortedBy { it.startDate }
+        this.segmentList = existingSegments.sortedWith(compareBy({ it.startDate }, { it.endDate }))
         this.visaExemptCountry = exemptCountry
         this.segmentIndex = null
         this.currentSegment = null
@@ -86,7 +110,7 @@ class AddTripHolder @Inject constructor() {
 
         this.tripStartDate = tripStartDate
         this.tripEndDate = tripEndDate
-        this.segmentList = existingSegments.sortedBy { it.startDate }
+        this.segmentList = existingSegments.sortedWith(compareBy({ it.startDate }, { it.endDate }))
         this.visaExemptCountry = exemptCountry
         this.segmentIndex = segmentIndex
         this.currentSegment = segment

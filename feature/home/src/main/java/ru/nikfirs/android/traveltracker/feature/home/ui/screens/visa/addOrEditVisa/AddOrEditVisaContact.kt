@@ -1,4 +1,4 @@
-package ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.editVisa
+package ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.addOrEditVisa
 
 import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
 import ru.nikfirs.android.traveltracker.core.domain.model.VisaCategory
@@ -9,7 +9,7 @@ import ru.nikfirs.android.traveltracker.core.ui.mvi.MviState
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-sealed class EditVisaContract {
+sealed class AddOrEditVisaContract {
     data class State(
         val isLoading: Boolean = false,
         val visaId: Long? = null,

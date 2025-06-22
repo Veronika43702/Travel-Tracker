@@ -1,4 +1,4 @@
-package ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.editVisa
+package ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.addOrEditVisa
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
@@ -13,13 +13,13 @@ import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.visa.UpdateV
 import ru.nikfirs.android.traveltracker.core.ui.R as uiR
 import java.time.LocalDate
 import javax.inject.Inject
-import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.editVisa.EditVisaContract.Action
-import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.editVisa.EditVisaContract.State
-import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.editVisa.EditVisaContract.Effect
+import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.addOrEditVisa.AddOrEditVisaContract.Action
+import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.addOrEditVisa.AddOrEditVisaContract.State
+import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.addOrEditVisa.AddOrEditVisaContract.Effect
 import java.time.temporal.ChronoUnit
 
 @HiltViewModel
-class EditVisaViewModel @Inject constructor(
+class AddOrEditVisaViewModel @Inject constructor(
     private val getVisaByIdUseCase: GetVisaByIdUseCase,
     private val updateVisaUseCase: UpdateVisaUseCase,
     private val saveVisaUseCase: SaveVisaUseCase,
@@ -215,8 +215,8 @@ class EditVisaViewModel @Inject constructor(
         }
     }
 
-    private fun validateForm(): EditVisaContract.ValidationErrors {
-        return EditVisaContract.ValidationErrors(
+    private fun validateForm(): AddOrEditVisaContract.ValidationErrors {
+        return AddOrEditVisaContract.ValidationErrors(
             visaNumberError = if (currentState.visaNumber.isBlank())
                 CustomString.resource(uiR.string.error_visa_number_required) else null,
             countryError = if (currentState.selectedCountry.isBlank())
@@ -231,7 +231,7 @@ class EditVisaViewModel @Inject constructor(
     private fun validateDates(
         startDate: LocalDate,
         expiryDate: LocalDate
-    ): EditVisaContract.ValidationErrors {
+    ): AddOrEditVisaContract.ValidationErrors {
         return currentState.validationErrors.copy(
             expiryDateError = if (expiryDate <= startDate)
                 CustomString.resource(uiR.string.error_expiry_date_invalid) else null

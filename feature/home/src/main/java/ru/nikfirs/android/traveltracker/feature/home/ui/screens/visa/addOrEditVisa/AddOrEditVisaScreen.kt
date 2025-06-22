@@ -1,4 +1,4 @@
-package ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.editVisa
+package ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.addOrEditVisa
 
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -34,16 +34,16 @@ import ru.nikfirs.android.traveltracker.core.ui.component.Screen
 import ru.nikfirs.android.traveltracker.core.ui.mvi.LaunchedEffectResolver
 import ru.nikfirs.android.traveltracker.core.ui.theme.AppTheme
 import ru.nikfirs.android.traveltracker.feature.home.ui.components.VisaInfoBox
-import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.editVisa.EditVisaContract.Action
-import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.editVisa.EditVisaContract.Effect
-import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.editVisa.EditVisaContract.State
+import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.addOrEditVisa.AddOrEditVisaContract.Action
+import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.addOrEditVisa.AddOrEditVisaContract.Effect
+import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.addOrEditVisa.AddOrEditVisaContract.State
 import ru.nikfirs.android.traveltracker.core.ui.R as uiR
 
 @Composable
 fun AddOrEditVisaScreen(
     navigateBack: () -> Unit,
     visaId: Long? = null,
-    viewModel: EditVisaViewModel = hiltViewModel(),
+    viewModel: AddOrEditVisaViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()

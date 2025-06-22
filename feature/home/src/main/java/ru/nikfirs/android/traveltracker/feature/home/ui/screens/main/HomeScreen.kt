@@ -60,6 +60,7 @@ import ru.nikfirs.android.traveltracker.core.ui.component.Screen
 import ru.nikfirs.android.traveltracker.core.ui.mvi.LaunchedEffectResolver
 import ru.nikfirs.android.traveltracker.core.ui.navigation.BottomNavBarRoute
 import ru.nikfirs.android.traveltracker.core.ui.theme.AppTheme
+import ru.nikfirs.android.traveltracker.core.ui.theme.button
 import ru.nikfirs.android.traveltracker.core.ui.theme.tab
 import ru.nikfirs.android.traveltracker.feature.home.domain.model.HomeTab
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.HomeContract.Action
@@ -120,9 +121,9 @@ fun HomeScreen(
                             HomeTab.TRIPS -> viewModel.setAction(Action.NavigateToAddTrip)
                         }
                     },
-                    modifier = Modifier.padding(16.dp),
                     containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                    shape = MaterialTheme.shapes.button,
                 ) {
                     Icon(
                         imageVector = Icons.Default.Add,
@@ -293,7 +294,7 @@ private fun TripsTabContent(
 ) {
     LazyColumn(
         contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         // Ongoing trips
         if (state.ongoingTrips.isNotEmpty()) {
@@ -480,6 +481,26 @@ private fun HomeScreenWithDataPreview() {
                 trips = listOf(
                     Trip(
                         id = 1,
+                        startDate = LocalDate.now().minusDays(5),
+                        endDate = LocalDate.now().plusDays(5),
+                        segments = listOf(
+                            TripSegment(
+                                country = "Germany",
+                                startDate = LocalDate.now().minusDays(5),
+                                endDate = LocalDate.now(),
+                                isExempt = false
+                            ),
+                            TripSegment(
+                                country = "Poland",
+                                startDate = LocalDate.now(),
+                                endDate = LocalDate.now().plusDays(5),
+                                isExempt = false
+                            )
+                        ),
+                        purpose = TripPurpose.TOURISM,
+                    ),
+                    Trip(
+                        id = 3,
                         startDate = LocalDate.now().minusDays(5),
                         endDate = LocalDate.now().plusDays(5),
                         segments = listOf(

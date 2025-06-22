@@ -44,6 +44,7 @@ interface TripDao {
             WHERE s.isExempt = 0
             AND DATE(s.startDate) <= :periodEnd
             AND DATE(s.endDate) >= :periodStart
+            AND (:tripId IS NULL OR t.id != :tripId)
 
             UNION ALL
 
@@ -67,6 +68,7 @@ interface TripDao {
     suspend fun getDaysCountInPeriodWithExemptions(
         periodStart: LocalDate,
         periodEnd: LocalDate,
+        tripId: Long?,
     ): Int
 
     // count days by countries for statistics
@@ -97,7 +99,7 @@ interface TripDao {
     )
     suspend fun getCountryStatistics(
         periodStart: LocalDate,
-        periodEnd: LocalDate
+        periodEnd: LocalDate,
     ): List<CountryStatistics>
 
     // checking available dates for new journey

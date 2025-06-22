@@ -59,7 +59,7 @@ fun DaysCounter(
             containerColor = MaterialTheme.colorScheme.surface
         ),
         elevation = CardDefaults.cardElevation(
-            defaultElevation = 2.dp
+            defaultElevation = cardElevation
         )
     ) {
         Column(

@@ -28,6 +28,7 @@ import ru.nikfirs.android.traveltracker.core.data.model.TRANSIT
 import ru.nikfirs.android.traveltracker.core.domain.model.SchengenCountries
 import ru.nikfirs.android.traveltracker.core.ui.R
 import ru.nikfirs.android.traveltracker.core.ui.component.EditAndDeleteRow
+import ru.nikfirs.android.traveltracker.core.ui.component.LightRUScreenPreview
 import ru.nikfirs.android.traveltracker.core.ui.component.StatusChip
 import ru.nikfirs.android.traveltracker.core.ui.component.SwipeableCard
 import ru.nikfirs.android.traveltracker.core.ui.extension.clickableOnce
@@ -174,7 +175,7 @@ fun TripSegmentCard(
     }
 }
 
-@Preview(showBackground = true)
+@LightRUScreenPreview
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun TripCardPreview() {
@@ -207,7 +208,7 @@ private fun TripCardPreview() {
 
             TripSegmentCard(
                 segment = TripSegmentUi(
-                    country = "Poland",
+                    country = "Poland long lone name ",
                     startDate = LocalDate.now().plusDays(3),
                     endDate = LocalDate.now().plusDays(7),
                     // cities = listOf("Warsaw"),

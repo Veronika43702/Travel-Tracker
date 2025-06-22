@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.dp
 import ru.nikfirs.android.traveltracker.core.ui.extension.clickableOnce
 import ru.nikfirs.android.traveltracker.core.ui.theme.AppTheme
 import ru.nikfirs.android.traveltracker.core.ui.theme.card
+import ru.nikfirs.android.traveltracker.core.ui.theme.cardElevation
 import ru.nikfirs.android.traveltracker.core.ui.theme.chip
 
 @Composable
@@ -25,25 +26,24 @@ fun TravelCard(
     content: @Composable ColumnScope.() -> Unit
 ) {
     Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(MaterialTheme.shapes.card)
-            .then(
-                if (onClick != null) {
-                    Modifier.clickableOnce { onClick() }
-                } else Modifier
-            ),
+        modifier = modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.card,
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
         elevation = CardDefaults.cardElevation(
-            defaultElevation = 2.dp
-        )
+            defaultElevation = cardElevation
+        ),
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .clip(MaterialTheme.shapes.card)
+                .then(
+                    if (onClick != null) {
+                        Modifier.clickableOnce { onClick() }
+                    } else Modifier
+                )
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -61,7 +61,9 @@ fun TravelCard(
 
             trailingContent?.let { trailing ->
                 Box(
-                    modifier = Modifier.padding(start = 16.dp).align(Alignment.Top),
+                    modifier = Modifier
+                        .padding(start = 16.dp)
+                        .align(Alignment.Top),
                     content = trailing,
                 )
             }
@@ -96,7 +98,7 @@ private fun TravelCardPreview() {
     AppTheme {
         Column(
             modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             TravelCard(
                 onClick = {},

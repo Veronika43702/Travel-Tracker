@@ -15,6 +15,7 @@ interface TripRepository {
     suspend fun deleteTrip(trip: Trip)
     suspend fun calculateDaysInPeriod(
         periodEnd: LocalDate,
+        tripId: Long?,
     ): DaysCalculation
 
     suspend fun checkIfDatesAvailable(
