@@ -26,7 +26,6 @@ fun CustomCalendar(
     existingRangeList: List<ExistingRange> = emptyList(),
     availableDateRange: ClosedRange<LocalDate>? = null,
     currentMonth: YearMonth = YearMonth.now(),
-    monthsToShow: Int = 12,
     dateList: List<DayCalculation> = emptyList(),
     showDots: Boolean = false,
     showRemainingDays: Boolean = false,
@@ -38,7 +37,7 @@ fun CustomCalendar(
 
     val endMonth = availableDateRange?.endInclusive?.let {
         YearMonth.of(it.year, it.month)
-    } ?: currentMonth.plusMonths(monthsToShow.toLong())
+    } ?: currentMonth.plusMonths(12)
 
     val monthsToDisplay = generateSequence(startMonth) { it.plusMonths(1) }
         .takeWhile { !it.isAfter(endMonth) }
@@ -113,7 +112,6 @@ private fun CustomCalendarRangePickerPreview() {
                 )
             ),
             availableDateRange = now.minusMonths(2)..now.plusDays(60),
-            monthsToShow = 6,
             dateList = listOf(
                 DayCalculation(
                     date = now.minusDays(1),

@@ -27,6 +27,7 @@ sealed class DateType {
     data class Trip(val tripId: Long) : DateType()
     data class Visa(val visaId: Long) : DateType()
     data object DayLimit : DateType()
+    data object Other : DateType()
 }
 
 data class DateRangeSelection(
@@ -34,4 +35,11 @@ data class DateRangeSelection(
     val endDate: LocalDate? = null
 ) {
     val isComplete: Boolean get() = startDate != null && endDate != null
+}
+
+
+fun isDateBlocked(date: LocalDate, blockedPeriod: Set<BlockDateModel>): Boolean {
+    return blockedPeriod.any { block ->
+        !date.isBefore(block.startDate) && !date.isAfter(block.endDate)
+    }
 }

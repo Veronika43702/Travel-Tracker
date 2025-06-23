@@ -45,10 +45,12 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import ru.nikfirs.android.traveltracker.core.ui.R
 import ru.nikfirs.android.traveltracker.core.ui.extension.clickableOnce
+import ru.nikfirs.android.traveltracker.core.ui.model.BlockDateModel
 import ru.nikfirs.android.traveltracker.core.ui.model.CustomIndication
 import ru.nikfirs.android.traveltracker.core.ui.model.DateRangeSelection
 import ru.nikfirs.android.traveltracker.core.ui.model.DayCalculation
 import ru.nikfirs.android.traveltracker.core.ui.model.ExistingRange
+import ru.nikfirs.android.traveltracker.core.ui.model.isDateBlocked
 import ru.nikfirs.android.traveltracker.core.ui.theme.AppTheme
 import ru.nikfirs.android.traveltracker.core.ui.theme.DangerRed
 import ru.nikfirs.android.traveltracker.core.ui.theme.LocalCustomColors
@@ -157,6 +159,8 @@ internal fun MonthCalendar(
     dateList: List<DayCalculation> = emptyList(),
     showDots: Boolean = false,
     showRemainingDays: Boolean = false,
+    blockedDays: Set<LocalDate> = emptySet(), // TODO
+    blockedPeriod: Set<BlockDateModel> = emptySet(),
 ) {
     Column {
         // Month header
@@ -184,6 +188,8 @@ internal fun MonthCalendar(
             dateList = dateList,
             showDots = showDots,
             showRemainingDays = showRemainingDays,
+            blockedDays = blockedDays,
+            blockedPeriods = blockedPeriod,
         )
     }
 }
@@ -246,6 +252,8 @@ internal fun CalendarMonthGrid(
     dateList: List<DayCalculation> = emptyList(),
     showDots: Boolean = true,
     showRemainingDays: Boolean = true,
+    blockedDays: Set<LocalDate> = emptySet(), // TODO
+    blockedPeriods: Set<BlockDateModel> = emptySet(),
 ) {
     val weekFields = WeekFields.of(Locale.getDefault())
     val firstDayOfWeek = weekFields.firstDayOfWeek
@@ -291,7 +299,9 @@ internal fun CalendarMonthGrid(
                     existingSegments = existingSegments.filter {
                         date >= it.startDate && date <= it.endDate
                     },
-                    isAvailable = availableDateRange?.let { date in it } ?: true,
+                    isAvailable = (availableDateRange?.let { date in it } ?: true)
+                            && date !in blockedDays
+                            && !isDateBlocked(date, blockedPeriods),
                     onClick = {
                         if (availableDateRange?.let { date in it } != false) {
                             onDateClick(date)
@@ -300,7 +310,7 @@ internal fun CalendarMonthGrid(
                     smallCells = smallCells,
                     dateList = dateList,
                     showDots = showDots,
-                    showRemainingDays = showRemainingDays
+                    showRemainingDays = showRemainingDays,
                 )
             } else {
                 // Empty cell for dates from previous/next month

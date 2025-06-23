@@ -61,7 +61,10 @@ class CalendarViewmodel @Inject constructor(
                 ) { trips, visas ->
                     Pair(trips, visas)
                 }.collectLatest { (trips, visas) ->
-                    val dateRange = calculateAvailableDateRange(trips)
+                    val dateRange = calculateAvailableDateRange(
+                        trips = trips,
+                        visaExpiryDate = visas.maxOf { it.expiryDate }
+                    )
                     val tripRanges = createTripRanges(trips)
                     val visaRanges = createVisaRanges(visas)
                     val dateList = createDateList(trips, dateRange)
@@ -91,6 +94,7 @@ class CalendarViewmodel @Inject constructor(
      */
     private fun calculateAvailableDateRange(
         trips: List<Trip>,
+        visaExpiryDate: LocalDate,
     ): ClosedRange<LocalDate> {
         val today = LocalDate.now()
         val defaultStartDate = today.minusDays(PERIOD_DAYS.toLong())
@@ -109,7 +113,7 @@ class CalendarViewmodel @Inject constructor(
             .filter { it.isFuture && it.endDate != null }
             .maxByOrNull { it.endDate ?: defaultEndDate }
 
-        val endDate = maxOf(latestFutureTrip?.endDate ?: defaultEndDate, defaultEndDate)
+        val endDate = maxOf(latestFutureTrip?.endDate ?: defaultEndDate, visaExpiryDate)
 
         return startDate.withDayOfMonth(1)..endDate.withDayOfMonth(endDate.lengthOfMonth())
     }

@@ -26,7 +26,7 @@ sealed class AddTripContract {
         val startDate: LocalDate? = null,
         val endDate: LocalDate? = null,
         val showDatePicker: Boolean = false,
-        val blockedDates: Set<BlockDateModel> = emptySet(),
+        val blockedPeriods: Set<BlockDateModel> = emptySet(),
 
         val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy"),
         val daysAvailableAtStart: DaysAvailableInfo? = null,

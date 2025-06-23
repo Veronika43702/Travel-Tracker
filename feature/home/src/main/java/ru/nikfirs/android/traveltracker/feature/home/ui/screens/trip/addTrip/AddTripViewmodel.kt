@@ -31,6 +31,7 @@ import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTrip.Add
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.utils.AddTripHolder
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.utils.getTripSegmentColorByIndex
 import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 import ru.nikfirs.android.traveltracker.core.ui.R as uiR
 
@@ -80,7 +81,7 @@ class AddTripViewModel @Inject constructor(
     }
 
     private fun loadData(tripId: Long?) {
-        launch {
+        launchIO {
             setState { it.copy(isLoading = true) }
 
             try {
@@ -95,6 +96,10 @@ class AddTripViewModel @Inject constructor(
                         loadTripData(tripId)
                         setDataForHolder()
                         recalculateAvailableDays()
+                        currentState.selectedVisa?.let { visa ->
+                            val blockedTripPeriods = calculateBlockedTripDates(visa, tripId)
+                            setState { it.copy(blockedPeriods = blockedTripPeriods) }
+                        }
                     }
                 }
                 setState { it.copy(isLoading = false, tripId = tripId) }
@@ -190,23 +195,26 @@ class AddTripViewModel @Inject constructor(
     }
 
     private fun updateSelectedVisa(visa: Visa?) {
-        setState {
-            it.copy(
-                selectedVisa = visa,
-                isVisaDropdownExpanded = false,
-                validationErrors = ValidationErrors(),
-                startDate = null,
-                endDate = null,
-                segments = emptyList(),
-            )
-        }
+        launchIO {
+            setState {
+                it.copy(
+                    selectedVisa = visa,
+                    isVisaDropdownExpanded = false,
+                    validationErrors = ValidationErrors(),
+                    startDate = null,
+                    endDate = null,
+                    segments = emptyList(),
+                )
+            }
 
-        // update and available days
-        recalculateAvailableDays()
+            // update and available days
+            recalculateAvailableDays()
 
-        // calculate block dates when other trips exist
-        visa?.let {
-            setState { it.copy(blockedDates = calculateBlockedTripDates(visa)) }
+            // calculate block dates when other trips exist
+            visa?.let {
+                val blockedTripPeriods = calculateBlockedTripDates(visa)
+                setState { it.copy(blockedPeriods = blockedTripPeriods) }
+            }
         }
     }
 
@@ -229,7 +237,7 @@ class AddTripViewModel @Inject constructor(
         if (!value && currentState.startDate == null) {
             setState {
                 it.copy(
-                    blockedDates = currentState.blockedDates
+                    blockedPeriods = currentState.blockedPeriods
                         .filter { date -> date.type is DateType.Trip }
                         .toSet()
                 )
@@ -298,7 +306,6 @@ class AddTripViewModel @Inject constructor(
 
     private fun recalculateAvailableDays() {
         if (currentState.startDate == null || currentState.endDate == null) {
-            calculateInitialDays()
             return
         }
         launchIO {
@@ -364,7 +371,7 @@ class AddTripViewModel @Inject constructor(
             if (!checkDaysOutOfSegments()) return
 
             setState { it.copy(isLoading = true) }
-            launch {
+            launchIO {
                 try {
                     val trip = Trip(
                         id = id ?: 0,
@@ -460,7 +467,7 @@ class AddTripViewModel @Inject constructor(
 
     private fun saveTripWithTransit() {
         val id = currentState.tripId
-        launch {
+        launchIO {
             setState { it.copy(isLoading = true) }
 
             try {
@@ -537,95 +544,85 @@ class AddTripViewModel @Inject constructor(
         setState { it.copy(warningTextDaysOutSegments = value) }
     }
 
-    private fun calculateBlockedTripDates(visa: Visa): Set<BlockDateModel> {
-        var blockTripDates: Set<BlockDateModel> = emptySet()
-        launchIO {
-            try {
-                val trips = getTripsByDatesUseCase(visa.startDate, visa.expiryDate)
-                blockTripDates = trips
-                    .filter { it.startDate != null && it.endDate != null }
-                    .map { trip ->
+    private suspend fun calculateBlockedTripDates(
+        visa: Visa,
+        tripId: Long? = null
+    ): Set<BlockDateModel> {
+        val blockTripDates: MutableSet<BlockDateModel> = mutableSetOf()
+
+        try {
+            val trips = getTripsByDatesUseCase(visa.startDate, visa.expiryDate)
+            trips
+                .filter {
+                    it.startDate != null && it.endDate != null && it.id != tripId
+                }
+                .forEach { trip ->
+                    blockTripDates.add(
                         BlockDateModel(
                             startDate = trip.startDate ?: visa.startDate.minusDays(-1),
-                            endDate = trip.startDate ?: visa.startDate.minusDays(-1),
+                            endDate = trip.endDate ?: visa.startDate.minusDays(-1),
                             type = DateType.Trip(tripId = trip.id)
                         )
-                    }.toSet()
-            } catch (e: Exception) {
-            }
-        }
-        return blockTripDates
-    }
-
-    private fun calculateTotalBlockDates(startDate: LocalDate?): Set<BlockDateModel> {
-        val blockDates: MutableSet<BlockDateModel> = mutableSetOf()
-
-        val blockTripDates =
-            currentState.blockedDates.filter { it.type is DateType.Trip }.toSet()
-        val blockDayLimitDates = calculateBlockDayLimitDates(startDate)
-
-        blockDates.addAll(blockTripDates)
-        blockDates.addAll(blockDayLimitDates)
-
-        return blockTripDates
-    }
-
-    private fun calculateBlockDayLimitDates(startDate: LocalDate?): Set<BlockDateModel> {
-        val blockDayLimitDates: MutableSet<BlockDateModel> = mutableSetOf()
-        if (startDate == null) return blockDayLimitDates
-        val visa = currentState.selectedVisa ?: return blockDayLimitDates
-        launchIO {
-            val firstBlockDate = minOf(
-                visa.expiryDate,
-                currentState.blockedDates
-                    .filter { it.startDate.isAfter(startDate) }
-                    .minOfOrNull { it.startDate } ?: visa.expiryDate
-            )
-
-            var checkDate = visa.startDate
-            var currentBlockStart: LocalDate? = null
-            var previousBlockedDate: LocalDate? = null
-
-            while (!checkDate.isAfter(firstBlockDate)) {
-                try {
-                    val calculation =
-                        calculateDaysInPeriodUseCase(periodEnd = checkDate, currentState.tripId)
-
-                    if (calculation.totalDaysUsed >= MAX_STAY_DAYS) {
-                        if (currentBlockStart == null) {
-                            currentBlockStart = checkDate
-                        }
-                        previousBlockedDate = checkDate
-                    } else {
-                        // block exists and days over limit ended
-                        if (currentBlockStart != null && previousBlockedDate != null) {
-                            blockDayLimitDates.add(
-                                BlockDateModel(
-                                    startDate = currentBlockStart,
-                                    endDate = previousBlockedDate,
-                                    type = DateType.DayLimit
-                                )
-                            )
-                            currentBlockStart = null
-                            previousBlockedDate = null
-                        }
-                    }
-                } catch (e: Exception) {
-                }
-                checkDate = checkDate.plusDays(1)
-            }
-
-
-            if (currentBlockStart != null && previousBlockedDate != null) {
-                blockDayLimitDates.add(
-                    BlockDateModel(
-                        startDate = currentBlockStart,
-                        endDate = previousBlockedDate,
-                        type = DateType.DayLimit
                     )
-                )
-            }
+                }
+        } catch (e: Exception) {
+            setError(CustomString.text(e.message))
         }
+
+        return blockTripDates
+    }
+
+    private fun calculateTotalBlockDates(startDate: LocalDate?) {
+        launchIO {
+            val blockDates: MutableSet<BlockDateModel> = mutableSetOf()
+
+            val blockTripDates =
+                currentState.blockedPeriods.filter { it.type is DateType.Trip }.toSet()
+            val blockDayLimitDates = calculateBlockDayLimitDates(startDate)
+
+            blockDates.addAll(blockTripDates)
+            blockDates.addAll(blockDayLimitDates)
+
+            setState { it.copy(blockedPeriods = blockDates) }
+        }
+    }
+
+    private suspend fun calculateBlockDayLimitDates(startDate: LocalDate?): Set<BlockDateModel> {
+        val blockDayLimitDates: MutableSet<BlockDateModel> = mutableSetOf()
+        val visa = currentState.selectedVisa
+        if (startDate == null || visa == null) return blockDayLimitDates
+
+        val dayOfFirstTripAfterStartDate = currentState.blockedPeriods
+            .filter { it.type is DateType.Trip }
+            .sortedBy { it.startDate }
+            .firstOrNull { it.startDate.isAfter(startDate) }?.startDate ?: visa.expiryDate.plusDays(
+            1
+        )
+
+        var checkDate: LocalDate = startDate
+        while (!checkDate.isAfter(dayOfFirstTripAfterStartDate)) {
+            try {
+                val calculation =
+                    calculateDaysInPeriodUseCase(periodEnd = checkDate, currentState.tripId)
+
+                val tripDuration = ChronoUnit.DAYS.between(startDate, checkDate) + 1
+                if (calculation.totalDaysUsed + tripDuration > MAX_STAY_DAYS) {
+                    break
+                }
+            } catch (e: Exception) {
+                setError(CustomString.text(e.message))
+            }
+            checkDate = checkDate.plusDays(1)
+        }
+
+        val firstLimitDay = minOf(checkDate, dayOfFirstTripAfterStartDate)
+        blockDayLimitDates.add(
+            BlockDateModel(
+                startDate = firstLimitDay,
+                endDate = visa.expiryDate,
+                type = DateType.Other,
+            )
+        )
 
         return blockDayLimitDates
     }

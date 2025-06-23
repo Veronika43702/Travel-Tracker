@@ -48,7 +48,7 @@ import ru.nikfirs.android.traveltracker.core.domain.model.VisaCategory
 import ru.nikfirs.android.traveltracker.core.domain.model.VisaEntries
 import ru.nikfirs.android.traveltracker.core.ui.R
 import ru.nikfirs.android.traveltracker.core.ui.component.CustomButton
-import ru.nikfirs.android.traveltracker.core.ui.component.CustomDateRangePicker
+import ru.nikfirs.android.traveltracker.core.ui.component.CustomCalendarRangePicker
 import ru.nikfirs.android.traveltracker.core.ui.component.CustomTextField
 import ru.nikfirs.android.traveltracker.core.ui.component.CustomTextFieldButton
 import ru.nikfirs.android.traveltracker.core.ui.component.DialogTwoRowButton
@@ -56,6 +56,7 @@ import ru.nikfirs.android.traveltracker.core.ui.component.ErrorDialog
 import ru.nikfirs.android.traveltracker.core.ui.component.FullScreenLoadingIndicator
 import ru.nikfirs.android.traveltracker.core.ui.component.Screen
 import ru.nikfirs.android.traveltracker.core.ui.extension.asString
+import ru.nikfirs.android.traveltracker.core.ui.model.DateRangeSelection
 import ru.nikfirs.android.traveltracker.core.ui.mvi.LaunchedEffectResolver
 import ru.nikfirs.android.traveltracker.core.ui.theme.AppTheme
 import ru.nikfirs.android.traveltracker.feature.home.domain.model.TripSegmentUi
@@ -64,6 +65,7 @@ import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTrip.Add
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTrip.AddTripContract.Effect
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTrip.AddTripContract.State
 import java.time.LocalDate
+import java.time.YearMonth
 
 @Composable
 fun AddTripScreen(
@@ -486,19 +488,23 @@ private fun AddTripScreenContent(
 
     // Date Picker
     if (state.showDatePicker) {
-        CustomDateRangePicker(
-            dateStart = state.startDate,
-            dateEnd = state.endDate,
+        CustomCalendarRangePicker(
+            selectedRange = DateRangeSelection(state.startDate, state.endDate),
+            availableDateRange = state.selectedVisa?.expiryDate?.let {
+                state.selectedVisa.startDate..it
+            },
+            onDateRangeSelected = { range ->
+                if (range.startDate != null && range.endDate == null)
+                    onAction(Action.CalculateBlockDaysByStartDate(range.startDate))
+            },
             onConfirmClick = { startDate, endDate ->
                 onAction(Action.UpdateDates(startDate, endDate))
             },
             onCancelClick = { onAction(Action.ShowDatePicker(false)) },
-            startDateToChoose = state.selectedVisa?.startDate,
-            endDateToChoose = state.selectedVisa?.expiryDate,
-            blockedPeriod = state.blockedDates,
-            onStartChooseClick = {
-                onAction(Action.CalculateBlockDaysByStartDate(it))
-            }
+            currentMonth = state.startDate?.let {
+                YearMonth.of(it.year, it.month)
+            } ?: YearMonth.now(),
+            blockedPeriod = state.blockedPeriods,
         )
     }
 
@@ -525,7 +531,7 @@ private fun AddTripScreenPreview() {
     AppTheme {
         AddTripScreenContent(
             state = State(
-                showDatePicker = false,
+                showDatePicker = true,
                 startDate = LocalDate.now(),
                 endDate = LocalDate.now().plusDays(7),
                 selectedVisa = Visa(
