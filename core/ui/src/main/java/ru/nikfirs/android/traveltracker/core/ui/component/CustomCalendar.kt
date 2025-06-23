@@ -127,7 +127,7 @@ private fun CustomCalendarRangePickerPreview() {
                 ),
                 DayCalculation(
                     date = now.plusDays(2),
-                    remaining = 88,
+                    remaining = -2,
                     isUsed = true,
                 ),
                 DayCalculation(

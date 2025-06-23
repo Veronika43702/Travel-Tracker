@@ -21,6 +21,8 @@
     <string name="error_loading_trip">Error loading trip</string>
     <string name="error_deleting_trip">Error deleting trip</string>
 
+    <string name="trip_over_limit_warning">Trip contains days exceeding limit. Update data</string>
+
     <!-- Success Messages -->
     <string name="trip_deleted_successfully">Trip deleted successfully</string>
 </resources>

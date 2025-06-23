@@ -494,7 +494,7 @@ class AddTripViewModel @Inject constructor(
                         startDate = group.first(),
                         endDate = group.last(),
                         cities = emptyList(),
-                        isExempt = true,
+                        isExempt = false,
                     )
                 }
                 segments.addAll(transitSegments)

@@ -26,12 +26,13 @@ import androidx.compose.ui.unit.dp
 import ru.nikfirs.android.traveltracker.core.domain.model.Trip
 import ru.nikfirs.android.traveltracker.core.domain.model.TripPurpose
 import ru.nikfirs.android.traveltracker.core.domain.model.TripSegment
-import ru.nikfirs.android.traveltracker.core.ui.R
+import ru.nikfirs.android.traveltracker.core.ui.R as uiR
 import ru.nikfirs.android.traveltracker.core.ui.component.EditAndDeleteRow
 import ru.nikfirs.android.traveltracker.core.ui.component.StatusChip
 import ru.nikfirs.android.traveltracker.core.ui.component.SwipeableCard
 import ru.nikfirs.android.traveltracker.core.ui.component.TravelCard
 import ru.nikfirs.android.traveltracker.core.ui.theme.AppTheme
+import ru.nikfirs.android.traveltracker.feature.home.R
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.HomeContract.Action
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -99,12 +100,12 @@ fun TripCard(
             ) {
                 Icon(
                     painter = when (trip.purpose) {
-                        TripPurpose.TOURISM -> painterResource(R.drawable.ic_luggage)
-                        TripPurpose.BUSINESS -> painterResource(R.drawable.ic_work)
-                        TripPurpose.FAMILY -> painterResource(R.drawable.ic_family_restroom)
-                        TripPurpose.MEDICAL -> painterResource(R.drawable.ic_local_hospital)
-                        TripPurpose.EDUCATION -> painterResource(R.drawable.ic_school)
-                        TripPurpose.OTHER -> painterResource(R.drawable.ic_travel_explore)
+                        TripPurpose.TOURISM -> painterResource(uiR.drawable.ic_luggage)
+                        TripPurpose.BUSINESS -> painterResource(uiR.drawable.ic_work)
+                        TripPurpose.FAMILY -> painterResource(uiR.drawable.ic_family_restroom)
+                        TripPurpose.MEDICAL -> painterResource(uiR.drawable.ic_local_hospital)
+                        TripPurpose.EDUCATION -> painterResource(uiR.drawable.ic_school)
+                        TripPurpose.OTHER -> painterResource(uiR.drawable.ic_travel_explore)
                     },
                     contentDescription = null,
                     modifier = Modifier.size(24.dp),
@@ -122,7 +123,7 @@ fun TripCard(
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 StatusChip(
-                    text = stringResource(R.string.trip_duration_days, trip.duration.toInt()),
+                    text = stringResource(uiR.string.trip_duration_days, trip.duration.toInt()),
                     backgroundColor = MaterialTheme.colorScheme.primaryContainer,
                     contentColor = MaterialTheme.colorScheme.onPrimaryContainer
                 )
@@ -130,7 +131,7 @@ fun TripCard(
                 if (isExempt) {
                     StatusChip(
                         text = stringResource(
-                            R.string.countable_days_count,
+                            uiR.string.countable_days_count,
                             countableDuration
                         ),
                         backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
@@ -142,7 +143,7 @@ fun TripCard(
 
                 when {
                     trip.isOngoing -> StatusChip(
-                        text = stringResource(R.string.trip_ongoing),
+                        text = stringResource(uiR.string.trip_ongoing),
                         backgroundColor = MaterialTheme.colorScheme.secondary,
                         contentColor = MaterialTheme.colorScheme.onSecondary
                     )
@@ -152,8 +153,9 @@ fun TripCard(
         warning = if (trip.hasOverLimitDay) {
             {
                 StatusChip(
-                    text = "Warning", // TODO warning
-                    backgroundColor = MaterialTheme.colorScheme.error
+                    text = stringResource(R.string.trip_over_limit_warning),
+                    backgroundColor = MaterialTheme.colorScheme.error,
+                    contentColor = MaterialTheme.colorScheme.onError
                 )
             }
         } else null,
@@ -165,7 +167,7 @@ fun TripCard(
         if (trip.startDate != null && trip.endDate != null) {
             Text(
                 text = stringResource(
-                    R.string.trip_dates,
+                    uiR.string.trip_dates,
                     trip.startDate?.format(dateFormatter) ?: "",
                     trip.endDate?.format(dateFormatter) ?: "",
                 ),

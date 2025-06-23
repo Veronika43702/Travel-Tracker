@@ -19,7 +19,7 @@ class GetHomeDataUseCase @Inject constructor(
         ) { visas, trips ->
             HomeData(
                 allVisas = visas,
-                allTrips = trips,
+                allTrips = trips.sortedWith(compareBy({ it.startDate }, { it.endDate }))
             )
         }
     }

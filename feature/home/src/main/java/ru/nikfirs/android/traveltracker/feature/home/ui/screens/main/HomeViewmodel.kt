@@ -3,6 +3,7 @@ package ru.nikfirs.android.traveltracker.feature.home.ui.screens.main
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.runBlocking
 import ru.nikfirs.android.traveltracker.core.domain.PERIOD_DAYS
 import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
 import ru.nikfirs.android.traveltracker.core.domain.model.Trip
@@ -70,12 +71,12 @@ class HomeViewModel @Inject constructor(
                         setError(CustomString.text(exception.message))
                     }
                     .collectLatest { homeData ->
-                        // TODO add hasOverLimitDay parameter to trips
+                        val tripsWithLimitInfo = addLimitOverInfoToTrips(homeData.allTrips)
 
                         setState {
                             it.copy(
                                 visas = homeData.allVisas,
-                                trips = homeData.allTrips,
+                                trips = tripsWithLimitInfo,
                                 isLoading = false,
                                 error = null
                             )
@@ -89,8 +90,31 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private fun addLimitOverInfoToTrips(trips: List<Trip>): List<Trip> {
-        return trips // TODO
+    private suspend fun addLimitOverInfoToTrips(trips: List<Trip>): List<Trip> {
+        return trips.map { trip ->
+            trip.copy(hasOverLimitDay = checkTripHasOverLimitDay(trip))
+        }
+    }
+
+    private suspend fun checkTripHasOverLimitDay(trip: Trip): Boolean {
+        val startDate = trip.startDate ?: return false
+        val endDate = trip.endDate ?: return false
+
+        var currentDate = startDate
+        while (!currentDate.isAfter(endDate)) {
+            try {
+                val calculation = calculateDaysInPeriodUseCase.invoke(periodEnd = currentDate)
+
+                if (calculation.isOverLimit) {
+                    return true
+                }
+            } catch (e: Exception) {
+
+            }
+            currentDate = currentDate.plusDays(1)
+        }
+
+        return false
     }
 
     private fun updateDaysCalculation() {

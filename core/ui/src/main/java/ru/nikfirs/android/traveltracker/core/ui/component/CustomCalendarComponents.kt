@@ -50,7 +50,9 @@ import ru.nikfirs.android.traveltracker.core.ui.model.DateRangeSelection
 import ru.nikfirs.android.traveltracker.core.ui.model.DayCalculation
 import ru.nikfirs.android.traveltracker.core.ui.model.ExistingRange
 import ru.nikfirs.android.traveltracker.core.ui.theme.AppTheme
+import ru.nikfirs.android.traveltracker.core.ui.theme.DangerRed
 import ru.nikfirs.android.traveltracker.core.ui.theme.LocalCustomColors
+import ru.nikfirs.android.traveltracker.core.ui.theme.WarningAmber
 import ru.nikfirs.android.traveltracker.core.ui.theme.calendarCircle
 import ru.nikfirs.android.traveltracker.core.ui.theme.calendarDay
 import ru.nikfirs.android.traveltracker.core.ui.theme.calendarEnd
@@ -565,7 +567,11 @@ private fun DateInfo(
                     .align(Alignment.TopEnd)
                     .size(calendarLabelSize)
                     .background(
-                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.1f),
+                        color = when {
+                            specificDate.remaining in 0..25 -> WarningAmber.copy(alpha = 0.1f)
+                            specificDate.remaining < 0 -> DangerRed.copy(alpha = 0.4f)
+                            else -> MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.1f)
+                        },
                         shape = CircleShape
                     )
                     .padding(calendarPaddingInForLabels),

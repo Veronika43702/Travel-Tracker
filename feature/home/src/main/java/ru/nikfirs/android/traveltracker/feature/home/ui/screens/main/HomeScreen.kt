@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.CircularProgressIndicator
@@ -43,6 +44,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ru.nikfirs.android.traveltracker.core.domain.model.DaysCalculation
 import ru.nikfirs.android.traveltracker.core.domain.model.Trip
@@ -292,7 +294,17 @@ private fun TripsTabContent(
     state: State,
     onAction: (Action) -> Unit
 ) {
+    val listState = rememberLazyListState()
+    LaunchedEffect(state.trips) {
+        val firstOverLimitTripIndex = findFirstOverLimitTripIndex(state)
+        if (firstOverLimitTripIndex != -1) {
+            delay(100)
+            listState.animateScrollToItem(firstOverLimitTripIndex)
+        }
+    }
+
     LazyColumn(
+        state = listState,
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
@@ -345,9 +357,8 @@ private fun TripsTabContent(
             }
         }
 
-        // Past trips (show only last 5)
-        val recentPastTrips = state.pastTrips.take(5)
-        if (recentPastTrips.isNotEmpty()) {
+        // Past trips (within past 180 days)
+        if (state.pastTrips.isNotEmpty()) {
             item {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
@@ -359,7 +370,7 @@ private fun TripsTabContent(
             }
 
             items(
-                items = recentPastTrips,
+                items = state.pastTrips,
                 key = { "trip_${it.id}" }
             ) { trip ->
                 SwipeableTripCard(
@@ -431,6 +442,48 @@ private fun EmptyState(
             onClick = onAddClick,
         )
     }
+}
+
+private fun findFirstOverLimitTripIndex(state: State): Int {
+    var currentIndex = 0
+
+    // search in ngoing trips
+    if (state.ongoingTrips.isNotEmpty()) {
+        currentIndex++ // header
+
+        for (trip in state.ongoingTrips) {
+            if (trip.hasOverLimitDay) {
+                return currentIndex
+            }
+            currentIndex++
+        }
+    }
+
+    // search in planned trips
+    if (state.plannedTrips.isNotEmpty()) {
+        currentIndex++ // spacer + header
+
+        for (trip in state.plannedTrips) {
+            if (trip.hasOverLimitDay) {
+                return currentIndex
+            }
+            currentIndex++
+        }
+    }
+
+    // search in past trips
+    if (state.pastTrips.isNotEmpty()) {
+        currentIndex++ // spacer + header
+
+        for (trip in state.pastTrips) {
+            if (trip.hasOverLimitDay) {
+                return currentIndex
+            }
+            currentIndex++
+        }
+    }
+
+    return -1 // not found
 }
 
 @Preview(showBackground = true)
