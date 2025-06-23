@@ -152,7 +152,7 @@ fun TripCard(
         warning = if (trip.hasOverLimitDay) {
             {
                 StatusChip(
-                    text = "Warning", // TODO
+                    text = "Warning", // TODO warning
                     backgroundColor = MaterialTheme.colorScheme.error
                 )
             }

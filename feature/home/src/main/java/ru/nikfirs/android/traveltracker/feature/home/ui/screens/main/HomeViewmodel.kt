@@ -3,12 +3,14 @@ package ru.nikfirs.android.traveltracker.feature.home.ui.screens.main
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
+import ru.nikfirs.android.traveltracker.core.domain.PERIOD_DAYS
 import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
 import ru.nikfirs.android.traveltracker.core.domain.model.Trip
 import ru.nikfirs.android.traveltracker.core.domain.model.Visa
 import ru.nikfirs.android.traveltracker.core.ui.R
 import ru.nikfirs.android.traveltracker.core.ui.mvi.ViewModel
 import ru.nikfirs.android.traveltracker.core.ui.mvi.launch
+import ru.nikfirs.android.traveltracker.core.ui.mvi.launchDefault
 import ru.nikfirs.android.traveltracker.feature.home.domain.model.HomeTab
 import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.CalculateDaysInPeriodUseCase
 import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.trip.DeleteTripUseCase
@@ -40,7 +42,6 @@ class HomeViewModel @Inject constructor(
     override fun handleAction(action: Action) {
         when (action) {
             is Action.LoadData -> loadData()
-            is Action.RefreshData -> loadData()
             Action.UpdateDaysCalculation -> updateDaysCalculation()
             is Action.SelectTab -> selectTab(action.tab)
             is Action.NavigateToAddVisa -> navigateToAddVisa()
@@ -64,11 +65,13 @@ class HomeViewModel @Inject constructor(
             setState { it.copy(isLoading = true, error = null) }
 
             try {
-                getHomeDataUseCase()
+                getHomeDataUseCase(LocalDate.now().minusDays(PERIOD_DAYS.toLong()))
                     .catch { exception ->
                         setError(CustomString.text(exception.message))
                     }
                     .collectLatest { homeData ->
+                        // TODO add hasOverLimitDay parameter to trips
+
                         setState {
                             it.copy(
                                 visas = homeData.allVisas,
@@ -86,6 +89,10 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    private fun addLimitOverInfoToTrips(trips: List<Trip>): List<Trip> {
+        return trips // TODO
+    }
+
     private fun updateDaysCalculation() {
         launch {
             try {
@@ -94,7 +101,6 @@ class HomeViewModel @Inject constructor(
                 )
                 setState { it.copy(daysCalculation = calculation) }
             } catch (e: Exception) {
-                // TODO
             }
         }
     }
