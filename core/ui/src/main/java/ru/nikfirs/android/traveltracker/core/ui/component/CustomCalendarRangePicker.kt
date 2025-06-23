@@ -24,6 +24,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import ru.nikfirs.android.traveltracker.core.ui.R
+import ru.nikfirs.android.traveltracker.core.ui.model.DateRangeSelection
+import ru.nikfirs.android.traveltracker.core.ui.model.ExistingRange
 import ru.nikfirs.android.traveltracker.core.ui.theme.AppTheme
 import java.time.LocalDate
 import java.time.YearMonth
@@ -104,7 +106,7 @@ fun CustomCalendarRangePicker(
             // Days of week header
             DaysOfWeekHeader(
                 modifier = Modifier
-                    .width(cellSize * 7 + horizontalPadding * 6)
+                    .width(pickerCellSize * 7 + pickerHorizontalPadding * 6)
                     .padding(horizontal = 12.dp)
                     .align(Alignment.CenterHorizontally)
             )
@@ -113,8 +115,8 @@ fun CustomCalendarRangePicker(
             LazyColumn(
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
-                    .width(cellSize * 7 + horizontalPadding * 6)
-                    .height(cellSize * 9 + 20.dp),
+                    .width(pickerCellSize * 7 + pickerHorizontalPadding * 6)
+                    .height(pickerCellSize * 9 + 20.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 items(monthsToDisplay) { month ->
@@ -149,7 +151,7 @@ fun CustomCalendarRangePicker(
                             tempSelection = newSelection
                             onDateRangeSelected(newSelection)
                         },
-                        isDatePicker = true
+                        smallCells = true
                     )
                 }
             }

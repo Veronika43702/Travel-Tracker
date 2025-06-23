@@ -10,7 +10,7 @@ import ru.nikfirs.android.traveltracker.core.domain.model.TripPurpose
 import ru.nikfirs.android.traveltracker.core.domain.model.TripSegment
 import ru.nikfirs.android.traveltracker.core.domain.model.Visa
 import ru.nikfirs.android.traveltracker.core.ui.model.BlockDateModel
-import ru.nikfirs.android.traveltracker.core.ui.model.BlockDateType
+import ru.nikfirs.android.traveltracker.core.ui.model.DateType
 import ru.nikfirs.android.traveltracker.core.ui.mvi.ViewModel
 import ru.nikfirs.android.traveltracker.core.ui.mvi.launch
 import ru.nikfirs.android.traveltracker.core.ui.mvi.launchIO
@@ -230,7 +230,7 @@ class AddTripViewModel @Inject constructor(
             setState {
                 it.copy(
                     blockedDates = currentState.blockedDates
-                        .filter { date -> date.type is BlockDateType.Trip }
+                        .filter { date -> date.type is DateType.Trip }
                         .toSet()
                 )
             }
@@ -548,7 +548,7 @@ class AddTripViewModel @Inject constructor(
                         BlockDateModel(
                             startDate = trip.startDate ?: visa.startDate.minusDays(-1),
                             endDate = trip.startDate ?: visa.startDate.minusDays(-1),
-                            type = BlockDateType.Trip(tripId = trip.id)
+                            type = DateType.Trip(tripId = trip.id)
                         )
                     }.toSet()
             } catch (e: Exception) {
@@ -561,7 +561,7 @@ class AddTripViewModel @Inject constructor(
         val blockDates: MutableSet<BlockDateModel> = mutableSetOf()
 
         val blockTripDates =
-            currentState.blockedDates.filter { it.type is BlockDateType.Trip }.toSet()
+            currentState.blockedDates.filter { it.type is DateType.Trip }.toSet()
         val blockDayLimitDates = calculateBlockDayLimitDates(startDate)
 
         blockDates.addAll(blockTripDates)
@@ -603,7 +603,7 @@ class AddTripViewModel @Inject constructor(
                                 BlockDateModel(
                                     startDate = currentBlockStart,
                                     endDate = previousBlockedDate,
-                                    type = BlockDateType.DayLimit
+                                    type = DateType.DayLimit
                                 )
                             )
                             currentBlockStart = null
@@ -621,7 +621,7 @@ class AddTripViewModel @Inject constructor(
                     BlockDateModel(
                         startDate = currentBlockStart,
                         endDate = previousBlockedDate,
-                        type = BlockDateType.DayLimit
+                        type = DateType.DayLimit
                     )
                 )
             }

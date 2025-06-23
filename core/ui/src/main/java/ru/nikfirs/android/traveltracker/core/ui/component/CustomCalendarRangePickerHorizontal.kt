@@ -47,6 +47,8 @@ import androidx.compose.ui.window.DialogProperties
 import ru.nikfirs.android.traveltracker.core.ui.R
 import ru.nikfirs.android.traveltracker.core.ui.extension.clickableOnce
 import ru.nikfirs.android.traveltracker.core.ui.model.CustomIndication
+import ru.nikfirs.android.traveltracker.core.ui.model.DateRangeSelection
+import ru.nikfirs.android.traveltracker.core.ui.model.ExistingRange
 import ru.nikfirs.android.traveltracker.core.ui.theme.AppTheme
 import ru.nikfirs.android.traveltracker.core.ui.theme.calendarCircle
 import ru.nikfirs.android.traveltracker.core.ui.theme.calendarEnd

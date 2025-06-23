@@ -8,12 +8,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import ru.nikfirs.android.traveltracker.core.ui.model.DayCalculation
+import ru.nikfirs.android.traveltracker.core.ui.model.ExistingRange
 import ru.nikfirs.android.traveltracker.core.ui.theme.AppTheme
 import java.time.LocalDate
 import java.time.YearMonth
@@ -25,8 +28,8 @@ fun CustomCalendar(
     currentMonth: YearMonth = YearMonth.now(),
     monthsToShow: Int = 12,
     dateList: List<DayCalculation> = emptyList(),
-    showDots: Boolean = true,
-    showRemainingDays: Boolean = true,
+    showDots: Boolean = false,
+    showRemainingDays: Boolean = false,
 ) {
     // Calculate months to display
     val startMonth = availableDateRange?.start?.let {
@@ -73,26 +76,19 @@ fun CustomCalendar(
             items(monthsToDisplay) { month ->
                 MonthCalendar(
                     month = month,
-                    selectedRange = DateRangeSelection(),
                     existingSegments = existingRangeList,
                     availableDateRange = availableDateRange,
                     onDateClick = {},
-                    isDatePicker = false,
+                    smallCells = false,
                     dateList = dateList,
                     showDots = showDots,
                     showRemainingDays = showRemainingDays,
                 )
+                HorizontalDivider()
             }
         }
     }
 }
-
-data class DayCalculation(
-    val date: LocalDate,
-    val remaining: Int,
-    val isUsed: Boolean = false,
-    val isIncreased: Boolean = false,
-)
 
 // Preview
 @LightRUScreenPreview
@@ -102,6 +98,8 @@ private fun CustomCalendarRangePickerPreview() {
     val now = LocalDate.now()
     AppTheme {
         CustomCalendar(
+            showRemainingDays = true,
+            showDots = true,
             existingRangeList = listOf(
                 ExistingRange(
                     startDate = now.plusDays(5),

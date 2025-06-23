@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -28,10 +29,15 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -40,6 +46,9 @@ import androidx.compose.ui.unit.dp
 import ru.nikfirs.android.traveltracker.core.ui.R
 import ru.nikfirs.android.traveltracker.core.ui.extension.clickableOnce
 import ru.nikfirs.android.traveltracker.core.ui.model.CustomIndication
+import ru.nikfirs.android.traveltracker.core.ui.model.DateRangeSelection
+import ru.nikfirs.android.traveltracker.core.ui.model.DayCalculation
+import ru.nikfirs.android.traveltracker.core.ui.model.ExistingRange
 import ru.nikfirs.android.traveltracker.core.ui.theme.AppTheme
 import ru.nikfirs.android.traveltracker.core.ui.theme.LocalCustomColors
 import ru.nikfirs.android.traveltracker.core.ui.theme.calendarCircle
@@ -53,6 +62,14 @@ import java.time.format.TextStyle
 import java.time.temporal.WeekFields
 import java.util.Locale
 
+/**
+ * Header for date picker containing:
+ * - selected date range data;
+ * - icon "Close" to clear selection.
+ * @param selectedRange [range][DateRangeSelection] selected by user.
+ * @param onClear clears [selectedRange] (both startDate and endDate = null)
+ * @param modifier modifier for Row with dates and clear icon
+ */
 @Composable
 internal fun DateRangePickerHeader(
     selectedRange: DateRangeSelection,
@@ -113,17 +130,31 @@ internal fun DateRangePickerHeader(
     }
 }
 
+/**
+ * Calendar month grid with month name.
+ * @param month month for view
+ * @param availableDateRange range of available dates for selection.
+ * Dates out of range are not available for click.
+ * @param onDateClick action on date. Click is able when date is within [availableDateRange]
+ * @param existingSegments ranges (segments, trips, visa validity period)
+ * with color data for view to user.
+ * @param smallCells when true cell is fixed by width
+ * @param selectedRange [range][DateRangeSelection] selected by user (used in picker).
+ * @param dateList list of [dates][DayCalculation] to show information about day limit change.
+ * @param showDots parameter to show dots (isUsed, isIncreased) from [dateList] at left and right bottom
+ * @param showRemainingDays parameter to show remaining day count at right top
+ */
 @Composable
 internal fun MonthCalendar(
     month: YearMonth,
-    selectedRange: DateRangeSelection,
-    existingSegments: List<ExistingRange>,
     availableDateRange: ClosedRange<LocalDate>?,
     onDateClick: (LocalDate) -> Unit,
-    isDatePicker: Boolean,
+    smallCells: Boolean = true,
+    existingSegments: List<ExistingRange> = emptyList(),
+    selectedRange: DateRangeSelection = DateRangeSelection(),
     dateList: List<DayCalculation> = emptyList(),
-    showDots: Boolean = true,
-    showRemainingDays: Boolean = true,
+    showDots: Boolean = false,
+    showRemainingDays: Boolean = false,
 ) {
     Column {
         // Month header
@@ -147,7 +178,7 @@ internal fun MonthCalendar(
             existingSegments = existingSegments,
             availableDateRange = availableDateRange,
             onDateClick = onDateClick,
-            isDatePicker = isDatePicker,
+            smallCells = smallCells,
             dateList = dateList,
             showDots = showDots,
             showRemainingDays = showRemainingDays,
@@ -155,6 +186,9 @@ internal fun MonthCalendar(
     }
 }
 
+/**
+ * Calendar header with days of week
+ */
 @Composable
 internal fun DaysOfWeekHeader(
     modifier: Modifier = Modifier
@@ -185,14 +219,28 @@ internal fun DaysOfWeekHeader(
     }
 }
 
+/**
+ * Calendar month grid. Height of month grid calculated by day count in current [month].
+ * @param month month for view
+ * @param availableDateRange range of available dates for selection.
+ * Dates out of range are not available for click.
+ * @param onDateClick action on date. Click is able when date is within [availableDateRange]
+ * @param existingSegments ranges (segments, trips, visa validity period)
+ * with color data for view to user.
+ * @param smallCells when true cell is fixed by width
+ * @param selectedRange [range][DateRangeSelection] selected by user (used in picker).
+ * @param dateList list of [dates][DayCalculation] to show information about day limit change.
+ * @param showDots parameter to show dots (isUsed, isIncreased) from [dateList] at left and right bottom
+ * @param showRemainingDays parameter to show remaining day count at right top
+ */
 @Composable
 internal fun CalendarMonthGrid(
     month: YearMonth,
-    selectedRange: DateRangeSelection,
-    existingSegments: List<ExistingRange>,
     availableDateRange: ClosedRange<LocalDate>?,
+    existingSegments: List<ExistingRange>,
     onDateClick: (LocalDate) -> Unit,
-    isDatePicker: Boolean,
+    smallCells: Boolean,
+    selectedRange: DateRangeSelection,
     dateList: List<DayCalculation> = emptyList(),
     showDots: Boolean = true,
     showRemainingDays: Boolean = true,
@@ -210,20 +258,22 @@ internal fun CalendarMonthGrid(
         .takeWhile { !it.isAfter(endDate) }
         .toList()
 
+    val rows = remember(month) { calculateWeekRowsForMonth(month) }
+
     LazyVerticalGrid(
         columns = GridCells.Fixed(7),
         userScrollEnabled = false,
-        verticalArrangement = Arrangement.spacedBy(getVerticalPadding(isDatePicker)),
+        verticalArrangement = Arrangement.spacedBy(getVerticalPadding(smallCells)),
         modifier = Modifier
             .then(
-                if (isDatePicker) {
+                if (smallCells) {
                     Modifier
-                        .width(cellSize * 7 + horizontalPadding * 6)
-                        .height(cellSize * 6 + verticalPickerPadding * 6) // 6 weeks * 40dp per week + spacing
+                        .width(pickerCellSize * 7 + pickerHorizontalPadding * 6)
+                        .height(pickerCellSize * rows + pickerVerticalPadding * (rows - 1))
                 } else {
                     Modifier
                         .fillMaxWidth()
-                        .height(cellLargeSize * 6 + verticalPadding * 6)
+                        .height(calendarCellSize * rows + calendarVerticalPadding * (rows - 1))
                 }
             )
     ) {
@@ -241,11 +291,11 @@ internal fun CalendarMonthGrid(
                     },
                     isAvailable = availableDateRange?.let { date in it } ?: true,
                     onClick = {
-                        if (availableDateRange?.let { date in it } != false) onDateClick(
-                            date
-                        )
+                        if (availableDateRange?.let { date in it } != false) {
+                            onDateClick(date)
+                        }
                     },
-                    isDatePicker = isDatePicker,
+                    smallCells = smallCells,
                     dateList = dateList,
                     showDots = showDots,
                     showRemainingDays = showRemainingDays
@@ -258,6 +308,22 @@ internal fun CalendarMonthGrid(
     }
 }
 
+/**
+ * Calendar day
+ * @param date current day for formatting
+ * @param isSelected day is within user selected range
+ * @param isRangeStart day is the start of user selected range
+ * @param isRangeEnd day is the end of user selected range
+ * @param isEndSelected end day is selected in user selected range
+ * @param isAvailable day available for click
+ * @param existingSegments ranges (segments, trips, visa validity period)
+ * with color data for view to user.
+ * @param onClick action on day click. Click is able when date is [isAvailable]
+ * @param smallCells when true cell is fixed by width
+ * @param dateList list of [dates][DayCalculation] to show information about day limit change.
+ * @param showDots parameter to show dots (isUsed, isIncreased) from [dateList] at left and right bottom
+ * @param showRemainingDays parameter to show remaining day count at right top
+ */
 @Composable
 internal fun CalendarRangeDay(
     date: LocalDate,
@@ -265,10 +331,10 @@ internal fun CalendarRangeDay(
     isRangeStart: Boolean,
     isRangeEnd: Boolean,
     isEndSelected: Boolean,
-    existingSegments: List<ExistingRange>,
     isAvailable: Boolean,
+    existingSegments: List<ExistingRange>,
     onClick: () -> Unit,
-    isDatePicker: Boolean,
+    smallCells: Boolean,
     dateList: List<DayCalculation> = emptyList(),
     showDots: Boolean = true,
     showRemainingDays: Boolean = true,
@@ -284,17 +350,17 @@ internal fun CalendarRangeDay(
     Box(
         modifier = Modifier
             .then(
-                if (isDatePicker) {
+                if (smallCells) {
                     Modifier
-                        .height(cellSize)
-                        .width(cellSize + horizontalPadding)
+                        .height(pickerCellSize)
+                        .width(pickerCellSize + pickerHorizontalPadding)
                 } else {
-                    Modifier.height(cellLargeSize)
+                    Modifier.height(calendarCellSize)
                 }
             )
             .alpha(alpha)
             .clickableOnce(
-                enabled = isAvailable && isDatePicker,
+                enabled = isAvailable,
                 indication = CustomIndication(
                     ripple(bounded = false, radius = 28.dp)
                 ),
@@ -306,49 +372,23 @@ internal fun CalendarRangeDay(
             ExistingSegmentBackground(
                 date = date,
                 segments = existingSegments,
-                modifier = Modifier.height(cellSize)
+                modifier = Modifier.height(pickerCellSize)
             )
         }
 
-        // Background for current selection
-        if (isSelected) {
-            Box(
-                modifier = Modifier
-                    .then(
-                        if (isDatePicker) {
-                            Modifier
-                                .height(cellSize)
-                                .width(
-                                    when {
-                                        isRangeStart && (isRangeEnd || !isEndSelected) -> cellSize
-                                        isRangeStart -> cellSize + horizontalPadding
-                                        isRangeEnd -> cellSize + horizontalPadding
-                                        else -> cellSize + horizontalPadding
-                                    }
-                                )
-                        } else {
-                            Modifier.fillMaxSize()
-                        }
-                    )
-                    .padding(
-                        start = if (isRangeStart && isEndSelected) cellSize / 2 else 0.dp,
-                        end = if (isRangeEnd) cellSize / 2 else 0.dp,
-                    )
-                    .background(
-                        color = LocalCustomColors.current.calendarDay,
-                        shape = when {
-                            isRangeStart && (isRangeEnd || !isEndSelected) -> MaterialTheme.shapes.calendarCircle
-                            else -> RoundedCornerShape(0.dp)
-                        }
-                    )
-            )
-        }
+        // Background for selected range
+        SelectedRangeBackground(
+            isSelected = isSelected,
+            isRangeStart = isRangeStart,
+            isRangeEnd = isRangeEnd,
+            isEndSelected = isEndSelected,
+        )
 
         // Today indicator
         if (isToday) {
             Box(
                 modifier = Modifier
-                    .size(cellSize)
+                    .size(pickerCellSize)
                     .border(
                         width = 1.dp,
                         color = MaterialTheme.colorScheme.primary,
@@ -357,22 +397,13 @@ internal fun CalendarRangeDay(
             )
         }
 
-        // Selected Start or End Date
-        if (isRangeStart || isRangeEnd) {
-            Box(
-                modifier = Modifier
-                    .size(cellSize)
-                    .background(
-                        color = MaterialTheme.colorScheme.primary,
-                        shape = CircleShape
-                    )
-            )
-        }
+        // Background for date info (remaining days, dots)
+        DateInfo(date, dateList, showDots, showRemainingDays)
 
         // Date text
         Box(
             modifier = Modifier
-                .size(cellSize)
+                .size(pickerCellSize)
                 .align(Alignment.Center),
             contentAlignment = Alignment.Center
         ) {
@@ -388,74 +419,48 @@ internal fun CalendarRangeDay(
                 textAlign = TextAlign.Center,
             )
         }
-
-        if (!isDatePicker) {
-            val specificDate = dateList.find { date == it.date }
-            specificDate ?: return
-            if (showRemainingDays) {
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .size(labelSize)
-                        .background(
-                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.1f),
-                            shape = CircleShape
-                        )
-                        .padding(paddingInForLabels),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Text(
-                        text = specificDate.remaining.toString(),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        textAlign = TextAlign.Center,
-                    )
-                }
-            }
-            if (showDots) {
-                if (specificDate.isIncreased) {
-                    Box(
-                        modifier = Modifier
-                            .align(Alignment.BottomEnd)
-                            .padding(end = paddingOutForLabels, bottom = paddingOutForLabels)
-                            .size(labelSmallSize)
-                            .background(
-                                color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f),
-                                shape = CircleShape
-                            )
-                    )
-                }
-                if (specificDate.isUsed) {
-                    Box(
-                        modifier = Modifier
-                            .align(Alignment.BottomStart)
-                            .padding(start = paddingOutForLabels, bottom = paddingOutForLabels)
-                            .size(labelSmallSize)
-                            .background(
-                                color = MaterialTheme.colorScheme.error.copy(alpha = 0.2f),
-                                shape = CircleShape
-                            )
-                    )
-                }
-            }
-        }
     }
 }
 
+/**
+ * Background for ranges. Start and End has rounded shape
+ * (half of circle + rectangular from other end), other days rectangular for full width
+ * @param date current day for formatting
+ * @param segments ranges (segments, trips, visa validity period)
+ * with color data for view to user.
+ */
 @Composable
 private fun ExistingSegmentBackground(
     date: LocalDate,
     segments: List<ExistingRange>,
     modifier: Modifier = Modifier
 ) {
-    Box(modifier = modifier) {
+    val density = LocalDensity.current
+    var width by remember { mutableIntStateOf(0) }
+    val colorWidth = remember(width) {
+        pickerCellSize + (with(density) { width.toDp() } - pickerCellSize) / 2
+    }
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .onGloballyPositioned { width = it.size.width }
+    ) {
         segments.forEach { segment ->
             Box(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(
-                        start = if (date == segment.startDate) horizontalPadding / 6 else 0.dp,
-                        end = if (date == segment.endDate) horizontalPadding / 6 else 0.dp,
+                    .fillMaxHeight()
+                    .then(
+                        when (date) {
+                            segment.startDate -> Modifier
+                                .width(colorWidth)
+                                .align(Alignment.CenterEnd)
+
+                            segment.endDate -> Modifier
+                                .width(colorWidth)
+                                .align(Alignment.CenterStart)
+
+                            else -> Modifier.fillMaxWidth()
+                        }
                     )
                     .background(
                         color = segment.color.copy(alpha = 0.1f),
@@ -465,11 +470,150 @@ private fun ExistingSegmentBackground(
                             date == segment.endDate -> MaterialTheme.shapes.calendarEnd
                             else -> RoundedCornerShape(0.dp)
                         }
-                    ),
+                    )
+
             )
         }
     }
 }
+
+/**
+ * Background for user selected range. Start and End are bright circles.
+ * + half transparent and rectangular from other end, other days rectangular for full width
+ * @param isSelected day is within user selected range
+ * @param isRangeStart day is the start of user selected range
+ * @param isRangeEnd day is the end of user selected range
+ * @param isEndSelected end day is selected in user selected range
+ */
+@Composable
+private fun SelectedRangeBackground(
+    isSelected: Boolean,
+    isRangeStart: Boolean,
+    isRangeEnd: Boolean,
+    isEndSelected: Boolean,
+) {
+    val density = LocalDensity.current
+    var width by remember { mutableIntStateOf(0) }
+    val colorWidth = remember(width) { with(density) { width.toDp() } / 2 }
+    // Background for current selection
+    Box(
+        Modifier
+            .fillMaxSize()
+            .onGloballyPositioned {
+                width = it.size.width
+            },
+        contentAlignment = Alignment.Center
+    ) {
+        if (isSelected) {
+            Box(
+                modifier = Modifier
+                    .height(pickerCellSize)
+                    .then(
+                        when {
+                            (isRangeStart && !isEndSelected) -> Modifier.width(0.dp)
+                            isRangeStart -> Modifier
+                                .width(colorWidth)
+                                .align(Alignment.CenterEnd)
+
+                            isRangeEnd -> Modifier
+                                .width(colorWidth)
+                                .align(Alignment.CenterStart)
+
+                            else -> Modifier.fillMaxWidth()
+                        }
+                    )
+                    .background(
+                        color = LocalCustomColors.current.calendarDay,
+                        shape = RoundedCornerShape(0.dp)
+                    )
+            )
+        }
+    }
+    // Selected Start or End Date
+    if (isRangeStart || isRangeEnd) {
+        Box(
+            modifier = Modifier
+                .size(pickerCellSize)
+                .background(
+                    color = MaterialTheme.colorScheme.primary,
+                    shape = CircleShape
+                )
+        )
+    }
+}
+
+/**
+ * Additional data on dates with information about remaining days and changes.
+ * @param date current day for formatting
+ * @param dateList list of [dates][DayCalculation] to show information about day limit change.
+ * @param showDots parameter to show dots (isUsed, isIncreased) from [dateList] at left and right bottom
+ * @param showRemainingDays parameter to show remaining day count at right top
+ */
+@Composable
+private fun DateInfo(
+    date: LocalDate,
+    dateList: List<DayCalculation> = emptyList(),
+    showDots: Boolean = true,
+    showRemainingDays: Boolean = true,
+) {
+    Box(Modifier.fillMaxSize()) {
+        val specificDate = dateList.find { date == it.date }
+        specificDate ?: return
+        if (showRemainingDays) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .size(calendarLabelSize)
+                    .background(
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.1f),
+                        shape = CircleShape
+                    )
+                    .padding(calendarPaddingInForLabels),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    text = specificDate.remaining.toString(),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    textAlign = TextAlign.Center,
+                )
+            }
+        }
+        if (showDots) {
+            if (specificDate.isIncreased) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(
+                            end = calendarPaddingOutForLabels,
+                            bottom = calendarPaddingOutForLabels
+                        )
+                        .size(calendarLabelSmallSize)
+                        .background(
+                            color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.2f),
+                            shape = CircleShape
+                        )
+                )
+            }
+            if (specificDate.isUsed) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .padding(
+                            start = calendarPaddingOutForLabels,
+                            bottom = calendarPaddingOutForLabels
+                        )
+                        .size(calendarLabelSmallSize)
+                        .background(
+                            color = MaterialTheme.colorScheme.error.copy(alpha = 0.2f),
+                            shape = CircleShape
+                        )
+                )
+            }
+        }
+    }
+}
+
 
 internal fun isDateInRange(
     date: LocalDate,
@@ -480,34 +624,31 @@ internal fun isDateInRange(
     return date in start..end
 }
 
-data class ExistingRange(
-    val startDate: LocalDate,
-    val endDate: LocalDate,
-    val color: Color,
-    val id: Long? = null,
-)
-
-data class DateRangeSelection(
-    val startDate: LocalDate? = null,
-    val endDate: LocalDate? = null
-) {
-    val isComplete: Boolean get() = startDate != null && endDate != null
+private fun getVerticalPadding(isPicker: Boolean): Dp {
+    return if (isPicker) pickerVerticalPadding else calendarVerticalPadding
 }
 
-val cellSize = 40.dp
-val horizontalPadding = 8.dp
-val verticalPickerPadding = 8.dp
+private fun calculateWeekRowsForMonth(month: YearMonth): Int {
+    val firstDayOfMonth = month.atDay(1)
+    val firstDayOfWeek = (firstDayOfMonth.dayOfWeek.value + 6) % 7 // Mon=0, Sun=6
 
-fun getVerticalPadding(isPicker: Boolean): Dp {
-    return if (isPicker) verticalPickerPadding else verticalPadding
+    val totalDays = month.lengthOfMonth()
+    val totalCells = firstDayOfWeek + totalDays
+    return (totalCells + 6) / 7
 }
 
-val cellLargeSize = 60.dp
-val verticalPadding = 2.dp
-val paddingInForLabels = 2.dp
-val paddingOutForLabels = 4.dp
-val labelSmallSize = 12.dp
-val labelSize = 20.dp
+// Date Picker
+val pickerCellSize = 40.dp
+val pickerHorizontalPadding = 8.dp
+val pickerVerticalPadding = 8.dp
+
+// Calendar
+val calendarCellSize = 60.dp
+val calendarVerticalPadding = 2.dp
+val calendarPaddingInForLabels = 2.dp
+val calendarPaddingOutForLabels = 4.dp
+val calendarLabelSmallSize = 12.dp
+val calendarLabelSize = 20.dp
 
 // Preview
 @LightRUPreview
@@ -537,7 +678,8 @@ private fun MonthCalendarPreview() {
         MonthCalendar(
             selectedRange = DateRangeSelection(
                 startDate = now.plusDays(5),
-                endDate = now.plusDays(8)
+                //endDate = null
+                endDate = now.plusDays(7)
             ),
             existingSegments = listOf(
                 ExistingRange(
@@ -554,7 +696,7 @@ private fun MonthCalendarPreview() {
             availableDateRange = now.minusDays(5)..now.plusDays(60),
             month = YearMonth.of(now.year, now.month),
             onDateClick = {},
-            isDatePicker = true,
+            smallCells = false,
         )
     }
 }
