@@ -1,5 +1,6 @@
 package ru.nikfirs.android.traveltracker.feature.home.ui.screens.main
 
+import android.util.Log
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
@@ -18,8 +19,8 @@ import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.GetHomeDataU
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.HomeContract.Action
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.HomeContract.State
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.HomeContract.Effect
-import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.utils.HomeAction
-import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.utils.HomeActionModel
+import ru.nikfirs.android.traveltracker.feature.home.ui.utils.HomeAction
+import ru.nikfirs.android.traveltracker.feature.home.ui.utils.HomeActionModel
 import java.time.LocalDate
 import javax.inject.Inject
 import ru.nikfirs.android.traveltracker.core.ui.R as UiR
@@ -107,7 +108,7 @@ class HomeViewModel @Inject constructor(
                     return true
                 }
             } catch (e: Exception) {
-
+                Log.e(null, "checkTripHasOverLimitDay", e)
             }
             currentDate = currentDate.plusDays(1)
         }
@@ -123,6 +124,7 @@ class HomeViewModel @Inject constructor(
                 )
                 setState { it.copy(daysCalculation = calculation) }
             } catch (e: Exception) {
+                setError(CustomString.text(e.message))
             }
         }
     }

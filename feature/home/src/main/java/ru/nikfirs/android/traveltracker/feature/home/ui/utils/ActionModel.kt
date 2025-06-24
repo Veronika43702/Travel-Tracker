@@ -1,4 +1,4 @@
-package ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.utils
+package ru.nikfirs.android.traveltracker.feature.home.ui.utils
 
 import ru.nikfirs.android.traveltracker.core.domain.model.Trip
 import ru.nikfirs.android.traveltracker.core.domain.model.Visa

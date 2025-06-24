@@ -1,5 +1,6 @@
 package ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTrip
 
+import android.util.Log
 import dagger.hilt.android.lifecycle.HiltViewModel
 import ru.nikfirs.android.traveltracker.core.data.model.TRANSIT
 import ru.nikfirs.android.traveltracker.core.domain.MAX_STAY_DAYS
@@ -103,6 +104,7 @@ class AddTripViewModel @Inject constructor(
                 setState { it.copy(isLoading = false, tripId = tripId) }
             } catch (e: Exception) {
                 setError(CustomString.resource(uiR.string.error_loading_data))
+                Log.e(null, "loadData", e)
             }
         }
     }
@@ -140,7 +142,8 @@ class AddTripViewModel @Inject constructor(
                 )
             }
         } catch (e: Exception) {
-            setError(CustomString.resource(R.string.error_loading_trip))
+            setError(CustomString.resource(uiR.string.error_loading_data))
+            Log.e(null, "recalculateAvailableDays", e)
         }
     }
 
@@ -205,7 +208,7 @@ class AddTripViewModel @Inject constructor(
                 )
             }
 
-            // update and available days
+            // update available days
             recalculateAvailableDays()
 
             // calculate block dates when other trips exist
@@ -226,6 +229,7 @@ class AddTripViewModel @Inject constructor(
             )
         }
 
+        // update available days
         recalculateAvailableDays()
     }
 
@@ -258,6 +262,8 @@ class AddTripViewModel @Inject constructor(
                 segments = addTripHolder.segmentList
             )
         }
+
+        // update available days
         recalculateAvailableDays()
     }
 
@@ -295,6 +301,8 @@ class AddTripViewModel @Inject constructor(
     private fun removeSegment(segment: TripSegmentUi) {
         addTripHolder.deleteSegmentFromList(segment)
         setState { it.copy(segments = addTripHolder.segmentList) }
+
+        // update available days
         recalculateAvailableDays()
     }
 
@@ -341,11 +349,11 @@ class AddTripViewModel @Inject constructor(
                     periodEnd = currentState.endDate ?: LocalDate.now(),
                     tripExceptionId = currentState.tripId,
                 )
-
                 val endDaysInfo = DaysAvailableInfo(
                     used = endCalculation.totalDaysUsed + countableDays,
                     remaining = endCalculation.remainingDays - countableDays,
                 )
+
                 setState {
                     it.copy(
                         daysAvailableAtStart = startDaysInfo,
@@ -357,6 +365,7 @@ class AddTripViewModel @Inject constructor(
             } catch (e: Exception) {
                 calculateInitialDays()
                 setError(CustomString.internal())
+                Log.e(null, "recalculateAvailableDays", e)
             }
         }
     }
@@ -402,6 +411,7 @@ class AddTripViewModel @Inject constructor(
                             error = CustomString.resource(uiR.string.error_saving_trip)
                         )
                     }
+                    Log.e(null, "saveOrUpdateTrip", e)
                 }
             }
         } else {
@@ -530,6 +540,7 @@ class AddTripViewModel @Inject constructor(
                         error = CustomString.resource(uiR.string.error_saving_trip)
                     )
                 }
+                Log.e(null, "saveTripWithTransit", e)
             }
         }
     }
@@ -564,7 +575,8 @@ class AddTripViewModel @Inject constructor(
                     )
                 }
         } catch (e: Exception) {
-            setError(CustomString.text(e.message))
+            setError(CustomString.internal())
+            Log.e(null, "calculateBlockedTripDates", e)
         }
 
         return blockTripDates
@@ -608,7 +620,8 @@ class AddTripViewModel @Inject constructor(
                     break
                 }
             } catch (e: Exception) {
-                setError(CustomString.text(e.message))
+                setError(CustomString.internal())
+                Log.e(null, "calculateBlockDayLimitDates", e)
             }
             checkDate = checkDate.plusDays(1)
         }

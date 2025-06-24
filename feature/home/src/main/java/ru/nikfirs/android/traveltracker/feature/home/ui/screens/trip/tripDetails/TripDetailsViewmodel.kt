@@ -1,5 +1,6 @@
 package ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.tripDetails
 
+import android.util.Log
 import dagger.hilt.android.lifecycle.HiltViewModel
 import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
 import ru.nikfirs.android.traveltracker.core.ui.mvi.ViewModel
@@ -32,9 +33,7 @@ class TripDetailsViewModel @Inject constructor(
             Action.Delete -> deleteTrip()
             is Action.SetError -> setError(action.error)
             Action.HideDialog -> hideDialog()
-            Action.ChangeExpandSegment -> {
-                setState { it.copy(expandSegments = !currentState.expandSegments) }
-            }
+            Action.ChangeExpandSegment -> expandSegments()
         }
     }
 
@@ -72,6 +71,7 @@ class TripDetailsViewModel @Inject constructor(
                 }
             } catch (e: Exception) {
                 setError(CustomString.resource(R.string.error_loading_trip))
+                Log.e(null, "loadTrip", e)
             }
         }
     }
@@ -94,12 +94,17 @@ class TripDetailsViewModel @Inject constructor(
                 setEffect { Effect.NavigateBack }
             } catch (e: Exception) {
                 setError(CustomString.resource(R.string.error_deleting_trip))
+                Log.e(null, "deleteTrip", e)
             }
         }
     }
 
     private fun hideDialog() {
         setState { it.copy(dialogText = null) }
+    }
+
+    private fun expandSegments() {
+        setState { it.copy(expandSegments = !currentState.expandSegments) }
     }
 
     private fun setError(error: CustomString?) {

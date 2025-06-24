@@ -34,7 +34,7 @@ import ru.nikfirs.android.traveltracker.core.ui.ui.component.LightRUScreenPrevie
 import ru.nikfirs.android.traveltracker.core.ui.ui.component.Screen
 import ru.nikfirs.android.traveltracker.core.ui.mvi.LaunchedEffectResolver
 import ru.nikfirs.android.traveltracker.core.ui.ui.theme.AppTheme
-import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.utils.VisaAction
+import ru.nikfirs.android.traveltracker.feature.home.ui.utils.VisaAction
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.visaDetails.VisaDetailsContract.Action
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.visaDetails.VisaDetailsContract.Effect
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.visaDetails.VisaDetailsContract.State

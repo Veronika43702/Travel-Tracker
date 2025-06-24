@@ -9,8 +9,6 @@ import javax.inject.Singleton
 @Singleton
 class AddTripHolder @Inject constructor() {
 
-//    var segmentsUpdated = false
-
     var tripStartDate: LocalDate? = null
         private set
 
@@ -25,8 +23,7 @@ class AddTripHolder @Inject constructor() {
     var currentSegment: TripSegmentUi? = null
         private set
 
-    var segmentIndex: Int? = null
-        private set
+    private var segmentIndex: Int? = null
 
     fun getSegmentColor(): Color {
         return segmentIndex?.let { getTripSegmentColorByIndex(it) }
@@ -42,7 +39,6 @@ class AddTripHolder @Inject constructor() {
             .mapIndexed { index, item ->
                 item.copy(color = getTripSegmentColorByIndex(index))
             }
-//        segmentsUpdated = true
     }
 
     fun getSegmentCities(): String {
@@ -53,7 +49,6 @@ class AddTripHolder @Inject constructor() {
         segmentList = segmentList.filter { it != segment }.mapIndexed { index, item ->
             item.copy(color = getTripSegmentColorByIndex(index))
         }
-//        segmentsUpdated = true
     }
 
     /**

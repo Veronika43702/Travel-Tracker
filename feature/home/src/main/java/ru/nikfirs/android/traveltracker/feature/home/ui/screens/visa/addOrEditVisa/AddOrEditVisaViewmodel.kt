@@ -1,6 +1,8 @@
 package ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.addOrEditVisa
 
+import android.util.Log
 import dagger.hilt.android.lifecycle.HiltViewModel
+import ru.nikfirs.android.traveltracker.core.domain.MAX_STAY_DAYS
 import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
 import ru.nikfirs.android.traveltracker.core.domain.model.Visa
 import ru.nikfirs.android.traveltracker.core.domain.model.VisaCategory
@@ -70,6 +72,7 @@ class AddOrEditVisaViewModel @Inject constructor(
                 )
             } catch (e: Exception) {
                 setError(CustomString.resource(uiR.string.error_loading_data))
+                Log.e(null, "loadVisa", e)
             }
         }
     }
@@ -99,7 +102,8 @@ class AddOrEditVisaViewModel @Inject constructor(
         ) + 1)
 
         val stayDuration = when (currentState.visaType) {
-            VisaCategory.TYPE_C -> (if (visaDuration < 90) visaDuration else 90).toString()
+            VisaCategory.TYPE_C -> (
+                    if (visaDuration < MAX_STAY_DAYS) visaDuration else MAX_STAY_DAYS).toString()
             else -> (ChronoUnit.DAYS.between(
                 currentState.startDate,
                 currentState.expiryDate
@@ -107,7 +111,6 @@ class AddOrEditVisaViewModel @Inject constructor(
         }
         setState { it.copy(durationOfStay = stayDuration) }
     }
-
 
     private fun updateCountry(country: String) {
         setState {
@@ -201,12 +204,8 @@ class AddOrEditVisaViewModel @Inject constructor(
                     setEffect { Effect.NavigateBack }
 
                 } catch (e: Exception) {
-                    setState {
-                        it.copy(
-                            isLoading = false,
-                            error = CustomString.resource(uiR.string.error_saving_visa)
-                        )
-                    }
+                    setError(CustomString.resource(uiR.string.error_saving_visa))
+                    Log.e(null, "saveOrUpdateVisa", e)
                 }
             }
         } else {

@@ -1,5 +1,6 @@
 package ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.visaDetails
 
+import android.util.Log
 import dagger.hilt.android.lifecycle.HiltViewModel
 import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
 import ru.nikfirs.android.traveltracker.core.ui.R as uiR
@@ -8,7 +9,7 @@ import ru.nikfirs.android.traveltracker.core.ui.mvi.launch
 import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.visa.DeactivateVisaByIdUseCase
 import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.visa.DeleteVisaUseCase
 import ru.nikfirs.android.traveltracker.core.ui.domain.usecase.visa.GetVisaByIdUseCase
-import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.utils.VisaAction
+import ru.nikfirs.android.traveltracker.feature.home.ui.utils.VisaAction
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.visaDetails.VisaDetailsContract.Action
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.visaDetails.VisaDetailsContract.Effect
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.visaDetails.VisaDetailsContract.State
@@ -45,6 +46,7 @@ class VisaDetailsViewModel @Inject constructor(
                 )
             } catch (e: Exception) {
                 setError(CustomString.resource(uiR.string.error_loading_data))
+                Log.e(null, "loadVisa", e)
             }
         }
     }
@@ -68,6 +70,7 @@ class VisaDetailsViewModel @Inject constructor(
                 } ?: setError(CustomString.resource(uiR.string.error_visa_not_found))
             } catch (e: Exception) {
                 setError(CustomString.resource(uiR.string.error_updating_data))
+                Log.e(null, "annulVisa", e)
             }
         }
     }
@@ -92,6 +95,7 @@ class VisaDetailsViewModel @Inject constructor(
                 setEffect { Effect.NavigateBack }
             } catch (e: Exception) {
                 setError(CustomString.resource(uiR.string.error_deleting_data))
+                Log.e(null, "deleteVisa", e)
             }
         }
     }

@@ -71,7 +71,7 @@ import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.HomeContrac
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.components.DaysCounterCard
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.components.SwipeableTripCard
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.components.SwipeableVisaCard
-import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.utils.HomeAction
+import ru.nikfirs.android.traveltracker.feature.home.ui.utils.HomeAction
 import java.time.LocalDate
 
 @Composable
