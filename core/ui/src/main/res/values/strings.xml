@@ -130,7 +130,7 @@
     <string name="country">Страна</string>
     <string name="issue_date">Дата начала</string>
     <string name="expiry_date">Дата окончания</string>
-    <string name="duration_of_stay">Продолжительность пребывания</string>
+    <string name="visa_duration_of_stay">Продолжительность пребывания</string>
     <string name="days">дней</string>
     <string name="entries_type">Тип въезда</string>
     <string name="entries_single">Однократная</string>
@@ -165,20 +165,23 @@
     <string name="success_visa_added">Виза успешно добавлена</string>
 
     <!-- Add Trip Screen -->
+
+
+    <!-- Add Trip Screen -->
     <string name="add_trip_title">Добавить поездку</string>
     <string name="visa_section">Виза</string>
     <string name="no_available_visas">Нет доступных виз</string>
     <string name="visa_validity_period">%1$s — %2$s</string>
     <string name="selected_visa_validity">Виза действует: %1$s — %2$s</string>
     <string name="select_purpose">Выберите цель поездки</string>
-    <string name="trip_dates_section">Даты поездки</string>
+
     <string name="start_date">Дата начала</string>
     <string name="end_date">Дата окончания</string>
     <string name="trip_duration">Общая длительность</string>
     <string name="countable_days_count">учитывается %d дн.</string>
     <string name="days_available_at_start">Доступно дней на начало</string>
     <string name="days_available_at_end">Доступно дней на конец</string>
-    <string name="trip_purpose_section">Цель поездки</string>
+
     <string name="purpose_tourism">Туризм</string>
     <string name="purpose_business">Бизнес</string>
     <string name="purpose_family">Семейные обстоятельства</string>
@@ -186,7 +189,6 @@
     <string name="purpose_education">Образование</string>
     <string name="purpose_other">Другое</string>
     <string name="select_visa">Выберите визу</string>
-    <string name="trip_segments_section">Сегменты поездки</string>
     <string name="add_segment">Добавить сегмент</string>
     <string name="segment_country">Страна</string>
     <string name="segment_dates">Даты пребывания</string>

@@ -42,7 +42,7 @@ import ru.nikfirs.android.traveltracker.core.domain.model.TripPurpose
 import ru.nikfirs.android.traveltracker.core.domain.model.Visa
 import ru.nikfirs.android.traveltracker.core.domain.model.VisaCategory
 import ru.nikfirs.android.traveltracker.core.domain.model.VisaEntries
-import ru.nikfirs.android.traveltracker.core.ui.R
+import ru.nikfirs.android.traveltracker.core.ui.R as uiR
 import ru.nikfirs.android.traveltracker.core.ui.ui.component.CustomButton
 import ru.nikfirs.android.traveltracker.core.ui.ui.component.CustomCalendarRangePicker
 import ru.nikfirs.android.traveltracker.core.ui.ui.component.CustomOutlinedButton
@@ -60,6 +60,7 @@ import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.components.
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTrip.AddTripContract.Action
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTrip.AddTripContract.Effect
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTrip.AddTripContract.State
+import ru.nikfirs.android.traveltracker.feature.home.R
 import java.time.LocalDate
 import java.time.YearMonth
 
@@ -99,7 +100,7 @@ fun AddTripScreen(
         navigateBack()
     }
     Screen(
-        topTitle = stringResource(R.string.add_trip_title),
+        topTitle = stringResource(uiR.string.add_trip_title),
         navigateBack = {
             viewModel.addTripHolder.clear()
             navigateBack()
@@ -137,7 +138,7 @@ private fun AddTripScreenContent(
         // Visa
         Column {
             Text(
-                text = stringResource(R.string.visa_section),
+                text = stringResource(uiR.string.visa_section),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.primary
             )
@@ -151,18 +152,18 @@ private fun AddTripScreenContent(
                         state.selectedVisa != null -> {
                             val visa = state.selectedVisa
                             val typeText = when (visa.visaType) {
-                                VisaCategory.TYPE_C -> stringResource(R.string.visa_type_c_short)
-                                VisaCategory.TYPE_D -> stringResource(R.string.visa_type_d_short)
-                                VisaCategory.RESIDENCE_PERMIT -> stringResource(R.string.visa_type_residence_short)
+                                VisaCategory.TYPE_C -> stringResource(uiR.string.visa_type_c_short)
+                                VisaCategory.TYPE_D -> stringResource(uiR.string.visa_type_d_short)
+                                VisaCategory.RESIDENCE_PERMIT -> stringResource(uiR.string.visa_type_residence_short)
                             }
                             "$typeText (${visa.visaNumber}) ${visa.country}"
                         }
 
-                        state.availableVisas.isEmpty() -> stringResource(R.string.no_available_visas)
+                        state.availableVisas.isEmpty() -> stringResource(uiR.string.no_available_visas)
                         else -> ""
                     },
                     required = true,
-                    label = stringResource(R.string.select_visa),
+                    label = stringResource(uiR.string.select_visa),
                     trailingIconImage = Icons.Default.KeyboardArrowDown,
                     isError = state.validationErrors.visaError != null,
                     supportingText = state.validationErrors.visaError?.asString(),
@@ -177,7 +178,7 @@ private fun AddTripScreenContent(
                 ) {
                     if (state.availableVisas.isEmpty()) {
                         DropdownMenuItem(
-                            text = { Text(stringResource(R.string.no_available_visas)) },
+                            text = { Text(stringResource(uiR.string.no_available_visas)) },
                             onClick = { },
                             enabled = false
                         )
@@ -187,14 +188,14 @@ private fun AddTripScreenContent(
                                 text = {
                                     Column {
                                         val typeText = when (visa.visaType) {
-                                            VisaCategory.TYPE_C -> stringResource(R.string.visa_type_c_short)
-                                            VisaCategory.TYPE_D -> stringResource(R.string.visa_type_d_short)
-                                            VisaCategory.RESIDENCE_PERMIT -> stringResource(R.string.visa_type_residence_short)
+                                            VisaCategory.TYPE_C -> stringResource(uiR.string.visa_type_c_short)
+                                            VisaCategory.TYPE_D -> stringResource(uiR.string.visa_type_d_short)
+                                            VisaCategory.RESIDENCE_PERMIT -> stringResource(uiR.string.visa_type_residence_short)
                                         }
                                         Text("$typeText (${visa.visaNumber}) ${visa.country}")
                                         Text(
                                             text = stringResource(
-                                                R.string.visa_validity_period,
+                                                uiR.string.visa_validity_period,
                                                 visa.startDate.format(state.dateFormatter),
                                                 visa.expiryDate.format(state.dateFormatter)
                                             ),
@@ -221,7 +222,7 @@ private fun AddTripScreenContent(
                 ) {
                     Text(
                         text = stringResource(
-                            R.string.selected_visa_validity,
+                            uiR.string.selected_visa_validity,
                             visa.startDate.format(state.dateFormatter),
                             visa.expiryDate.format(state.dateFormatter)
                         ),
@@ -245,10 +246,10 @@ private fun AddTripScreenContent(
                 state.startDate.format(state.dateFormatter) +
                         " - " + state.endDate.format(state.dateFormatter)
             } else "",
-            label = stringResource(R.string.calendar_select_dates),
+            label = stringResource(uiR.string.calendar_select_dates),
             required = true,
             enabled = state.hasSelectedVisa,
-            trailingIcon = R.drawable.ic_calendar_today,
+            trailingIcon = uiR.drawable.ic_calendar_today,
             onClick = {
                 focusManager.clearFocus()
                 onAction(Action.ShowDatePicker(true))
@@ -283,14 +284,14 @@ private fun AddTripScreenContent(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
-                            text = stringResource(R.string.trip_duration),
+                            text = stringResource(uiR.string.trip_duration),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onTertiaryContainer
                         )
                         Column(horizontalAlignment = Alignment.End) {
                             Text(
                                 text = pluralStringResource(
-                                    R.plurals.days_count,
+                                    uiR.plurals.days_count,
                                     state.totalDuration.toInt(),
                                     state.totalDuration
                                 ),
@@ -300,7 +301,7 @@ private fun AddTripScreenContent(
                             if (state.hasExemptSegments) {
                                 Text(
                                     text = stringResource(
-                                        R.string.countable_days_count,
+                                        uiR.string.countable_days_count,
                                         state.countableDuration
                                     ),
                                     style = MaterialTheme.typography.bodySmall,
@@ -316,7 +317,7 @@ private fun AddTripScreenContent(
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Text(
-                                text = stringResource(R.string.days_available_at_start),
+                                text = stringResource(uiR.string.days_available_at_start),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onTertiaryContainer
                             )
@@ -334,7 +335,7 @@ private fun AddTripScreenContent(
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Text(
-                                text = stringResource(R.string.days_available_at_end),
+                                text = stringResource(uiR.string.days_available_at_end),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onTertiaryContainer
                             )
@@ -374,16 +375,16 @@ private fun AddTripScreenContent(
         ) {
             CustomTextFieldButton(
                 text = when (state.purpose) {
-                    TripPurpose.TOURISM -> stringResource(R.string.purpose_tourism)
-                    TripPurpose.BUSINESS -> stringResource(R.string.purpose_business)
-                    TripPurpose.FAMILY -> stringResource(R.string.purpose_family)
-                    TripPurpose.MEDICAL -> stringResource(R.string.purpose_medical)
-                    TripPurpose.EDUCATION -> stringResource(R.string.purpose_education)
-                    TripPurpose.OTHER -> stringResource(R.string.purpose_other)
+                    TripPurpose.TOURISM -> stringResource(uiR.string.purpose_tourism)
+                    TripPurpose.BUSINESS -> stringResource(uiR.string.purpose_business)
+                    TripPurpose.FAMILY -> stringResource(uiR.string.purpose_family)
+                    TripPurpose.MEDICAL -> stringResource(uiR.string.purpose_medical)
+                    TripPurpose.EDUCATION -> stringResource(uiR.string.purpose_education)
+                    TripPurpose.OTHER -> stringResource(uiR.string.purpose_other)
                 },
                 required = true,
                 enabled = state.hasSelectedVisa,
-                label = stringResource(R.string.select_purpose),
+                label = stringResource(uiR.string.select_purpose),
                 trailingIconImage = Icons.Default.KeyboardArrowDown,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -399,12 +400,12 @@ private fun AddTripScreenContent(
                         text = {
                             Text(
                                 when (purpose) {
-                                    TripPurpose.TOURISM -> stringResource(R.string.purpose_tourism)
-                                    TripPurpose.BUSINESS -> stringResource(R.string.purpose_business)
-                                    TripPurpose.FAMILY -> stringResource(R.string.purpose_family)
-                                    TripPurpose.MEDICAL -> stringResource(R.string.purpose_medical)
-                                    TripPurpose.EDUCATION -> stringResource(R.string.purpose_education)
-                                    TripPurpose.OTHER -> stringResource(R.string.purpose_other)
+                                    TripPurpose.TOURISM -> stringResource(uiR.string.purpose_tourism)
+                                    TripPurpose.BUSINESS -> stringResource(uiR.string.purpose_business)
+                                    TripPurpose.FAMILY -> stringResource(uiR.string.purpose_family)
+                                    TripPurpose.MEDICAL -> stringResource(uiR.string.purpose_medical)
+                                    TripPurpose.EDUCATION -> stringResource(uiR.string.purpose_education)
+                                    TripPurpose.OTHER -> stringResource(uiR.string.purpose_other)
                                 }
                             )
                         },
@@ -445,13 +446,14 @@ private fun AddTripScreenContent(
 
             // Button Add Segment
             CustomOutlinedButton(
-                text = stringResource(R.string.add_segment),
+                text = stringResource(uiR.string.add_segment),
                 onClick = {
                     focusManager.clearFocus()
                     onAction(Action.OpenAddSegmentEditor)
                 },
                 enabled = state.hasSelectedVisa && state.hasSelectedDates,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
                     .padding(top = if (state.segments.isNotEmpty()) 16.dp else 0.dp),
                 iconImage = Icons.Default.Add,
             )
@@ -462,7 +464,7 @@ private fun AddTripScreenContent(
             value = state.notes,
             onValueChange = { onAction(Action.UpdateNotes(it)) },
             enabled = state.hasSelectedVisa,
-            label = stringResource(R.string.notes_optional),
+            label = stringResource(uiR.string.notes_optional),
             modifier = Modifier.fillMaxWidth(),
             minLines = 3,
             maxLines = 5,
@@ -472,7 +474,7 @@ private fun AddTripScreenContent(
 
         // Button Save
         CustomButton(
-            text = stringResource(R.string.action_save),
+            text = stringResource(uiR.string.action_save),
             onClick = { onAction(Action.SaveTrip) },
             enabled = state.hasSelectedVisa,
             modifier = Modifier

@@ -88,7 +88,7 @@ fun TripDetailsScreen(
     }
 
     Screen(
-        topTitle = stringResource(R.string.trip_details_title),
+        topTitle = stringResource(R.string.home_trip_details_title),
         navigateBack = navigateBack,
     ) {
         TripDetailsContent(
@@ -225,27 +225,27 @@ private fun TripInfoSection(
     ) {
         // Trip Dates
         InfoDataBox(
-            header = stringResource(R.string.trip_details_dates),
+            header = stringResource(R.string.trip_dates_section),
             data = "${trip.startDate?.format(dateFormatter)} - ${trip.endDate?.format(dateFormatter)}"
         )
 
         // Duration
         InfoDataBox(
-            header = stringResource(R.string.trip_duration_info),
+            header = stringResource(R.string.home_trip_details_duration),
             data = if (trip.hasExemptSegment) {
                 stringResource(
-                    R.string.days_total_counted,
+                    R.string.home_trip_details_days_total_counted,
                     trip.duration.toInt(),
                     trip.countableDays
                 )
             } else {
-                stringResource(R.string.days_total_only, trip.duration.toInt())
+                stringResource(R.string.home_trip_details_days_total_only, trip.duration.toInt())
             }
         )
 
         // Purpose
         InfoDataBox(
-            header = stringResource(R.string.trip_purpose),
+            header = stringResource(R.string.trip_purpose_section),
             data = when (trip.purpose) {
                 TripPurpose.TOURISM -> stringResource(uiR.string.purpose_tourism)
                 TripPurpose.BUSINESS -> stringResource(uiR.string.purpose_business)
@@ -264,7 +264,7 @@ private fun TripInfoSection(
                 VisaCategory.RESIDENCE_PERMIT -> stringResource(ru.nikfirs.android.traveltracker.core.ui.R.string.visa_type_residence_short)
             }
             InfoDataBox(
-                header = stringResource(R.string.linked_visa),
+                header = stringResource(uiR.string.visa_section),
                 data = "$typeText (${visa.visaNumber}) ${visa.country}",
                 dataColor = MaterialTheme.colorScheme.primary,
                 onDataClick = { onVisaClick(visaId) }
@@ -308,7 +308,7 @@ private fun TripSegmentsSection(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                text = stringResource(R.string.trip_segments),
+                text = stringResource(R.string.trip_segments_section),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.primary
             )

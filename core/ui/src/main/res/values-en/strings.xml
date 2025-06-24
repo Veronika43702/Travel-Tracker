@@ -124,7 +124,7 @@
     <string name="country">Country</string>
     <string name="issue_date">Start Date</string>
     <string name="expiry_date">Expiry Date</string>
-    <string name="duration_of_stay">Duration of Stay</string>
+    <string name="visa_duration_of_stay">Duration of Stay</string>
     <string name="days">days</string>
     <string name="entries_type">Entry Type</string>
     <string name="entries_single">Single Entry</string>
@@ -169,14 +169,12 @@
     <string name="visa_validity_period">%1$s — %2$s</string>
     <string name="selected_visa_validity">Visa valid: %1$s — %2$s</string>
     <string name="select_purpose">Select trip purpose</string>
-    <string name="trip_dates_section">Trip Dates</string>
     <string name="start_date">Start Date</string>
     <string name="end_date">End Date</string>
     <string name="trip_duration">Total Duration</string>
     <string name="countable_days_count">counted %d days</string>
     <string name="days_available_at_start">Available days at start</string>
     <string name="days_available_at_end">Available days at end</string>
-    <string name="trip_purpose_section">Trip Purpose</string>
     <string name="purpose_tourism">Tourism</string>
     <string name="purpose_business">Business</string>
     <string name="purpose_family">Family</string>
@@ -184,7 +182,6 @@
     <string name="purpose_education">Education</string>
     <string name="purpose_other">Other</string>
     <string name="select_visa">Select Visa</string>
-    <string name="trip_segments_section">Trip Segments</string>
     <string name="add_segment">Add Segment</string>
     <string name="segment_country">Country</string>
     <string name="segment_dates">Dates of Stay</string>

@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Trip Details Screen -->
-    <string name="trip_details_title">Детали поездки</string>
-    <string name="trip_details_dates">Даты поездки</string>
-    <string name="trip_duration_info">Продолжительность</string>
-    <string name="trip_purpose">Цель поездки</string>
-    <string name="linked_visa">Связанная виза</string>
-    <string name="trip_segments">Сегменты поездки</string>
-    <string name="days_total_counted">%1$d дн. всего, %2$d дн. учитывается</string>
-    <string name="days_total_only">%1$d дн. всего</string>
-    <string name="no_linked_visa">Виза не указана</string>
+    <!-- Trip-->
+    <string name="trip_dates_section">Даты поездки</string>
+    <string name="trip_purpose_section">Цель поездки</string>
+    <string name="trip_segments_section">Сегменты поездки</string>
 
-    <!-- Trip Status -->
+    <!-- Trip Details Screen -->
+    <string name="home_trip_details_title">Детали поездки</string>
+    <string name="home_trip_details_duration">Продолжительность</string>
+    <string name="home_trip_details_days_total_counted">%1$d дн. всего, %2$d дн. учитывается</string>
+    <string name="home_trip_details_days_total_only">%1$d дн. всего</string>
+
+    <!-- Trip Status TODO -->
     <string name="trip_status_ongoing_details">Текущая</string>
     <string name="trip_status_planned_details">Запланированная</string>
     <string name="trip_status_completed_details">Завершенная</string>

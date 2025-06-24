@@ -191,7 +191,7 @@ fun VisaInfoBox(
 
     if (visa.visaType == VisaCategory.TYPE_C) {
         InfoDataBox(
-            header = stringResource(uiR.string.duration_of_stay),
+            header = stringResource(uiR.string.visa_duration_of_stay),
             data = visa.durationOfStay.toString(),
         )
         InfoDataBox(

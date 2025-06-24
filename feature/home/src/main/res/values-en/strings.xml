@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Trip -->
+    <string name="trip_dates_section">Trip Dates</string>
+    <string name="trip_purpose_section">Trip Purpose</string>
+    <string name="trip_segments_section">Trip Segments</string>
+
     <!-- Trip Details Screen -->
-    <string name="trip_details_title">Trip Details</string>
-    <string name="trip_details_dates">Trip Dates</string>
-    <string name="trip_duration_info">Duration</string>
-    <string name="trip_purpose">Purpose</string>
-    <string name="linked_visa">Linked Visa</string>
-    <string name="trip_segments">Trip Segments</string>
-    <string name="days_total_counted">%1$d days total, %2$d days counted</string>
-    <string name="days_total_only">%1$d days total</string>
-    <string name="no_linked_visa">No visa linked</string>
+    <string name="home_trip_details_title">Trip Details</string>
+    <string name="home_trip_details_duration">Duration</string>
+    <string name="home_trip_details_days_total_counted">%1$d days total, %2$d days counted</string>
+    <string name="home_trip_details_days_total_only">%1$d days total</string>
 
     <!-- Trip Status -->
     <string name="trip_status_ongoing_details">Ongoing</string>

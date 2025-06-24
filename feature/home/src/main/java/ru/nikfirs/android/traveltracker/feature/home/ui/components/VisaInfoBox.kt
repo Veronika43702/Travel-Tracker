@@ -130,7 +130,7 @@ internal fun VisaInfoBox(
         CustomTextField(
             value = durationOfStay,
             onValueChange = updateDurationOfStay,
-            label = stringResource(R.string.duration_of_stay),
+            label = stringResource(R.string.visa_duration_of_stay),
             required = true,
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
