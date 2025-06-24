@@ -10,6 +10,6 @@ class GetVisaFlowByDateUseCase @Inject constructor(
     private val visaRepository: VisaRepository
 ) {
     operator fun invoke(startDate: LocalDate, onlyActive: Boolean = false): Flow<List<Visa>> {
-        return visaRepository.getVisasByDate(startDate, onlyActive)
+        return visaRepository.getVisaFlowByDate(startDate, onlyActive)
     }
 }

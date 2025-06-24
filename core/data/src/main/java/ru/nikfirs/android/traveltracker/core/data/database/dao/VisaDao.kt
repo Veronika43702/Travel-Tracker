@@ -19,6 +19,26 @@ interface VisaDao {
     """)
     fun getVisaFlowByDate(startDate: LocalDate, onlyActive: Boolean): Flow<List<VisaEntity>>
 
+    @Query("""
+        SELECT v.* FROM visas v
+        LEFT JOIN (
+            SELECT visaId, COUNT(*) as trip_count 
+            FROM trips 
+            WHERE visaId IS NOT NULL 
+            GROUP BY visaId
+        ) t ON v.id = t.visaId
+        WHERE v.isActive = 1
+        AND v.expiryDate > :startDate
+        AND (
+            (v.entries = 'SINGLE' AND COALESCE(t.trip_count, 0) < 1) OR
+            (v.entries = 'DOUBLE' AND COALESCE(t.trip_count, 0) < 2) OR
+            (v.entries = 'MULTI')
+        )
+        ORDER BY v.startDate DESC
+    """)
+    fun getAvailableVisaByDate(startDate: LocalDate): List<VisaEntity>
+
+
     @Query("SELECT * FROM visas WHERE visaCategory = :category ORDER BY expiryDate DESC")
     fun getVisasByCategory(category: VisaCategory): Flow<List<VisaEntity>>
 

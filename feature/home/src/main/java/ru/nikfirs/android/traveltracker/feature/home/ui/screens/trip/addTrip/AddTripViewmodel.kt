@@ -1,7 +1,6 @@
 package ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTrip
 
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.first
 import ru.nikfirs.android.traveltracker.core.data.model.TRANSIT
 import ru.nikfirs.android.traveltracker.core.domain.MAX_STAY_DAYS
 import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
@@ -21,8 +20,8 @@ import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.trip.GetTrip
 import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.trip.GetTripsByDatesUseCase
 import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.trip.SaveTripUseCase
 import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.trip.UpdateTripUseCase
+import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.visa.GetAvailableVisasByDateUseCase
 import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.visa.GetVisaByIdUseCase
-import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.visa.GetVisasByDateUseCase
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTrip.AddTripContract.Action
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTrip.AddTripContract.DaysAvailableInfo
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTrip.AddTripContract.Effect
@@ -37,7 +36,7 @@ import ru.nikfirs.android.traveltracker.core.ui.R as uiR
 
 @HiltViewModel
 class AddTripViewModel @Inject constructor(
-    private val getVisasByDateUseCase: GetVisasByDateUseCase,
+    private val getAvailableVisasByDateUseCase: GetAvailableVisasByDateUseCase,
     private val calculateDaysInPeriodUseCase: CalculateDaysInPeriodUseCase,
     private val saveTripUseCase: SaveTripUseCase,
     private val updateTripUseCase: UpdateTripUseCase,
@@ -85,10 +84,9 @@ class AddTripViewModel @Inject constructor(
             setState { it.copy(isLoading = true) }
 
             try {
-                val visas = getVisasByDateUseCase(
-                    LocalDate.now().minusMonths(6),
-                    true
-                ).first()
+                val visas = getAvailableVisasByDateUseCase.invoke(
+                    LocalDate.now().minusMonths(6)
+                )
                 setState { it.copy(availableVisas = visas) }
 
                 if (!currentState.hasSelectedVisa) {

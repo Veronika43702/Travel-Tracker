@@ -7,7 +7,8 @@ import java.time.LocalDate
 
 interface VisaRepository {
     fun getAllVisas(): Flow<List<Visa>>
-    fun getVisasByDate(startDate: LocalDate, onlyActive: Boolean): Flow<List<Visa>>
+    fun getVisaFlowByDate(startDate: LocalDate, onlyActive: Boolean): Flow<List<Visa>>
+    fun getAvailableVisasByDate(startDate: LocalDate): List<Visa>
     fun getVisasByType(type: VisaCategory): Flow<List<Visa>>
     suspend fun getVisaById(visaId: Long): Visa?
     suspend fun insertVisa(visa: Visa): Long
