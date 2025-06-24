@@ -13,6 +13,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -51,6 +52,40 @@ fun CustomButton(
         onClick = onClick,
         shape = MaterialTheme.shapes.button,
         colors = colors,
+        modifier = modifier.defaultMinSize(minWidth = 100.dp),
+        enabled = enabled,
+        contentPadding = PaddingValues(vertical = 4.dp, horizontal = 12.dp)
+    ) {
+        iconRes?.let {
+            Icon(painter = painterResource(it), contentDescription = null)
+        } ?: iconImage?.let { Icon(it, contentDescription = null) }
+        if (iconRes != null || iconImage != null) {
+            Spacer(modifier = Modifier.width(8.dp))
+        }
+        Text(
+            text,
+            style = if (smallButton) {
+                LocalTextStyle.current
+            } else MaterialTheme.typography.titleSmall,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(vertical = if (smallButton) 8.dp else 14.5.dp)
+        )
+    }
+}
+
+@Composable
+fun CustomOutlinedButton(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    @DrawableRes iconRes: Int? = null,
+    iconImage: ImageVector? = null,
+    smallButton: Boolean = false,
+    enabled: Boolean = true,
+) {
+    OutlinedButton(
+        onClick = onClick,
+        shape = MaterialTheme.shapes.button,
         modifier = modifier.defaultMinSize(minWidth = 100.dp),
         enabled = enabled,
         contentPadding = PaddingValues(vertical = 4.dp, horizontal = 12.dp)

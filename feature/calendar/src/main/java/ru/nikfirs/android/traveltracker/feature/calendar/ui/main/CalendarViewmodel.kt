@@ -7,8 +7,9 @@ import ru.nikfirs.android.traveltracker.core.domain.PERIOD_DAYS
 import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
 import ru.nikfirs.android.traveltracker.core.domain.model.Trip
 import ru.nikfirs.android.traveltracker.core.domain.model.Visa
-import ru.nikfirs.android.traveltracker.core.ui.component.DayCalculation
-import ru.nikfirs.android.traveltracker.core.ui.component.ExistingRange
+import ru.nikfirs.android.traveltracker.core.ui.model.DateType
+import ru.nikfirs.android.traveltracker.core.ui.model.DayCalculation
+import ru.nikfirs.android.traveltracker.core.ui.model.ExistingRange
 import ru.nikfirs.android.traveltracker.core.ui.mvi.ViewModel
 import ru.nikfirs.android.traveltracker.core.ui.mvi.launch
 import ru.nikfirs.android.traveltracker.core.ui.theme.CalendarGray
@@ -60,7 +61,10 @@ class CalendarViewmodel @Inject constructor(
                 ) { trips, visas ->
                     Pair(trips, visas)
                 }.collectLatest { (trips, visas) ->
-                    val dateRange = calculateAvailableDateRange(trips)
+                    val dateRange = calculateAvailableDateRange(
+                        trips = trips,
+                        visaExpiryDate = visas.maxOf { it.expiryDate }
+                    )
                     val tripRanges = createTripRanges(trips)
                     val visaRanges = createVisaRanges(visas)
                     val dateList = createDateList(trips, dateRange)
@@ -90,6 +94,7 @@ class CalendarViewmodel @Inject constructor(
      */
     private fun calculateAvailableDateRange(
         trips: List<Trip>,
+        visaExpiryDate: LocalDate,
     ): ClosedRange<LocalDate> {
         val today = LocalDate.now()
         val defaultStartDate = today.minusDays(PERIOD_DAYS.toLong())
@@ -108,7 +113,7 @@ class CalendarViewmodel @Inject constructor(
             .filter { it.isFuture && it.endDate != null }
             .maxByOrNull { it.endDate ?: defaultEndDate }
 
-        val endDate = maxOf(latestFutureTrip?.endDate ?: defaultEndDate, defaultEndDate)
+        val endDate = maxOf(latestFutureTrip?.endDate ?: defaultEndDate, visaExpiryDate)
 
         return startDate.withDayOfMonth(1)..endDate.withDayOfMonth(endDate.lengthOfMonth())
     }
@@ -135,7 +140,7 @@ class CalendarViewmodel @Inject constructor(
                 startDate = startDate,
                 endDate = endDate,
                 color = color,
-                id = trip.id
+                type = DateType.Trip(trip.id)
             )
         }
     }
@@ -150,7 +155,7 @@ class CalendarViewmodel @Inject constructor(
                 startDate = visa.startDate,
                 endDate = visa.expiryDate,
                 color = color,
-                id = visa.id
+                type = DateType.Visa(visa.id)
             )
         }
     }

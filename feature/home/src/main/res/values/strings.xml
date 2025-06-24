@@ -21,6 +21,8 @@
     <string name="error_loading_trip">Ошибка загрузки поездки</string>
     <string name="error_deleting_trip">Ошибка удаления поездки</string>
 
+    <string name="trip_over_limit_warning">В поездке есть дни, превышающие лимит. Обновите данные</string>
+
     <!-- Success Messages -->
     <string name="trip_deleted_successfully">Поездка успешно удалена</string>
 </resources>

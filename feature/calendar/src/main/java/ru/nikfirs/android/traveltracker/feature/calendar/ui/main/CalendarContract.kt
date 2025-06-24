@@ -2,8 +2,8 @@ package ru.nikfirs.android.traveltracker.feature.calendar.ui.main
 
 import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
 import ru.nikfirs.android.traveltracker.core.domain.model.Trip
-import ru.nikfirs.android.traveltracker.core.ui.component.DayCalculation
-import ru.nikfirs.android.traveltracker.core.ui.component.ExistingRange
+import ru.nikfirs.android.traveltracker.core.ui.model.DayCalculation
+import ru.nikfirs.android.traveltracker.core.ui.model.ExistingRange
 import ru.nikfirs.android.traveltracker.core.ui.mvi.MviAction
 import ru.nikfirs.android.traveltracker.core.ui.mvi.MviEffect
 import ru.nikfirs.android.traveltracker.core.ui.mvi.MviState

@@ -50,7 +50,6 @@ sealed class HomeContract {
 
     sealed class Action : MviAction {
         data object LoadData : Action()
-        data object RefreshData : Action()
         data object UpdateDaysCalculation: Action()
         data class SelectTab(val tab: HomeTab) : Action()
         data object NavigateToAddVisa : Action()

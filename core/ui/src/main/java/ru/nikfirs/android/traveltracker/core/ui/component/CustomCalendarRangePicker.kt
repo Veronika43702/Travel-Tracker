@@ -10,10 +10,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -24,6 +26,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import ru.nikfirs.android.traveltracker.core.ui.R
+import ru.nikfirs.android.traveltracker.core.ui.model.BlockDateModel
+import ru.nikfirs.android.traveltracker.core.ui.model.DateRangeSelection
+import ru.nikfirs.android.traveltracker.core.ui.model.ExistingRange
 import ru.nikfirs.android.traveltracker.core.ui.theme.AppTheme
 import java.time.LocalDate
 import java.time.YearMonth
@@ -38,7 +43,8 @@ fun CustomCalendarRangePicker(
     currentMonth: YearMonth = YearMonth.now(),
     onCancelClick: () -> Unit = {},
     onConfirmClick: (LocalDate, LocalDate) -> Unit = { _, _ -> },
-    monthsToShow: Int = 12
+    blockedDays: Set<LocalDate> = emptySet(),
+    blockedPeriod: Set<BlockDateModel> = emptySet(),
 ) {
     var tempSelection by remember { mutableStateOf(selectedRange) }
 
@@ -49,11 +55,20 @@ fun CustomCalendarRangePicker(
 
     val endMonth = availableDateRange?.endInclusive?.let {
         YearMonth.of(it.year, it.month)
-    } ?: currentMonth.plusMonths(monthsToShow.toLong())
+    } ?: currentMonth.plusMonths(12)
 
     val monthsToDisplay = generateSequence(startMonth) { it.plusMonths(1) }
         .takeWhile { !it.isAfter(endMonth) }
         .toList()
+
+    val listState = rememberLazyListState()
+    LaunchedEffect(Unit) {
+        val index = monthsToDisplay.indexOf(currentMonth)
+        if (index >= 0) {
+            listState.scrollToItem(index)
+        }
+    }
+
     DatePickerDialog(
         onDismissRequest = onCancelClick,
         confirmButton = {
@@ -104,17 +119,18 @@ fun CustomCalendarRangePicker(
             // Days of week header
             DaysOfWeekHeader(
                 modifier = Modifier
-                    .width(cellSize * 7 + horizontalPadding * 6)
+                    .width(pickerCellSize * 7 + pickerHorizontalPadding * 6)
                     .padding(horizontal = 12.dp)
                     .align(Alignment.CenterHorizontally)
             )
 
             // Scrollable calendar content
             LazyColumn(
+                state = listState,
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
-                    .width(cellSize * 7 + horizontalPadding * 6)
-                    .height(cellSize * 9 + 20.dp),
+                    .width(pickerCellSize * 7 + pickerHorizontalPadding * 6)
+                    .height(pickerCellSize * 9 + 20.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 items(monthsToDisplay) { month ->
@@ -149,7 +165,9 @@ fun CustomCalendarRangePicker(
                             tempSelection = newSelection
                             onDateRangeSelected(newSelection)
                         },
-                        isDatePicker = true
+                        smallCells = true,
+                        blockedDays = blockedDays,
+                        blockedPeriod = blockedPeriod,
                     )
                 }
             }
@@ -181,7 +199,6 @@ private fun CustomCalendarRangePickerPreview() {
                 )
             ),
             availableDateRange = LocalDate.now()..LocalDate.now().plusDays(60),
-            monthsToShow = 6,
         )
     }
 }

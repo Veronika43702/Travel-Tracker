@@ -26,13 +26,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ru.nikfirs.android.traveltracker.core.ui.component.CustomCalendar
 import ru.nikfirs.android.traveltracker.core.ui.component.CustomSwitch
-import ru.nikfirs.android.traveltracker.core.ui.component.DayCalculation
 import ru.nikfirs.android.traveltracker.core.ui.component.ErrorDialog
-import ru.nikfirs.android.traveltracker.core.ui.component.ExistingRange
 import ru.nikfirs.android.traveltracker.core.ui.component.FullScreenLoadingIndicator
 import ru.nikfirs.android.traveltracker.core.ui.component.LightRUScreenPreview
 import ru.nikfirs.android.traveltracker.core.ui.component.Screen
 import ru.nikfirs.android.traveltracker.core.ui.extension.clickableOnce
+import ru.nikfirs.android.traveltracker.core.ui.model.DateType
+import ru.nikfirs.android.traveltracker.core.ui.model.DayCalculation
+import ru.nikfirs.android.traveltracker.core.ui.model.ExistingRange
 import ru.nikfirs.android.traveltracker.core.ui.model.IconType
 import ru.nikfirs.android.traveltracker.core.ui.model.TopBarActionModel
 import ru.nikfirs.android.traveltracker.core.ui.navigation.BottomNavBarRoute
@@ -258,13 +259,13 @@ private fun CalendarContentPreview() {
                         startDate = now.plusDays(5),
                         endDate = now.plusDays(8),
                         color = Color.Green,
-                        id = 1
+                        type = DateType.Trip(1),
                     ),
                     ExistingRange(
                         startDate = now.plusDays(10),
                         endDate = now.plusDays(14),
                         color = Color.Magenta,
-                        id = 2,
+                        type = DateType.Trip(2),
                     )
                 ),
             ),

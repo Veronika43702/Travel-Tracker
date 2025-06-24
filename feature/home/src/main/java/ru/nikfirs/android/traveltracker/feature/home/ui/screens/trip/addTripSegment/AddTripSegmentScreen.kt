@@ -39,11 +39,11 @@ import ru.nikfirs.android.traveltracker.core.ui.component.CustomButton
 import ru.nikfirs.android.traveltracker.core.ui.component.CustomCalendarRangePicker
 import ru.nikfirs.android.traveltracker.core.ui.component.CustomTextField
 import ru.nikfirs.android.traveltracker.core.ui.component.CustomTextFieldButton
-import ru.nikfirs.android.traveltracker.core.ui.component.DateRangeSelection
 import ru.nikfirs.android.traveltracker.core.ui.component.ErrorDialog
-import ru.nikfirs.android.traveltracker.core.ui.component.ExistingRange
 import ru.nikfirs.android.traveltracker.core.ui.component.Screen
 import ru.nikfirs.android.traveltracker.core.ui.extension.asString
+import ru.nikfirs.android.traveltracker.core.ui.model.DateRangeSelection
+import ru.nikfirs.android.traveltracker.core.ui.model.ExistingRange
 import ru.nikfirs.android.traveltracker.core.ui.mvi.LaunchedEffectResolver
 import ru.nikfirs.android.traveltracker.core.ui.theme.AppTheme
 import ru.nikfirs.android.traveltracker.feature.home.domain.model.TripSegmentUi

@@ -22,7 +22,7 @@ class VisaRepositoryImpl @Inject constructor(
     }
 
     override fun getVisasByDate(startDate: LocalDate, onlyActive: Boolean): Flow<List<Visa>> {
-        return visaDao.getVisasByDate(startDate, onlyActive).map { entities ->
+        return visaDao.getVisaFlowByDate(startDate, onlyActive).map { entities ->
             entities.map { it.toModel() }
         }
     }

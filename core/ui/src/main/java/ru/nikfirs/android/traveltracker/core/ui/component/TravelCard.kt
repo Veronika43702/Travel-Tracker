@@ -23,7 +23,8 @@ fun TravelCard(
     onClick: (() -> Unit)? = null,
     leadingContent: @Composable (BoxScope.() -> Unit)? = null,
     trailingContent: @Composable (BoxScope.() -> Unit)? = null,
-    content: @Composable ColumnScope.() -> Unit
+    warning: @Composable (() -> Unit)? = null,
+    content: @Composable ColumnScope.() -> Unit,
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -35,7 +36,7 @@ fun TravelCard(
             defaultElevation = cardElevation
         ),
     ) {
-        Row(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(MaterialTheme.shapes.card)
@@ -45,28 +46,36 @@ fun TravelCard(
                     } else Modifier
                 )
                 .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalAlignment = Alignment.End,
         ) {
-            leadingContent?.let { leading ->
-                Box(
-                    modifier = Modifier.padding(end = 16.dp),
-                    content = leading
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                leadingContent?.let { leading ->
+                    Box(
+                        modifier = Modifier.padding(end = 16.dp),
+                        content = leading
+                    )
+                }
+
+                Column(
+                    modifier = Modifier.weight(1f),
+                    content = content
                 )
+
+                trailingContent?.let { trailing ->
+                    Box(
+                        modifier = Modifier
+                            .padding(start = 16.dp)
+                            .align(Alignment.Top),
+                        content = trailing,
+                    )
+                }
             }
 
-            Column(
-                modifier = Modifier.weight(1f),
-                content = content
-            )
-
-            trailingContent?.let { trailing ->
-                Box(
-                    modifier = Modifier
-                        .padding(start = 16.dp)
-                        .align(Alignment.Top),
-                    content = trailing,
-                )
-            }
+            warning?.let { it() }
         }
     }
 }
@@ -115,7 +124,13 @@ private fun TravelCardPreview() {
                         text = "Active",
                         backgroundColor = MaterialTheme.colorScheme.secondary
                     )
-                }
+                },
+                warning = {
+                    StatusChip(
+                        text = "Warning",
+                        backgroundColor = MaterialTheme.colorScheme.error
+                    )
+                },
             ) {
                 Text("Card Title", style = MaterialTheme.typography.titleMedium)
                 Text("Card subtitle", style = MaterialTheme.typography.bodyMedium)

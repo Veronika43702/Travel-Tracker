@@ -79,7 +79,7 @@ class TripRepositoryImpl @Inject constructor(
 
         return DaysCalculation(
             totalDaysUsed = totalDaysUsed,
-            remainingDays = remainingDays.coerceAtLeast(0),
+            remainingDays = remainingDays,
             periodStart = periodStart,
             periodEnd = periodEnd,
         )

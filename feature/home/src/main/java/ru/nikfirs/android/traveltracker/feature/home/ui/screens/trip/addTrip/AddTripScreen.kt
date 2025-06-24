@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -21,10 +20,8 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuAnchorType
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -32,7 +29,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.pluralStringResource
@@ -48,7 +44,8 @@ import ru.nikfirs.android.traveltracker.core.domain.model.VisaCategory
 import ru.nikfirs.android.traveltracker.core.domain.model.VisaEntries
 import ru.nikfirs.android.traveltracker.core.ui.R
 import ru.nikfirs.android.traveltracker.core.ui.component.CustomButton
-import ru.nikfirs.android.traveltracker.core.ui.component.CustomDateRangePicker
+import ru.nikfirs.android.traveltracker.core.ui.component.CustomCalendarRangePicker
+import ru.nikfirs.android.traveltracker.core.ui.component.CustomOutlinedButton
 import ru.nikfirs.android.traveltracker.core.ui.component.CustomTextField
 import ru.nikfirs.android.traveltracker.core.ui.component.CustomTextFieldButton
 import ru.nikfirs.android.traveltracker.core.ui.component.DialogTwoRowButton
@@ -56,14 +53,15 @@ import ru.nikfirs.android.traveltracker.core.ui.component.ErrorDialog
 import ru.nikfirs.android.traveltracker.core.ui.component.FullScreenLoadingIndicator
 import ru.nikfirs.android.traveltracker.core.ui.component.Screen
 import ru.nikfirs.android.traveltracker.core.ui.extension.asString
+import ru.nikfirs.android.traveltracker.core.ui.model.DateRangeSelection
 import ru.nikfirs.android.traveltracker.core.ui.mvi.LaunchedEffectResolver
 import ru.nikfirs.android.traveltracker.core.ui.theme.AppTheme
-import ru.nikfirs.android.traveltracker.feature.home.domain.model.TripSegmentUi
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.components.SwipeableTripSegmentCard
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTrip.AddTripContract.Action
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTrip.AddTripContract.Effect
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTrip.AddTripContract.State
 import java.time.LocalDate
+import java.time.YearMonth
 
 @Composable
 fun AddTripScreen(
@@ -444,21 +442,20 @@ private fun AddTripScreenContent(
                     dateFormatter = state.dateFormatter,
                 )
             }
+
+            // Button Add Segment
+            CustomOutlinedButton(
+                text = stringResource(R.string.add_segment),
+                onClick = {
+                    focusManager.clearFocus()
+                    onAction(Action.OpenAddSegmentEditor)
+                },
+                enabled = state.hasSelectedVisa && state.hasSelectedDates,
+                modifier = Modifier.fillMaxWidth(),
+                iconImage = Icons.Default.Add,
+            )
         }
 
-        // Button Add Segment
-        OutlinedButton(
-            onClick = {
-                focusManager.clearFocus()
-                onAction(Action.OpenAddSegmentEditor)
-            },
-            enabled = state.hasSelectedVisa && state.hasSelectedDates,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Icon(Icons.Default.Add, contentDescription = null)
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(stringResource(R.string.add_segment))
-        }
 
         // Notes
         CustomTextField(
@@ -486,19 +483,23 @@ private fun AddTripScreenContent(
 
     // Date Picker
     if (state.showDatePicker) {
-        CustomDateRangePicker(
-            dateStart = state.startDate,
-            dateEnd = state.endDate,
+        CustomCalendarRangePicker(
+            selectedRange = DateRangeSelection(state.startDate, state.endDate),
+            availableDateRange = state.selectedVisa?.expiryDate?.let {
+                state.selectedVisa.startDate..it
+            },
+            onDateRangeSelected = { range ->
+                if (range.startDate != null && range.endDate == null)
+                    onAction(Action.CalculateBlockDaysByStartDate(range.startDate))
+            },
             onConfirmClick = { startDate, endDate ->
                 onAction(Action.UpdateDates(startDate, endDate))
             },
             onCancelClick = { onAction(Action.ShowDatePicker(false)) },
-            startDateToChoose = state.selectedVisa?.startDate,
-            endDateToChoose = state.selectedVisa?.expiryDate,
-            blockedPeriod = state.blockedDates,
-            onStartChooseClick = {
-                onAction(Action.CalculateBlockDaysByStartDate(it))
-            }
+            currentMonth = state.startDate?.let {
+                YearMonth.of(it.year, it.month)
+            } ?: YearMonth.now(),
+            blockedPeriod = state.blockedPeriods,
         )
     }
 
@@ -550,23 +551,23 @@ private fun AddTripScreenPreview() {
                         entries = VisaEntries.MULTI
                     )
                 ),
-                segments = listOf(
-                    TripSegmentUi(
-                        country = "Germany",
-                        startDate = LocalDate.now(),
-                        endDate = LocalDate.now().plusDays(3),
-                        cities = listOf("Berlin", "Munich"),
-                        isExempt = false
-                    ),
-                    TripSegmentUi(
-                        country = "Poland",
-                        startDate = LocalDate.now().plusDays(3),
-                        endDate = LocalDate.now().plusDays(7),
-                        // cities = listOf("Warsaw"),
-                        color = Color.Magenta,
-                        isExempt = true
-                    )
-                ),
+//                segments = listOf(
+//                    TripSegmentUi(
+//                        country = "Germany",
+//                        startDate = LocalDate.now(),
+//                        endDate = LocalDate.now().plusDays(3),
+//                        cities = listOf("Berlin", "Munich"),
+//                        isExempt = false
+//                    ),
+//                    TripSegmentUi(
+//                        country = "Poland",
+//                        startDate = LocalDate.now().plusDays(3),
+//                        endDate = LocalDate.now().plusDays(7),
+//                        // cities = listOf("Warsaw"),
+//                        color = Color.Magenta,
+//                        isExempt = true
+//                    )
+//                ),
                 daysAvailableAtStart = AddTripContract.DaysAvailableInfo(
                     used = 60,
                     remaining = 30
