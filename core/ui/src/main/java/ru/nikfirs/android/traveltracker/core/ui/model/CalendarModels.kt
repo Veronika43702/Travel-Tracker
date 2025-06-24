@@ -23,9 +23,9 @@ data class BlockDateModel(
     val type: DateType? = null,
 )
 
-sealed class DateType {
-    data class Trip(val tripId: Long) : DateType()
-    data class Visa(val visaId: Long) : DateType()
+sealed class DateType(val id: Long? = null) {
+    data class Trip(val tripId: Long) : DateType(tripId)
+    data class Visa(val visaId: Long) : DateType(visaId)
     data object DayLimit : DateType()
     data object Other : DateType()
 }

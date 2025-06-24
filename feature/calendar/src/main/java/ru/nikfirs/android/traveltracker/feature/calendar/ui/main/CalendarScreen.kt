@@ -36,9 +36,11 @@ import ru.nikfirs.android.traveltracker.core.ui.model.DayCalculation
 import ru.nikfirs.android.traveltracker.core.ui.model.ExistingRange
 import ru.nikfirs.android.traveltracker.core.ui.model.IconType
 import ru.nikfirs.android.traveltracker.core.ui.model.TopBarActionModel
+import ru.nikfirs.android.traveltracker.core.ui.mvi.LaunchedEffectResolver
 import ru.nikfirs.android.traveltracker.core.ui.navigation.BottomNavBarRoute
 import ru.nikfirs.android.traveltracker.core.ui.theme.AppTheme
 import ru.nikfirs.android.traveltracker.feature.calendar.R
+import ru.nikfirs.android.traveltracker.feature.calendar.ui.components.DayInformationCard
 import ru.nikfirs.android.traveltracker.feature.calendar.ui.main.CalendarContract.*
 import java.time.LocalDate
 import ru.nikfirs.android.traveltracker.core.ui.R as uiR
@@ -46,10 +48,18 @@ import ru.nikfirs.android.traveltracker.core.ui.R as uiR
 @Composable
 fun CalendarScreen(
     navigateRoute: (Any) -> Unit,
-    viewModel: CalendarViewmodel = hiltViewModel()
+    navigateToTripDetails: (tripId: Long) -> Unit,
+    navigateToVisaDetails: (visaId: Long) -> Unit,
+    viewModel: CalendarViewmodel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
+    LaunchedEffectResolver(flow = viewModel.effect) { effect ->
+        when (effect) {
+            is Effect.NavigateToTripDetails -> navigateToTripDetails(effect.tripId)
+            is Effect.NavigateToVisaDetails -> navigateToVisaDetails(effect.visaId)
+        }
+    }
     Screen(
         bottomNavRouteRoute = BottomNavBarRoute.Calendar,
         navigateRoute = navigateRoute,
@@ -65,6 +75,16 @@ fun CalendarScreen(
         CalendarContent(
             state = state,
             onAction = viewModel::setAction,
+        )
+    }
+
+    state.dateInformation?.let { dateInfo ->
+        DayInformationCard(
+            date = dateInfo.date,
+            dateInfo = dateInfo,
+            onClose = { viewModel.setAction(Action.ClearDateInfo) },
+            onTripClick = { viewModel.setAction(Action.NavigateToTripDetails) },
+            onVisaClick = { viewModel.setAction(Action.NavigateToVisaDetails) }
         )
     }
 
@@ -92,13 +112,13 @@ private fun CalendarContent(
                 } else Modifier
             )
     ) {
-
         CustomCalendar(
             existingRangeList =
             when {
                 state.filters.showVisaRange && state.filters.showTripRange -> {
                     state.visaRanges + state.tripRanges
                 }
+
                 state.filters.showVisaRange -> state.visaRanges
                 state.filters.showTripRange -> state.tripRanges
                 else -> emptyList()
@@ -107,6 +127,7 @@ private fun CalendarContent(
             dateList = state.dateList,
             showDots = state.filters.showDayChangeDot,
             showRemainingDays = state.filters.showRemainingDays,
+            onDateClick = { onAction(Action.GetDateInfo(it)) },
         )
 
         AnimatedVisibility(
@@ -219,7 +240,7 @@ private fun CalendarContentPreview() {
                     showRemainingDays = true,
                     showDayChangeDot = false
                 ),
-                showFilters = true,
+                showFilters = false,
                 dateList = listOf(
                     DayCalculation(
                         date = now.minusDays(1),
