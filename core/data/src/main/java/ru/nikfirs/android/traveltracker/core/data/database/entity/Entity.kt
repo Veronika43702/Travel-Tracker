@@ -21,7 +21,18 @@ data class VisaEntity(
     val notes: String = "",
 )
 
-@Entity(tableName = "trips")
+@Entity(
+    tableName = "trips",
+    foreignKeys = [
+        ForeignKey(
+            entity = VisaEntity::class,
+            parentColumns = ["id"],
+            childColumns = ["visaId"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ],
+    indices = [Index(value = ["visaId"])]
+)
 data class TripEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,

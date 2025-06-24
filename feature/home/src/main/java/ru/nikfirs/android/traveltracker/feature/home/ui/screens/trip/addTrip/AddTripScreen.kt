@@ -451,11 +451,11 @@ private fun AddTripScreenContent(
                     onAction(Action.OpenAddSegmentEditor)
                 },
                 enabled = state.hasSelectedVisa && state.hasSelectedDates,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth()
+                    .padding(top = if (state.segments.isNotEmpty()) 16.dp else 0.dp),
                 iconImage = Icons.Default.Add,
             )
         }
-
 
         // Notes
         CustomTextField(

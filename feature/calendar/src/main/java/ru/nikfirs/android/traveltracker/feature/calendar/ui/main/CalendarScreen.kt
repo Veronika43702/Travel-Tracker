@@ -40,6 +40,7 @@ import ru.nikfirs.android.traveltracker.core.ui.mvi.LaunchedEffectResolver
 import ru.nikfirs.android.traveltracker.core.ui.navigation.BottomNavBarRoute
 import ru.nikfirs.android.traveltracker.core.ui.theme.AppTheme
 import ru.nikfirs.android.traveltracker.feature.calendar.R
+import ru.nikfirs.android.traveltracker.feature.calendar.ui.components.DayInformationCard
 import ru.nikfirs.android.traveltracker.feature.calendar.ui.main.CalendarContract.*
 import java.time.LocalDate
 import ru.nikfirs.android.traveltracker.core.ui.R as uiR
@@ -74,6 +75,16 @@ fun CalendarScreen(
         CalendarContent(
             state = state,
             onAction = viewModel::setAction,
+        )
+    }
+
+    state.dateInformation?.let { dateInfo ->
+        DayInformationCard(
+            date = dateInfo.date,
+            dateInfo = dateInfo,
+            onClose = { viewModel.setAction(Action.ClearDateInfo) },
+            onTripClick = { viewModel.setAction(Action.NavigateToTripDetails) },
+            onVisaClick = { viewModel.setAction(Action.NavigateToVisaDetails) }
         )
     }
 
@@ -116,7 +127,7 @@ private fun CalendarContent(
             dateList = state.dateList,
             showDots = state.filters.showDayChangeDot,
             showRemainingDays = state.filters.showRemainingDays,
-            onDateClick = {},
+            onDateClick = { onAction(Action.GetDateInfo(it)) },
         )
 
         AnimatedVisibility(

@@ -262,18 +262,17 @@ class CalendarViewmodel @Inject constructor(
                 async { calculateDaysInPeriodUseCase.invoke(periodEnd = date) }
             val isIncreased = currentState.dateList.find { it.date == date }?.isIncreased
 
-            val daysCalculation = deferredDaysCalculation.await()
-            val visa = deferredVisa.await()
             val trip = deferredTrip.await()
-            val isUsed = trip != null
+            val visa = deferredVisa.await()
+            val daysCalculation = deferredDaysCalculation.await()
 
             setState {
                 it.copy(
                     dateInformation = DateDataModel(
+                        date = date,
                         trip = trip,
                         visa = visa,
                         remainingDays = daysCalculation.remainingDays,
-                        isUsed = isUsed,
                         isIncreased = isIncreased,
                     )
                 )

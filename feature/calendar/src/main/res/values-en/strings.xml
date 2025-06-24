@@ -10,4 +10,10 @@
     <string name="filter_visa_ranges_desc">Show visa validity periods</string>
     <string name="filter_trip_ranges">Trips</string>
     <string name="filter_trip_ranges_desc">Show trip periods</string>
+
+    <!-- Day Information Card (new) -->
+    <string name="day_info_remaining_days">remaining days: %1$d</string>
+    <string name="day_info_details">View details</string>
+    <string name="day_info_day_restored_desc">180 days ago there was a trip, so used days are being restored</string>
+    <string name="day_info_close">Close</string>
 </resources>

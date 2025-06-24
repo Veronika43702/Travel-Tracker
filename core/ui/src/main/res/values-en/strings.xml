@@ -148,8 +148,8 @@
 
     <!-- Visa Details Screen -->
     <string name="visa_details_title">Visa</string>
-    <string name="visa_annul_dialog">Are you sure you want to annul visa? It will be impossible to cancel the action.</string>
-    <string name="visa_delete_dialog">Are you sure you want to delete visa? It will be impossible to cancel the action.</string>
+    <string name="visa_annul_dialog">Are you sure you want to annul visa? Visa will not be available for creating or editing trips. It will be impossible to cancel the action.</string>
+    <string name="visa_delete_dialog">Are you sure you want to delete visa? All related trips will also be deleted. It will be impossible to cancel the action.</string>
     <string name="visa_details_annulled">Annulled</string>
 
     <!-- Trip Details Screen -->

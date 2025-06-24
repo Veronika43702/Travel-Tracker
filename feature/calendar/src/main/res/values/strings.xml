@@ -10,4 +10,10 @@
     <string name="filter_visa_ranges_desc">Показать периоды действия виз</string>
     <string name="filter_trip_ranges">Поездки</string>
     <string name="filter_trip_ranges_desc">Показать периоды поездок</string>
+
+    <!-- Day Information Card (new) -->
+    <string name="day_info_remaining_days">оставшиеся дни: %1$d</string>
+    <string name="day_info_details">Посмотреть детали</string>
+    <string name="day_info_day_restored_desc">180 дней назад была поездка, поэтому использованные дни восстанавливаются</string>
+    <string name="day_info_close">Закрыть</string>
 </resources>
