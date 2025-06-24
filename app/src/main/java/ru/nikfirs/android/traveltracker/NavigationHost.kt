@@ -9,6 +9,7 @@ import androidx.navigation.compose.NavHost
 import ru.nikfirs.android.traveltracker.core.ui.navigation.BottomNavBarRoute
 import ru.nikfirs.android.traveltracker.core.ui.navigation.DeepRoute
 import ru.nikfirs.android.traveltracker.feature.calendar.calendarNavigationGraph
+import ru.nikfirs.android.traveltracker.feature.home.HomeRoute
 import ru.nikfirs.android.traveltracker.feature.home.homeNavigationGraph
 
 @Composable
@@ -40,6 +41,14 @@ internal fun DeepRoute.resolve(
         DeepRoute.Home -> navController.navigate(BottomNavBarRoute.Home) {
             popUpTo(BottomNavBarRoute.Home) { inclusive = true }
             launchSingleTop = true
+        }
+
+        is DeepRoute.TripDetails -> {
+            navController.navigate(HomeRoute.TripDetails(tripId))
+        }
+
+        is DeepRoute.VisaDetails -> {
+            navController.navigate(HomeRoute.VisaDetails(visaId))
         }
     }
 }

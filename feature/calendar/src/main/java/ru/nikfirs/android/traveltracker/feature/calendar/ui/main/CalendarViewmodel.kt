@@ -1,6 +1,7 @@
 package ru.nikfirs.android.traveltracker.feature.calendar.ui.main
 
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import ru.nikfirs.android.traveltracker.core.domain.PERIOD_DAYS
@@ -12,12 +13,16 @@ import ru.nikfirs.android.traveltracker.core.ui.model.DayCalculation
 import ru.nikfirs.android.traveltracker.core.ui.model.ExistingRange
 import ru.nikfirs.android.traveltracker.core.ui.mvi.ViewModel
 import ru.nikfirs.android.traveltracker.core.ui.mvi.launch
+import ru.nikfirs.android.traveltracker.core.ui.mvi.launchIO
 import ru.nikfirs.android.traveltracker.core.ui.theme.CalendarGray
 import ru.nikfirs.android.traveltracker.core.ui.theme.Primary
 import ru.nikfirs.android.traveltracker.core.ui.theme.SuccessGreen
 import ru.nikfirs.android.traveltracker.core.ui.theme.VisaCalendar
+import ru.nikfirs.android.traveltracker.feature.calendar.domain.model.DateDataModel
 import ru.nikfirs.android.traveltracker.feature.calendar.domain.usecase.CalculateDaysInPeriodUseCase
+import ru.nikfirs.android.traveltracker.feature.calendar.domain.usecase.GetTripByIdUseCase
 import ru.nikfirs.android.traveltracker.feature.calendar.domain.usecase.GetTripsFlowByDatesUseCase
+import ru.nikfirs.android.traveltracker.feature.calendar.domain.usecase.GetVisaByIdUseCase
 import ru.nikfirs.android.traveltracker.feature.calendar.domain.usecase.GetVisaFlowByDateUseCase
 import ru.nikfirs.android.traveltracker.feature.calendar.ui.main.CalendarContract.Action
 import ru.nikfirs.android.traveltracker.feature.calendar.ui.main.CalendarContract.Effect
@@ -31,6 +36,8 @@ class CalendarViewmodel @Inject constructor(
     private val getTripsFlowByDatesUseCase: GetTripsFlowByDatesUseCase,
     private val getVisaFlowByDateUseCase: GetVisaFlowByDateUseCase,
     private val calculateDaysInPeriodUseCase: CalculateDaysInPeriodUseCase,
+    private val getTripByIdUseCase: GetTripByIdUseCase,
+    private val getVisaByIdUseCase: GetVisaByIdUseCase,
 ) : ViewModel<Action, Effect, State>() {
 
     init {
@@ -45,13 +52,17 @@ class CalendarViewmodel @Inject constructor(
             is Action.SetError -> setError(action.error)
             is Action.ShowFilters -> showFilters(action.value)
             is Action.UpdateFilters -> updateFilters(action.filters)
+            is Action.GetDateInfo -> getDateData(action.date)
+            Action.ClearDateInfo -> clearDateData()
+            Action.NavigateToTripDetails -> navigateToTripDetails()
+            Action.NavigateToVisaDetails -> navigateToVisaDetails()
         }
     }
 
     private fun loadData() {
-        launch {
-            setState { it.copy(isLoading = true, error = null) }
+        setState { it.copy(isLoading = true, error = null) }
 
+        launch {
             try {
                 val startDate = LocalDate.now().minusDays(PERIOD_DAYS.toLong())
 
@@ -72,7 +83,6 @@ class CalendarViewmodel @Inject constructor(
                     setState {
                         it.copy(
                             isLoading = false,
-                            trips = trips,
                             tripRanges = tripRanges,
                             visaRanges = visaRanges,
                             dateList = dateList,
@@ -228,6 +238,63 @@ class CalendarViewmodel @Inject constructor(
 
     private fun updateFilters(filters: Filters) {
         setState { it.copy(filters = filters) }
+    }
+
+    private fun getDateData(date: LocalDate) {
+        launchIO {
+            val deferredTrip = async {
+                val tripId = currentState.tripRanges.find { trip ->
+                    !date.isAfter(trip.endDate) && !date.isBefore(trip.startDate)
+                }?.type?.id
+
+                tripId?.let { getTripByIdUseCase.invoke(it) }
+            }
+
+            val deferredVisa = async {
+                val visaId = currentState.visaRanges.find { trip ->
+                    !date.isAfter(trip.endDate) && !date.isBefore(trip.startDate)
+                }?.type?.id
+
+                visaId?.let { getVisaByIdUseCase.invoke(it) }
+            }
+
+            val deferredDaysCalculation =
+                async { calculateDaysInPeriodUseCase.invoke(periodEnd = date) }
+            val isIncreased = currentState.dateList.find { it.date == date }?.isIncreased
+
+            val daysCalculation = deferredDaysCalculation.await()
+            val visa = deferredVisa.await()
+            val trip = deferredTrip.await()
+            val isUsed = trip != null
+
+            setState {
+                it.copy(
+                    dateInformation = DateDataModel(
+                        trip = trip,
+                        visa = visa,
+                        remainingDays = daysCalculation.remainingDays,
+                        isUsed = isUsed,
+                        isIncreased = isIncreased,
+                    )
+                )
+            }
+        }
+    }
+
+    private fun clearDateData() {
+        setState { it.copy(dateInformation = null) }
+    }
+
+    private fun navigateToTripDetails() {
+        currentState.dateInformation?.trip?.id?.let {
+            setEffect { Effect.NavigateToTripDetails(it) }
+        }
+    }
+
+    private fun navigateToVisaDetails() {
+        currentState.dateInformation?.visa?.id?.let {
+            setEffect { Effect.NavigateToVisaDetails(it) }
+        }
     }
 
     private fun setError(error: CustomString?) {

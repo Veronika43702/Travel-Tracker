@@ -29,6 +29,7 @@ fun CustomCalendar(
     dateList: List<DayCalculation> = emptyList(),
     showDots: Boolean = false,
     showRemainingDays: Boolean = false,
+    onDateClick: (LocalDate) -> Unit,
 ) {
     // Calculate months to display
     val startMonth = availableDateRange?.start?.let {
@@ -77,7 +78,7 @@ fun CustomCalendar(
                     month = month,
                     existingSegments = existingRangeList,
                     availableDateRange = availableDateRange,
-                    onDateClick = {},
+                    onDateClick = onDateClick,
                     smallCells = false,
                     dateList = dateList,
                     showDots = showDots,
@@ -145,7 +146,8 @@ private fun CustomCalendarRangePickerPreview() {
                     isIncreased = true,
                     isUsed = true,
                 )
-            )
+            ),
+            onDateClick = {},
         )
     }
 }

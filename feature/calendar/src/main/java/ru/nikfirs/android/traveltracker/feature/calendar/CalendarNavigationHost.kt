@@ -15,6 +15,8 @@ fun NavGraphBuilder.calendarNavigationGraph(
     composable<BottomNavBarRoute.Calendar> {
         CalendarScreen(
             navigateRoute = { navController.navigateBottomNavBarRoute(it) },
+            navigateToTripDetails = { navigateDeepRoute(DeepRoute.TripDetails(it)) },
+            navigateToVisaDetails = { navigateDeepRoute(DeepRoute.VisaDetails(it)) },
         )
     }
 }
