@@ -16,8 +16,8 @@ import androidx.compose.ui.unit.dp
 import ru.nikfirs.android.traveltracker.core.domain.model.DaysCalculation
 import ru.nikfirs.android.traveltracker.core.domain.model.Visa
 import ru.nikfirs.android.traveltracker.core.ui.R
-import ru.nikfirs.android.traveltracker.core.ui.component.DaysCounter
-import ru.nikfirs.android.traveltracker.core.ui.theme.AppTheme
+import ru.nikfirs.android.traveltracker.core.ui.ui.component.DaysCounter
+import ru.nikfirs.android.traveltracker.core.ui.ui.theme.AppTheme
 import java.time.LocalDate
 
 @Composable

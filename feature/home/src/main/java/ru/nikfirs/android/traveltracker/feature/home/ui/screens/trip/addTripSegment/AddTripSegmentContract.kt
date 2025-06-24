@@ -1,11 +1,11 @@
 package ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTripSegment
 
 import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
-import ru.nikfirs.android.traveltracker.core.ui.model.DateRangeSelection
+import ru.nikfirs.android.traveltracker.core.ui.ui.model.DateRangeSelection
 import ru.nikfirs.android.traveltracker.core.ui.mvi.MviAction
 import ru.nikfirs.android.traveltracker.core.ui.mvi.MviEffect
 import ru.nikfirs.android.traveltracker.core.ui.mvi.MviState
-import ru.nikfirs.android.traveltracker.feature.home.domain.model.TripSegmentUi
+import ru.nikfirs.android.traveltracker.feature.home.ui.model.TripSegmentUi
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 

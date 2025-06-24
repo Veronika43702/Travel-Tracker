@@ -7,7 +7,7 @@ import ru.nikfirs.android.traveltracker.core.domain.model.TripSegment
 import java.time.LocalDate
 
 interface TripRepository {
-    fun getAllTrips(): Flow<List<Trip>>
+    fun getAllTrips(): Flow<List<Trip>> //
     suspend fun getTripById(tripId: Long): Trip?
     suspend fun getTripsByDates(startDate: LocalDate, endDate: LocalDate): List<Trip>
     fun getTripsFlowByDates(startDate: LocalDate, endDate: LocalDate?): Flow<List<Trip>>

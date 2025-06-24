@@ -27,11 +27,11 @@ import ru.nikfirs.android.traveltracker.core.domain.model.Trip
 import ru.nikfirs.android.traveltracker.core.domain.model.TripPurpose
 import ru.nikfirs.android.traveltracker.core.domain.model.TripSegment
 import ru.nikfirs.android.traveltracker.core.ui.R as uiR
-import ru.nikfirs.android.traveltracker.core.ui.component.EditAndDeleteRow
-import ru.nikfirs.android.traveltracker.core.ui.component.StatusChip
-import ru.nikfirs.android.traveltracker.core.ui.component.SwipeableCard
-import ru.nikfirs.android.traveltracker.core.ui.component.TravelCard
-import ru.nikfirs.android.traveltracker.core.ui.theme.AppTheme
+import ru.nikfirs.android.traveltracker.core.ui.ui.component.EditAndDeleteRow
+import ru.nikfirs.android.traveltracker.core.ui.ui.component.StatusChip
+import ru.nikfirs.android.traveltracker.core.ui.ui.component.SwipeableCard
+import ru.nikfirs.android.traveltracker.core.ui.ui.component.TravelCard
+import ru.nikfirs.android.traveltracker.core.ui.ui.theme.AppTheme
 import ru.nikfirs.android.traveltracker.feature.home.R
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.HomeContract.Action
 import java.time.LocalDate

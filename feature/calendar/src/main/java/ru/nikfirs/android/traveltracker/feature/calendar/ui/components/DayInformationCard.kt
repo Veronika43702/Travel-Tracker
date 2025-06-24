@@ -38,13 +38,13 @@ import ru.nikfirs.android.traveltracker.core.domain.model.TripSegment
 import ru.nikfirs.android.traveltracker.core.domain.model.Visa
 import ru.nikfirs.android.traveltracker.core.domain.model.VisaCategory
 import ru.nikfirs.android.traveltracker.core.domain.model.VisaEntries
-import ru.nikfirs.android.traveltracker.core.ui.component.LightRUScreenPreview
-import ru.nikfirs.android.traveltracker.core.ui.extension.clickableOnce
-import ru.nikfirs.android.traveltracker.core.ui.theme.AppTheme
-import ru.nikfirs.android.traveltracker.core.ui.theme.VisaCalendar
-import ru.nikfirs.android.traveltracker.core.ui.theme.button
+import ru.nikfirs.android.traveltracker.core.ui.ui.component.LightRUScreenPreview
+import ru.nikfirs.android.traveltracker.core.ui.ui.extension.clickableOnce
+import ru.nikfirs.android.traveltracker.core.ui.ui.theme.AppTheme
+import ru.nikfirs.android.traveltracker.core.ui.ui.theme.VisaCalendar
+import ru.nikfirs.android.traveltracker.core.ui.ui.theme.button
 import ru.nikfirs.android.traveltracker.feature.calendar.R
-import ru.nikfirs.android.traveltracker.feature.calendar.domain.model.DateDataModel
+import ru.nikfirs.android.traveltracker.feature.calendar.ui.model.DateDataModel
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import ru.nikfirs.android.traveltracker.core.ui.R as uiR

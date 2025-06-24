@@ -2,9 +2,9 @@ package ru.nikfirs.android.traveltracker.feature.home.domain.usecase
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import ru.nikfirs.android.traveltracker.feature.home.domain.model.HomeData
-import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.trip.GetTripsFlowByDatesUseCase
-import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.visa.GetVisaFlowByDateUseCase
+import ru.nikfirs.android.traveltracker.core.ui.domain.usecase.trip.GetTripsFlowByDatesUseCase
+import ru.nikfirs.android.traveltracker.core.ui.domain.usecase.visa.GetVisaFlowByDateUseCase
+import ru.nikfirs.android.traveltracker.feature.home.ui.model.HomeData
 import java.time.LocalDate
 import javax.inject.Inject
 

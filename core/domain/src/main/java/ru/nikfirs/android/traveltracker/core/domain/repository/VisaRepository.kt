@@ -6,7 +6,7 @@ import ru.nikfirs.android.traveltracker.core.domain.model.VisaCategory
 import java.time.LocalDate
 
 interface VisaRepository {
-    fun getAllVisas(): Flow<List<Visa>>
+    fun getAllVisas(): Flow<List<Visa>> //
     fun getVisaFlowByDate(startDate: LocalDate, onlyActive: Boolean): Flow<List<Visa>>
     fun getAvailableVisasByDate(startDate: LocalDate): List<Visa>
     fun getVisasByType(type: VisaCategory): Flow<List<Visa>>

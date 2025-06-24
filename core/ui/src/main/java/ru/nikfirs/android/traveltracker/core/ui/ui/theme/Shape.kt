@@ -1,0 +1,36 @@
+package ru.nikfirs.android.traveltracker.core.ui.ui.theme
+
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Shapes
+import androidx.compose.ui.unit.dp
+
+val Shapes = Shapes()
+
+val Shapes.counter get() = RoundedCornerShape(12.dp)
+val Shapes.chip get() = RoundedCornerShape(8.dp)
+val Shapes.button get() = RoundedCornerShape(12.dp)
+val Shapes.dialog get() = RoundedCornerShape(22.dp)
+val Shapes.card get() = RoundedCornerShape(12.dp)
+val Shapes.cardBottom get() = RoundedCornerShape(22.dp, 22.dp, 0.dp, 0.dp)
+val Shapes.partnerCard get() = RoundedCornerShape(12.dp)
+val Shapes.picture get() = RoundedCornerShape(12.dp)
+val Shapes.banner get() = RoundedCornerShape(22.dp)
+val Shapes.textField get() = RoundedCornerShape(12.dp)
+val Shapes.row get() = RoundedCornerShape(20.dp)
+val Shapes.tab get() = RoundedCornerShape(12.dp)
+
+val calendar = 20.dp
+val Shapes.calendarCircle
+    get() = RoundedCornerShape(calendar)
+val Shapes.calendarStart
+    get() = RoundedCornerShape(
+        topStart = calendar,
+        bottomStart = calendar,
+    )
+val Shapes.calendarEnd
+    get() = RoundedCornerShape(
+        topEnd = calendar,
+        bottomEnd = calendar,
+    )
+
+val cardElevation = 4.dp

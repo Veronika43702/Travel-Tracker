@@ -27,14 +27,14 @@ import androidx.compose.ui.unit.dp
 import ru.nikfirs.android.traveltracker.core.data.model.TRANSIT
 import ru.nikfirs.android.traveltracker.core.domain.model.SchengenCountries
 import ru.nikfirs.android.traveltracker.core.ui.R
-import ru.nikfirs.android.traveltracker.core.ui.component.EditAndDeleteRow
-import ru.nikfirs.android.traveltracker.core.ui.component.LightRUScreenPreview
-import ru.nikfirs.android.traveltracker.core.ui.component.StatusChip
-import ru.nikfirs.android.traveltracker.core.ui.component.SwipeableCard
-import ru.nikfirs.android.traveltracker.core.ui.extension.clickableOnce
-import ru.nikfirs.android.traveltracker.core.ui.theme.AppTheme
-import ru.nikfirs.android.traveltracker.core.ui.theme.card
-import ru.nikfirs.android.traveltracker.feature.home.domain.model.TripSegmentUi
+import ru.nikfirs.android.traveltracker.core.ui.ui.component.EditAndDeleteRow
+import ru.nikfirs.android.traveltracker.core.ui.ui.component.LightRUScreenPreview
+import ru.nikfirs.android.traveltracker.core.ui.ui.component.StatusChip
+import ru.nikfirs.android.traveltracker.core.ui.ui.component.SwipeableCard
+import ru.nikfirs.android.traveltracker.core.ui.ui.extension.clickableOnce
+import ru.nikfirs.android.traveltracker.core.ui.ui.theme.AppTheme
+import ru.nikfirs.android.traveltracker.core.ui.ui.theme.card
+import ru.nikfirs.android.traveltracker.feature.home.ui.model.TripSegmentUi
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 

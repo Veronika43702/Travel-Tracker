@@ -17,11 +17,11 @@ import ru.nikfirs.android.traveltracker.core.domain.model.Visa
 import ru.nikfirs.android.traveltracker.core.domain.model.VisaEntries
 import ru.nikfirs.android.traveltracker.core.domain.model.VisaCategory
 import ru.nikfirs.android.traveltracker.core.ui.R
-import ru.nikfirs.android.traveltracker.core.ui.component.EditAndDeleteRow
-import ru.nikfirs.android.traveltracker.core.ui.component.StatusChip
-import ru.nikfirs.android.traveltracker.core.ui.component.SwipeableCard
-import ru.nikfirs.android.traveltracker.core.ui.component.TravelCard
-import ru.nikfirs.android.traveltracker.core.ui.theme.*
+import ru.nikfirs.android.traveltracker.core.ui.ui.component.EditAndDeleteRow
+import ru.nikfirs.android.traveltracker.core.ui.ui.component.StatusChip
+import ru.nikfirs.android.traveltracker.core.ui.ui.component.SwipeableCard
+import ru.nikfirs.android.traveltracker.core.ui.ui.component.TravelCard
+import ru.nikfirs.android.traveltracker.core.ui.ui.theme.AppTheme
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.HomeContract.Action
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter

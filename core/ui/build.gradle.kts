@@ -28,5 +28,6 @@ dependencies {
     testImplementation(libs.bundles.tests)
     androidTestImplementation(libs.bundles.androidTest)
 
+    api(project(":core:data"))
     api(project(":core:domain"))
 }

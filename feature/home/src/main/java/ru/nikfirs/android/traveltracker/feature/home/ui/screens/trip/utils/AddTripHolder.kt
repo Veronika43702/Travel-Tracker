@@ -1,7 +1,7 @@
 package ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.utils
 
 import androidx.compose.ui.graphics.Color
-import ru.nikfirs.android.traveltracker.feature.home.domain.model.TripSegmentUi
+import ru.nikfirs.android.traveltracker.feature.home.ui.model.TripSegmentUi
 import java.time.LocalDate
 import javax.inject.Inject
 import javax.inject.Singleton

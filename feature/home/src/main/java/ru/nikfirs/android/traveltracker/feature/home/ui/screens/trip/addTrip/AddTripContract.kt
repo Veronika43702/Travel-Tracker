@@ -6,11 +6,11 @@ import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
 import ru.nikfirs.android.traveltracker.core.domain.model.TripPurpose
 import ru.nikfirs.android.traveltracker.core.domain.model.Visa
 import ru.nikfirs.android.traveltracker.core.domain.model.VisaCategory
-import ru.nikfirs.android.traveltracker.core.ui.model.BlockDateModel
+import ru.nikfirs.android.traveltracker.core.ui.ui.model.BlockDateModel
 import ru.nikfirs.android.traveltracker.core.ui.mvi.MviAction
 import ru.nikfirs.android.traveltracker.core.ui.mvi.MviEffect
 import ru.nikfirs.android.traveltracker.core.ui.mvi.MviState
-import ru.nikfirs.android.traveltracker.feature.home.domain.model.TripSegmentUi
+import ru.nikfirs.android.traveltracker.feature.home.ui.model.TripSegmentUi
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 

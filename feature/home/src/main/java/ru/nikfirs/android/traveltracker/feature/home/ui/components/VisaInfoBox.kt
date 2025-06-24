@@ -39,11 +39,11 @@ import ru.nikfirs.android.traveltracker.core.domain.model.SchengenCountries
 import ru.nikfirs.android.traveltracker.core.domain.model.VisaCategory
 import ru.nikfirs.android.traveltracker.core.domain.model.VisaEntries
 import ru.nikfirs.android.traveltracker.core.ui.R
-import ru.nikfirs.android.traveltracker.core.ui.component.CustomTextField
-import ru.nikfirs.android.traveltracker.core.ui.component.CustomTextFieldButton
-import ru.nikfirs.android.traveltracker.core.ui.component.RadioButtonRow
-import ru.nikfirs.android.traveltracker.core.ui.extension.asString
-import ru.nikfirs.android.traveltracker.core.ui.extension.clickableOnce
+import ru.nikfirs.android.traveltracker.core.ui.ui.component.CustomTextField
+import ru.nikfirs.android.traveltracker.core.ui.ui.component.CustomTextFieldButton
+import ru.nikfirs.android.traveltracker.core.ui.ui.component.RadioButtonRow
+import ru.nikfirs.android.traveltracker.core.ui.ui.extension.asString
+import ru.nikfirs.android.traveltracker.core.ui.ui.extension.clickableOnce
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -84,7 +84,7 @@ internal fun VisaInfoBox(
         modifier = Modifier.fillMaxWidth(),
         required = true,
         isError = visaNumberError != null,
-        supportingText = visaNumberError?.let { it.asString() },
+        supportingText = visaNumberError.asString(),
     )
 
     // Visa Type Selection
@@ -102,7 +102,7 @@ internal fun VisaInfoBox(
         onCountrySelected = updateCountry,
         locale = locale,
         isError = countryError != null,
-        errorText = countryError?.let { it.asString() }
+        errorText = countryError.asString()
     )
 
     // Issue Date
