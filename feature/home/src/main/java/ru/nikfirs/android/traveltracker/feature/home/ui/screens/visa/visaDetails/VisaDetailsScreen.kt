@@ -34,6 +34,7 @@ import ru.nikfirs.android.traveltracker.core.ui.ui.component.LightRUScreenPrevie
 import ru.nikfirs.android.traveltracker.core.ui.ui.component.Screen
 import ru.nikfirs.android.traveltracker.core.ui.mvi.LaunchedEffectResolver
 import ru.nikfirs.android.traveltracker.core.ui.ui.theme.AppTheme
+import ru.nikfirs.android.traveltracker.feature.home.R
 import ru.nikfirs.android.traveltracker.feature.home.ui.utils.VisaAction
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.visaDetails.VisaDetailsContract.Action
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.visaDetails.VisaDetailsContract.Effect
@@ -60,7 +61,7 @@ fun VisaDetailsScreen(
         }
     }
     Screen(
-        topTitle = stringResource(uiR.string.visa_details_title),
+        topTitle = stringResource(R.string.home_visa_details_title),
         navigateBack = navigateBack,
     ) {
         AddVisaScreenContent(
@@ -156,7 +157,7 @@ fun VisaInfoBox(
     visa ?: return
     if (!visa.isActive) {
         Text(
-            text = stringResource(uiR.string.visa_details_annulled),
+            text = stringResource(R.string.home_visa_details_annulled),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.error,
             modifier = Modifier
@@ -165,47 +166,47 @@ fun VisaInfoBox(
         )
     }
     InfoDataBox(
-        header = stringResource(uiR.string.visa_number),
+        header = stringResource(R.string.home_visa_number),
         data = visa.visaNumber,
     )
     InfoDataBox(
-        header = stringResource(uiR.string.visa_type),
+        header = stringResource(R.string.home_visa_type),
         data = when (visa.visaType) {
-            VisaCategory.TYPE_C -> stringResource(uiR.string.visa_type_c_short)
-            VisaCategory.TYPE_D -> stringResource(uiR.string.visa_type_d_short)
-            VisaCategory.RESIDENCE_PERMIT -> stringResource(uiR.string.visa_type_residence_short)
+            VisaCategory.TYPE_C -> stringResource(uiR.string.visa_type_c)
+            VisaCategory.TYPE_D -> stringResource(uiR.string.visa_type_d)
+            VisaCategory.RESIDENCE_PERMIT -> stringResource(uiR.string.visa_type_residence_permit)
         },
     )
     InfoDataBox(
-        header = stringResource(uiR.string.country),
+        header = stringResource(R.string.home_visa_country),
         data = visa.country,
     )
     InfoDataBox(
-        header = stringResource(uiR.string.issue_date),
+        header = stringResource(R.string.home_visa_issue_date),
         data = visa.startDate.format(dateFormatter),
     )
     InfoDataBox(
-        header = stringResource(uiR.string.expiry_date),
+        header = stringResource(R.string.home_visa_expiry_date),
         data = visa.expiryDate.format(dateFormatter),
     )
 
     if (visa.visaType == VisaCategory.TYPE_C) {
         InfoDataBox(
-            header = stringResource(uiR.string.visa_duration_of_stay),
+            header = stringResource(R.string.home_visa_visa_duration),
             data = visa.durationOfStay.toString(),
         )
         InfoDataBox(
-            header = stringResource(uiR.string.entries_type),
+            header = stringResource(R.string.home_visa_entries_type),
             data = when (visa.entries) {
-                VisaEntries.SINGLE -> stringResource(uiR.string.entries_single)
-                VisaEntries.DOUBLE -> stringResource(uiR.string.entries_double)
-                VisaEntries.MULTI -> stringResource(uiR.string.entries_multi)
+                VisaEntries.SINGLE -> stringResource(R.string.home_visa_entries_single)
+                VisaEntries.DOUBLE -> stringResource(R.string.home_visa_entries_double)
+                VisaEntries.MULTI -> stringResource(R.string.home_visa_entries_multi)
             },
         )
     }
     if (visa.notes.isNotBlank()) {
         InfoDataBox(
-            header = stringResource(uiR.string.notes),
+            header = stringResource(R.string.home_notes),
             data = visa.notes,
         )
     }
@@ -250,7 +251,7 @@ private fun AddVisaScreenPreview2() {
                     durationOfStay = 365,
                     notes = "notes",
                 ),
-                dialogText = CustomString.resource(uiR.string.visa_annul_dialog)
+                dialogText = CustomString.resource(R.string.home_visa_dialog_annul)
             ),
             onAction = {},
             isEditable = true,

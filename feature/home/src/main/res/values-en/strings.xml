@@ -1,28 +1,150 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Home Screen -->
+    <string name="home_tab_visas">Visas</string>
+    <string name="home_tab_trips">Trips</string>
+    <string name="home_empty_state">No data to display</string>
+    <string name="home_add_first_visa">Add your first visa</string>
+    <string name="home_add_first_trip">Add your first trip</string>
+
+    <!-- Days Counter -->
+    <string name="visa_days_counter_title">Days in EU</string>
+    <string name="visa_days_counter_format">%1$d / %2$d</string>
+    <string name="visa_days_counter_period">In the last 180 days</string>
+    <plurals name="visa_days_remaining">
+        <item quantity="one">%1$d day remaining</item>
+        <item quantity="other">%1$d days remaining</item>
+    </plurals>
+    <string name="visa_days_limit_warning">Approaching the limit!</string>
+    <string name="visa_days_limit_exceeded">Limit exceeded!</string>
+    <plurals name="visa_day_counter_warning">
+        <item quantity="one">Visa expires in %1$d day</item>
+        <item quantity="other">Visa expires in %1$d days</item>
+    </plurals>
+
+    <!-- Empty states -->
+    <string name="home_empty_all">No data to display.\nAdd your first visa!</string>
+    <string name="home_empty_visas">You don\'t have any active visas yet.\nAdd your first visa!</string>
+    <string name="home_empty_trips">You don\'t have any trips yet.\nAdd your first trip!</string>
+
+    <!-- Common Trip and Visa -->
+    <string name="home_notes_optional">Notes (optional)</string>
+    <string name="home_notes">Notes</string>
+
+    <!-- Trip sections -->
+    <string name="home_trips_section_ongoing">Ongoing trips</string>
+    <string name="home_trips_section_planned">Planned</string>
+    <string name="home_trips_section_past">Past</string>
+
     <!-- Trip -->
-    <string name="trip_dates_section">Trip Dates</string>
-    <string name="trip_purpose_section">Trip Purpose</string>
-    <string name="trip_segments_section">Trip Segments</string>
+    <string name="home_trip_add_title">Trip adding</string>
+    <string name="home_trip_edit_title">Trip editing</string>
+    <string name="home_trip_select_visa">Select Visa</string>
+    <string name="home_trip_selected_visa_validity">Visa valid: %1$s — %2$s</string>
+    <string name="home_trip_dates_section">Trip Dates</string>
+    <string name="home_trip_duration">Total Duration</string>
+    <string name="home_trip_countable_days">counted %d days</string>
+    <string name="home_trip_days_available_at_start">Available days at start</string>
+    <string name="home_trip_days_available_at_end">Available days at end</string>
+    <string name="home_trip_purpose_section">Trip Purpose</string>
+    <string name="home_trip_purpose_select">Select trip purpose</string>
+    <string name="home_trip_purpose_tourism">Tourism</string>
+    <string name="home_trip_purpose_business">Business</string>
+    <string name="home_trip_purpose_family">Family</string>
+    <string name="home_trip_purpose_medical">Medical</string>
+    <string name="home_trip_purpose_education">Education</string>
+    <string name="home_trip_purpose_other">Other</string>
+    <string name="home_trip_segments_section">Trip Segments</string>
+    <string name="home_trip_add_segment">Add Segment</string>
+    <string name="home_trip_visa_section">Visa</string>
+    <string name="home_trip_over_limit_warning">Trip contains days exceeding limit. Update data</string>
+    <plurals name="days_count">
+        <item quantity="one">%d day</item>
+        <item quantity="other">%d days</item>
+    </plurals>
+    <string name="home_trip_dialog_delete">Are you sure you want to delete trip? It will be impossible to cancel the action.</string>
+
+    <!-- Trip Card -->
+    <string name="trip_card_duration_days">%1$d days</string>
+    <string name="trip_card_status_ongoing">Ongoing trip</string>
+    <string name="trip_card_status_planned">Planned</string>
+    <string name="trip_card_dates">%1$s\n%2$s</string>
 
     <!-- Trip Details Screen -->
     <string name="home_trip_details_title">Trip Details</string>
     <string name="home_trip_details_duration">Duration</string>
     <string name="home_trip_details_days_total_counted">%1$d days total, %2$d days counted</string>
     <string name="home_trip_details_days_total_only">%1$d days total</string>
+    <string name="home_trip_details_status_ongoing">Ongoing</string>
+    <string name="home_trip_details_status_planned">Planned</string>
+    <string name="home_trip_details_trip_status_completed">Completed</string>
 
-    <!-- Trip Status -->
-    <string name="trip_status_ongoing_details">Ongoing</string>
-    <string name="trip_status_planned_details">Planned</string>
-    <string name="trip_status_completed_details">Completed</string>
+    <!-- Trip Segment Card -->
+    <string name="home_trip_segment_add_title">Segment adding</string>
+    <string name="home_trip_segment_edit_title">Segment editing</string>
+    <string name="home_trip_segment_country">Country</string>
+    <string name="home_trip_segment_transit_option">Transit (any country)</string>
+    <string name="home_trip_segment_exempt">Exempt</string>
+    <string name="home_trip_segment_dates">Dates of Stay</string>
+    <string name="home_trip_segment_duration">Duration: %d days</string>
+    <string name="home_trip_segment_cities">Cities (optional)</string>
+    <string name="home_trip_cities_placeholder">e.g. Berlin, Munich</string>
 
     <!-- Error Messages for Trip Details -->
-    <string name="error_trip_not_found">Trip not found</string>
-    <string name="error_loading_trip">Error loading trip</string>
-    <string name="error_deleting_trip">Error deleting trip</string>
+    <string name="home_error_trip_not_found">Trip not found</string>
+    <string name="home_error_trip_loading">Error loading trip</string>
+    <string name="home_error_trip_saving">Error saving trip</string>
+    <string name="home_error_trip_deleting">Error deleting trip</string>
 
-    <string name="trip_over_limit_warning">Trip contains days exceeding limit. Update data</string>
+    <!-- Validation Errors -->
+    <string name="home_error_trip_visa_required">Select a visa for the trip</string>
+    <string name="home_error_trip_no_segments">Add at least one trip segment</string>
+    <string name="home_error_trip_segment_gap">There are gaps between segments. For saving transit segments will be automatically added.</string>
+    <string name="home_error_trip_days_limit_exceeded">Trip exceeds stay limit</string>
+
+    <!-- Validation Errors Trip Segments -->
+    <string name="home_error_trip_segment_country_required">Select country for segment</string>
+    <string name="home_error_trip_segment_dates_required">Please select dates for the segment</string>
+
+    <!-- Visa -->
+    <string name="home_visa_add_title">Visa adding</string>
+    <string name="home_visa_edit_title">Visa editing</string>
+    <string name="home_visa_no_visas">No available visas</string>
+    <string name="home_visa_number">Visa Number</string>
+    <string name="home_visa_type">Visa Type</string>
+    <string name="home_visa_country">Country</string>
+    <string name="home_visa_issue_date">Start Date</string>
+    <string name="home_visa_expiry_date">Expiry Date</string>
+    <string name="home_visa_validity_period">%1$s — %2$s</string>
+    <string name="home_visa_visa_duration">Duration of Stay</string>
+    <string name="home_visa_duration_suffix">days</string>
+    <string name="home_visa_entries_type">Entry Type</string>
+    <string name="home_visa_entries_single">Single Entry</string>
+    <string name="home_visa_entries_double">Double Entry</string>
+    <string name="home_visa_entries_multi">Multiple Entry</string>
+    <string name="home_visa_expiry_warning">Expires in %1$d days</string>
+    <string name="home_visa_dialog_annul">Are you sure you want to annul visa? Visa will not be available for creating or editing trips. It will be impossible to cancel the action.</string>
+    <string name="home_visa_dialog_delete">Are you sure you want to delete visa? All related trips will also be deleted. It will be impossible to cancel the action.</string>
+
+    <!-- Visa Details Screen -->
+    <string name="home_visa_details_title">Visa</string>
+    <string name="home_visa_details_annulled">Annulled</string>
+
+    <!-- Error Messages for Visa -->
+    <string name="home_error_visa_not_found">Visa not found</string>
+    <string name="home_error_visa_saving">Error saving visa</string>
+    <string name="home_error_visa_loading">Error loading trip</string>
+    <string name="home_error_visa_deleting">Error deleting trip</string>
+
+    <!-- Validation Errors -->
+    <string name="error_visa_number_required">Visa number is required</string>
+    <string name="error_country_required">Please select issuing country</string>
+    <string name="error_expiry_date_invalid">Expiry date must be after issue date</string>
+    <string name="error_duration_required">Please specify duration of stay</string>
+    <string name="error_duration_invalid">Please enter a valid number</string>
+    <string name="error_duration_positive">Duration must be greater than 0</string>
 
     <!-- Success Messages -->
-    <string name="trip_deleted_successfully">Trip deleted successfully</string>
+    <string name="home_trip_deleted_successfully">Trip deleted successfully</string>
+    <string name="home_visa_deleted_successfully">Visa with related trips deleted</string>
 </resources>

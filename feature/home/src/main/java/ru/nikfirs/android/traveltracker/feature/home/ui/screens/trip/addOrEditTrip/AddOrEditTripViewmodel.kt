@@ -1,4 +1,4 @@
-package ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTrip
+package ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addOrEditTrip
 
 import android.util.Log
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,11 +23,11 @@ import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.trip.SaveTri
 import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.trip.UpdateTripUseCase
 import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.visa.GetAvailableVisasByDateUseCase
 import ru.nikfirs.android.traveltracker.core.ui.domain.usecase.visa.GetVisaByIdUseCase
-import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTrip.AddTripContract.Action
-import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTrip.AddTripContract.DaysAvailableInfo
-import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTrip.AddTripContract.Effect
-import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTrip.AddTripContract.State
-import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTrip.AddTripContract.ValidationErrors
+import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addOrEditTrip.AddOrEditTripContract.Action
+import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addOrEditTrip.AddOrEditTripContract.DaysAvailableInfo
+import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addOrEditTrip.AddOrEditTripContract.Effect
+import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addOrEditTrip.AddOrEditTripContract.State
+import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addOrEditTrip.AddOrEditTripContract.ValidationErrors
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.utils.AddTripHolder
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.utils.getTripSegmentColorByIndex
 import java.time.LocalDate
@@ -36,7 +36,7 @@ import javax.inject.Inject
 import ru.nikfirs.android.traveltracker.core.ui.R as uiR
 
 @HiltViewModel
-class AddTripViewModel @Inject constructor(
+class AddOrEditTripViewModel @Inject constructor(
     private val getAvailableVisasByDateUseCase: GetAvailableVisasByDateUseCase,
     private val calculateDaysInPeriodUseCase: CalculateDaysInPeriodUseCase,
     private val saveTripUseCase: SaveTripUseCase,
@@ -113,7 +113,7 @@ class AddTripViewModel @Inject constructor(
         try {
             val trip = tripId?.let { getTripByIdUseCase.invoke(it) }
             if (trip == null) {
-                setError(CustomString.resource(R.string.error_trip_not_found))
+                setError(CustomString.resource(R.string.home_error_trip_not_found))
                 return
             }
 
@@ -408,7 +408,7 @@ class AddTripViewModel @Inject constructor(
                     setState {
                         it.copy(
                             isLoading = false,
-                            error = CustomString.resource(uiR.string.error_saving_trip)
+                            error = CustomString.resource(R.string.home_error_trip_saving)
                         )
                     }
                     Log.e(null, "saveOrUpdateTrip", e)
@@ -427,11 +427,11 @@ class AddTripViewModel @Inject constructor(
 
         return ValidationErrors(
             visaError = if (selectedVisa == null)
-                CustomString.resource(uiR.string.error_visa_required) else null,
+                CustomString.resource(R.string.home_error_trip_visa_required) else null,
             segmentsError = if (segments.isEmpty())
-                CustomString.resource(uiR.string.error_no_segments) else null,
+                CustomString.resource(R.string.home_error_trip_no_segments) else null,
             daysLimitError = if (daysAtEnd?.isOverLimit == true)
-                CustomString.resource(uiR.string.error_days_limit_exceeded) else null
+                CustomString.resource(R.string.home_error_trip_days_limit_exceeded) else null
         )
     }
 
@@ -460,7 +460,7 @@ class AddTripViewModel @Inject constructor(
             setState {
                 it.copy(
                     warningTextDaysOutSegments =
-                    CustomString.resource(uiR.string.error_segment_gap)
+                    CustomString.resource(R.string.home_error_trip_segment_gap)
                 )
             }
         }
@@ -537,7 +537,7 @@ class AddTripViewModel @Inject constructor(
                 setState {
                     it.copy(
                         isLoading = false,
-                        error = CustomString.resource(uiR.string.error_saving_trip)
+                        error = CustomString.resource(R.string.home_error_trip_saving)
                     )
                 }
                 Log.e(null, "saveTripWithTransit", e)

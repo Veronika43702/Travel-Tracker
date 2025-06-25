@@ -9,6 +9,7 @@ import ru.nikfirs.android.traveltracker.core.ui.mvi.launch
 import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.visa.DeactivateVisaByIdUseCase
 import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.visa.DeleteVisaUseCase
 import ru.nikfirs.android.traveltracker.core.ui.domain.usecase.visa.GetVisaByIdUseCase
+import ru.nikfirs.android.traveltracker.feature.home.R
 import ru.nikfirs.android.traveltracker.feature.home.ui.utils.VisaAction
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.visaDetails.VisaDetailsContract.Action
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.visaDetails.VisaDetailsContract.Effect
@@ -42,10 +43,10 @@ class VisaDetailsViewModel @Inject constructor(
             try {
                 val visa = getVisaByIdUseCase.invoke(visaId)
                 visa?.let { setState { it.copy(isLoading = false, visa = visa) } } ?: setError(
-                    CustomString.resource(uiR.string.error_visa_not_found)
+                    CustomString.resource(R.string.home_error_visa_not_found)
                 )
             } catch (e: Exception) {
-                setError(CustomString.resource(uiR.string.error_loading_data))
+                setError(CustomString.resource(R.string.home_error_visa_loading))
                 Log.e(null, "loadVisa", e)
             }
         }
@@ -54,7 +55,7 @@ class VisaDetailsViewModel @Inject constructor(
     private fun showAnnulDialog() {
         setState {
             it.copy(
-                dialogText = CustomString.resource(uiR.string.visa_annul_dialog),
+                dialogText = CustomString.resource(R.string.home_visa_dialog_annul),
                 action = VisaAction.ANNUL
             )
         }
@@ -67,7 +68,7 @@ class VisaDetailsViewModel @Inject constructor(
                 currentState.visa?.id?.let { id ->
                     deactivateVisaByIdUseCase.invoke(id)
                     loadVisa(id)
-                } ?: setError(CustomString.resource(uiR.string.error_visa_not_found))
+                } ?: setError(CustomString.resource(R.string.home_error_visa_not_found))
             } catch (e: Exception) {
                 setError(CustomString.resource(uiR.string.error_updating_data))
                 Log.e(null, "annulVisa", e)
@@ -78,7 +79,7 @@ class VisaDetailsViewModel @Inject constructor(
     private fun showDeleteDialog() {
         setState {
             it.copy(
-                dialogText = CustomString.resource(uiR.string.visa_delete_dialog),
+                dialogText = CustomString.resource(R.string.home_visa_dialog_delete),
                 action = VisaAction.DELETE
             )
         }
@@ -91,10 +92,10 @@ class VisaDetailsViewModel @Inject constructor(
             try {
                 currentState.visa?.let { id ->
                     deleteVisaUseCase.invoke(id)
-                } ?: setError(CustomString.resource(uiR.string.error_visa_not_found))
+                } ?: setError(CustomString.resource(R.string.home_error_visa_not_found))
                 setEffect { Effect.NavigateBack }
             } catch (e: Exception) {
-                setError(CustomString.resource(uiR.string.error_deleting_data))
+                setError(CustomString.resource(R.string.home_error_visa_deleting))
                 Log.e(null, "deleteVisa", e)
             }
         }

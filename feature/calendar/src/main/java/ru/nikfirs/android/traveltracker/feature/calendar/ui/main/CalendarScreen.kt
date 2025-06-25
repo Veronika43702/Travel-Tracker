@@ -177,8 +177,8 @@ fun FilterMenu(
                 onCheckedChange = { isChecked ->
                     onFiltersChange(filters.copy(showRemainingDays = isChecked))
                 },
-                title = stringResource(R.string.filter_remaining_days),
-                description = stringResource(R.string.filter_remaining_days_desc)
+                title = stringResource(R.string.calendar_filter_remaining_days),
+                description = stringResource(R.string.calendar_filter_remaining_days_description)
             )
 
             HorizontalDivider(
@@ -192,8 +192,8 @@ fun FilterMenu(
                 onCheckedChange = { isChecked ->
                     onFiltersChange(filters.copy(showDayChangeDot = isChecked))
                 },
-                title = stringResource(R.string.filter_day_change_indicators),
-                description = stringResource(R.string.filter_day_change_indicators_desc)
+                title = stringResource(R.string.calendar_filter_day_change_indicators),
+                description = stringResource(R.string.calendar_filter_day_change_indicators_description)
             )
 
             HorizontalDivider(
@@ -207,8 +207,8 @@ fun FilterMenu(
                 onCheckedChange = { isChecked ->
                     onFiltersChange(filters.copy(showVisaRange = isChecked))
                 },
-                title = stringResource(R.string.filter_visa_ranges),
-                description = stringResource(R.string.filter_visa_ranges_desc)
+                title = stringResource(R.string.calendar_filter_visa_ranges),
+                description = stringResource(R.string.calendar_filter_visa_ranges_description)
             )
 
             HorizontalDivider(
@@ -222,8 +222,8 @@ fun FilterMenu(
                 onCheckedChange = { isChecked ->
                     onFiltersChange(filters.copy(showTripRange = isChecked))
                 },
-                title = stringResource(R.string.filter_trip_ranges),
-                description = stringResource(R.string.filter_trip_ranges_desc)
+                title = stringResource(R.string.calendar_filter_trip_ranges),
+                description = stringResource(R.string.calendar_filter_trip_ranges_description)
             )
         }
     }

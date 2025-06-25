@@ -38,12 +38,13 @@ import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
 import ru.nikfirs.android.traveltracker.core.domain.model.SchengenCountries
 import ru.nikfirs.android.traveltracker.core.domain.model.VisaCategory
 import ru.nikfirs.android.traveltracker.core.domain.model.VisaEntries
-import ru.nikfirs.android.traveltracker.core.ui.R
+import ru.nikfirs.android.traveltracker.core.ui.R as uiR
 import ru.nikfirs.android.traveltracker.core.ui.ui.component.CustomTextField
 import ru.nikfirs.android.traveltracker.core.ui.ui.component.CustomTextFieldButton
 import ru.nikfirs.android.traveltracker.core.ui.ui.component.RadioButtonRow
 import ru.nikfirs.android.traveltracker.core.ui.ui.extension.asString
 import ru.nikfirs.android.traveltracker.core.ui.ui.extension.clickableOnce
+import ru.nikfirs.android.traveltracker.feature.home.R
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -80,7 +81,7 @@ internal fun VisaInfoBox(
     CustomTextField(
         value = visaNumber,
         onValueChange = updateVisaNumber,
-        label = stringResource(R.string.visa_number),
+        label = stringResource(R.string.home_visa_number),
         modifier = Modifier.fillMaxWidth(),
         required = true,
         isError = visaNumberError != null,
@@ -107,7 +108,7 @@ internal fun VisaInfoBox(
 
     // Issue Date
     DatePickerField(
-        label = stringResource(R.string.issue_date),
+        label = stringResource(R.string.home_visa_issue_date),
         date = startDate,
         onDateSelected = updateStartDate,
         isError = startDateError != null,
@@ -117,7 +118,7 @@ internal fun VisaInfoBox(
 
     // Expiry Date
     DatePickerField(
-        label = stringResource(R.string.expiry_date),
+        label = stringResource(R.string.home_visa_expiry_date),
         date = expiryDate,
         onDateSelected = updateExpiryDate,
         isError = expiryDateError != null,
@@ -130,11 +131,11 @@ internal fun VisaInfoBox(
         CustomTextField(
             value = durationOfStay,
             onValueChange = updateDurationOfStay,
-            label = stringResource(R.string.visa_duration_of_stay),
+            label = stringResource(R.string.home_visa_visa_duration),
             required = true,
             modifier = Modifier.fillMaxWidth(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            suffix = { Text(stringResource(R.string.days)) },
+            suffix = { Text(stringResource(R.string.home_visa_duration_suffix)) },
             isError = durationError != null,
             supportingText = durationError?.asString(),
         )
@@ -151,7 +152,7 @@ internal fun VisaInfoBox(
     CustomTextField(
         value = notes,
         onValueChange = updateNotes,
-        label = stringResource(R.string.notes_optional),
+        label = stringResource(R.string.home_notes_optional),
         modifier = Modifier.fillMaxWidth(),
         minLines = 3,
         maxLines = 5,
@@ -166,7 +167,7 @@ private fun VisaTypeSelection(
 ) {
     Column {
         Text(
-            text = "${stringResource(R.string.visa_type)}*",
+            text = "${stringResource(R.string.home_visa_type)}*",
             style = MaterialTheme.typography.labelMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -178,9 +179,9 @@ private fun VisaTypeSelection(
             VisaCategory.entries.forEach { type ->
                 RadioButtonRow(
                     text = when (type) {
-                        VisaCategory.TYPE_C -> stringResource(R.string.visa_type_c_short)
-                        VisaCategory.TYPE_D -> stringResource(R.string.visa_type_d_short)
-                        VisaCategory.RESIDENCE_PERMIT -> stringResource(R.string.visa_type_residence_short)
+                        VisaCategory.TYPE_C -> stringResource(uiR.string.visa_type_c)
+                        VisaCategory.TYPE_D -> stringResource(uiR.string.visa_type_d)
+                        VisaCategory.RESIDENCE_PERMIT -> stringResource(uiR.string.visa_type_residence_permit)
                     },
                     selected = selectedType == type,
                     modifier = Modifier.weight(1f),
@@ -213,7 +214,7 @@ private fun CountryDropdown(
             text = SchengenCountries.getCountryByCode(selectedCountry)?.getDisplayName(locale)
                 ?: selectedCountry,
             required = true,
-            label = stringResource(R.string.country),
+            label = stringResource(R.string.home_visa_country),
             trailingIconImage = Icons.Default.KeyboardArrowDown,
             modifier = Modifier
                 .fillMaxWidth()
@@ -261,7 +262,7 @@ private fun DatePickerField(
             },
             required = true,
             label = label,
-            trailingIcon = R.drawable.ic_calendar_today,
+            trailingIcon = uiR.drawable.ic_calendar_today,
             isError = isError,
             supportingText = errorText,
         )
@@ -308,12 +309,12 @@ private fun DatePickerDialog(
                     }
                 }
             ) {
-                Text(stringResource(R.string.action_confirm))
+                Text(stringResource(uiR.string.action_confirm))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.action_cancel))
+                Text(stringResource(uiR.string.action_cancel))
             }
         }
     ) {
@@ -329,7 +330,7 @@ private fun EntriesSelection(
 ) {
     Column {
         Text(
-            text = "${stringResource(R.string.entries_type)}*",
+            text = "${stringResource(R.string.home_visa_entries_type)}*",
             style = MaterialTheme.typography.labelMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -349,9 +350,9 @@ private fun EntriesSelection(
                 ) {
                     RadioButtonRow(
                         text = when (entries) {
-                            VisaEntries.SINGLE -> stringResource(R.string.entries_single)
-                            VisaEntries.DOUBLE -> stringResource(R.string.entries_double)
-                            VisaEntries.MULTI -> stringResource(R.string.entries_multi)
+                            VisaEntries.SINGLE -> stringResource(R.string.home_visa_entries_single)
+                            VisaEntries.DOUBLE -> stringResource(R.string.home_visa_entries_double)
+                            VisaEntries.MULTI -> stringResource(R.string.home_visa_entries_multi)
                         },
                         selected = selectedEntries == entries,
                         modifier = Modifier.fillMaxWidth(),

@@ -105,7 +105,7 @@ fun ErrorDialog(
                         )
 
                         CustomButton(
-                            text = stringResource(id = R.string.error_retry),
+                            text = stringResource(id = R.string.action_retry),
                             onClick = onRetry,
                             modifier = Modifier.weight(1f),
                             smallButton = true,

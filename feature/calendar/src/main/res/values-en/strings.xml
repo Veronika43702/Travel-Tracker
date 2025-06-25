@@ -2,18 +2,18 @@
 <resources>
     <!-- Calendar Filters -->
     <string name="calendar_filters_title">Calendar Filters</string>
-    <string name="filter_remaining_days">Remaining Days</string>
-    <string name="filter_remaining_days_desc">Show remaining days count</string>
-    <string name="filter_day_change_indicators">Change Indicators</string>
-    <string name="filter_day_change_indicators_desc">Show day count change dots</string>
-    <string name="filter_visa_ranges">Visa Ranges</string>
-    <string name="filter_visa_ranges_desc">Show visa validity periods</string>
-    <string name="filter_trip_ranges">Trips</string>
-    <string name="filter_trip_ranges_desc">Show trip periods</string>
+    <string name="calendar_filter_remaining_days">Remaining Days</string>
+    <string name="calendar_filter_remaining_days_description">Show remaining days count</string>
+    <string name="calendar_filter_day_change_indicators">Change Indicators</string>
+    <string name="calendar_filter_day_change_indicators_description">Show day count change dots</string>
+    <string name="calendar_filter_visa_ranges">Visa Ranges</string>
+    <string name="calendar_filter_visa_ranges_description">Show visa validity periods</string>
+    <string name="calendar_filter_trip_ranges">Trips</string>
+    <string name="calendar_filter_trip_ranges_description">Show trip periods</string>
 
-    <!-- Day Information Card (new) -->
-    <string name="day_info_remaining_days">remaining days: %1$d</string>
-    <string name="day_info_details">View details</string>
-    <string name="day_info_day_restored_desc">180 days ago there was a trip, so used days are being restored</string>
-    <string name="day_info_close">Close</string>
+    <!-- Day Information Card -->
+    <string name="calendar_day_info_remaining_days">remaining days: %1$d</string>
+    <string name="calendar_day_info_details">View details</string>
+    <string name="calendar_day_info_day_restored_description">180 days ago there was a trip, so used days are being restored</string>
+    <string name="calendar_day_info_close_description">Close</string>
 </resources>

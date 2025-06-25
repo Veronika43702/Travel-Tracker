@@ -1,4 +1,4 @@
-package ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTrip
+package ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addOrEditTrip
 
 import ru.nikfirs.android.traveltracker.core.domain.MAX_STAY_DAYS
 import ru.nikfirs.android.traveltracker.core.domain.WARNING_THRESHOLD
@@ -14,7 +14,7 @@ import ru.nikfirs.android.traveltracker.feature.home.ui.model.TripSegmentUi
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-sealed class AddTripContract {
+sealed class AddOrEditTripContract {
     data class State(
         val isLoading: Boolean = false,
         val tripId: Long? = null,

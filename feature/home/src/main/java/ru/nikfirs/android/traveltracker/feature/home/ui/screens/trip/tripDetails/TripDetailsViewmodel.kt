@@ -43,7 +43,7 @@ class TripDetailsViewModel @Inject constructor(
             try {
                 val trip = getTripByIdUseCase.invoke(tripId)
                 if (trip == null) {
-                    setError(CustomString.resource(R.string.error_trip_not_found))
+                    setError(CustomString.resource(R.string.home_error_trip_not_found))
                     return@launch
                 }
 
@@ -70,7 +70,7 @@ class TripDetailsViewModel @Inject constructor(
                     )
                 }
             } catch (e: Exception) {
-                setError(CustomString.resource(R.string.error_loading_trip))
+                setError(CustomString.resource(R.string.home_error_trip_loading))
                 Log.e(null, "loadTrip", e)
             }
         }
@@ -79,7 +79,7 @@ class TripDetailsViewModel @Inject constructor(
     private fun showDeleteDialog() {
         setState {
             it.copy(
-                dialogText = CustomString.resource(uiR.string.trip_delete_dialog)
+                dialogText = CustomString.resource(R.string.home_trip_dialog_delete)
             )
         }
     }
@@ -90,10 +90,10 @@ class TripDetailsViewModel @Inject constructor(
             try {
                 currentState.trip?.let { trip ->
                     deleteTripUseCase.invoke(trip)
-                } ?: setError(CustomString.resource(R.string.error_trip_not_found))
+                } ?: setError(CustomString.resource(R.string.home_error_trip_not_found))
                 setEffect { Effect.NavigateBack }
             } catch (e: Exception) {
-                setError(CustomString.resource(R.string.error_deleting_trip))
+                setError(CustomString.resource(R.string.home_error_trip_deleting))
                 Log.e(null, "deleteTrip", e)
             }
         }

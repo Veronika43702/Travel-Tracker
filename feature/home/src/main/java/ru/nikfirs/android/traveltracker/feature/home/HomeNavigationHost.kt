@@ -7,7 +7,7 @@ import androidx.navigation.toRoute
 import ru.nikfirs.android.traveltracker.core.ui.navigation.BottomNavBarRoute
 import ru.nikfirs.android.traveltracker.core.ui.navigation.DeepRoute
 import ru.nikfirs.android.traveltracker.core.ui.navigation.navigateBottomNavBarRoute
-import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTrip.AddTripScreen
+import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addOrEditTrip.AddOrEditTripScreen
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTripSegment.AddTripSegmentScreen
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.tripDetails.TripDetailsScreen
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.addOrEditVisa.AddOrEditVisaScreen
@@ -49,7 +49,7 @@ fun NavGraphBuilder.homeNavigationGraph(
     // Trip
     composable<HomeRoute.AddTrip> { backStack ->
         val route = backStack.toRoute<HomeRoute.AddTrip>()
-        AddTripScreen(
+        AddOrEditTripScreen(
             tripId = route.tripId,
             navigateToTripSegment = { navController.navigate(HomeRoute.AddTripSegment) },
             navigateBack = { navController.popBackStack() },

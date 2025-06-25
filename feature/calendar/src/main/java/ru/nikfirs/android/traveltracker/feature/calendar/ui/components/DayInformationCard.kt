@@ -111,7 +111,7 @@ fun DayInformationCard(
                                 .clickableOnce { onClose() }
                                 .padding(4.dp),
                             imageVector = Icons.Default.Close,
-                            contentDescription = stringResource(R.string.day_info_close),
+                            contentDescription = stringResource(R.string.calendar_day_info_close_description),
                             tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
@@ -131,7 +131,7 @@ fun DayInformationCard(
                         dateInfo.remainingDays?.let { remainingDays ->
                             Text(
                                 text = stringResource(
-                                    R.string.day_info_remaining_days,
+                                    R.string.calendar_day_info_remaining_days,
                                     remainingDays
                                 ),
                                 style = MaterialTheme.typography.bodyMedium,
@@ -156,7 +156,7 @@ fun DayInformationCard(
                                     )
 
                                     Text(
-                                        text = stringResource(R.string.day_info_day_restored_desc),
+                                        text = stringResource(R.string.calendar_day_info_day_restored_description),
                                         style = MaterialTheme.typography.bodySmall,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
@@ -205,7 +205,7 @@ fun DayInformationCard(
                                         }
 
                                         Text(
-                                            text = stringResource(R.string.day_info_details),
+                                            text = stringResource(R.string.calendar_day_info_details),
                                             style = MaterialTheme.typography.labelMedium,
                                             color = MaterialTheme.colorScheme.primary,
                                             modifier = Modifier.clickableOnce { onTripClick() }
@@ -238,7 +238,7 @@ fun DayInformationCard(
                                             text = when (visa.visaType) {
                                                 VisaCategory.TYPE_C -> stringResource(uiR.string.visa_type_c)
                                                 VisaCategory.TYPE_D -> stringResource(uiR.string.visa_type_d)
-                                                VisaCategory.RESIDENCE_PERMIT -> stringResource(uiR.string.visa_residence_permit)
+                                                VisaCategory.RESIDENCE_PERMIT -> stringResource(uiR.string.visa_type_residence_permit)
                                             },
                                             style = MaterialTheme.typography.bodyMedium,
                                             color = MaterialTheme.colorScheme.onSurface
@@ -253,7 +253,7 @@ fun DayInformationCard(
                                         )
 
                                         Text(
-                                            text = stringResource(R.string.day_info_details),
+                                            text = stringResource(R.string.calendar_day_info_details),
                                             style = MaterialTheme.typography.labelMedium,
                                             color = MaterialTheme.colorScheme.primary,
                                             modifier = Modifier.clickableOnce { onVisaClick() }

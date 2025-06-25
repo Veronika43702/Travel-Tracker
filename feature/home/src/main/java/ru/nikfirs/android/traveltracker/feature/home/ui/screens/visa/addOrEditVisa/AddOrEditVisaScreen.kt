@@ -33,6 +33,7 @@ import ru.nikfirs.android.traveltracker.core.ui.ui.component.LightRUScreenPrevie
 import ru.nikfirs.android.traveltracker.core.ui.ui.component.Screen
 import ru.nikfirs.android.traveltracker.core.ui.mvi.LaunchedEffectResolver
 import ru.nikfirs.android.traveltracker.core.ui.ui.theme.AppTheme
+import ru.nikfirs.android.traveltracker.feature.home.R
 import ru.nikfirs.android.traveltracker.feature.home.ui.components.VisaInfoBox
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.addOrEditVisa.AddOrEditVisaContract.Action
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.addOrEditVisa.AddOrEditVisaContract.Effect
@@ -58,7 +59,11 @@ fun AddOrEditVisaScreen(
         }
     }
     Screen(
-        topTitle = stringResource(uiR.string.visa_edit_title),
+        topTitle = if (visaId == null) {
+            stringResource(R.string.home_visa_add_title)
+        } else {
+            stringResource(R.string.home_visa_edit_title)
+        },
         navigateBack = navigateBack,
     ) {
         AddVisaScreenContent(

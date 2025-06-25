@@ -195,9 +195,9 @@ private fun TripStatusSection(
     ) {
         StatusChip(
             text = when {
-                trip.isOngoing -> stringResource(R.string.trip_status_ongoing_details)
-                trip.isFuture -> stringResource(R.string.trip_status_planned_details)
-                else -> stringResource(R.string.trip_status_completed_details)
+                trip.isOngoing -> stringResource(R.string.home_trip_details_status_ongoing)
+                trip.isFuture -> stringResource(R.string.home_trip_details_status_planned)
+                else -> stringResource(R.string.home_trip_details_trip_status_completed)
             },
             backgroundColor = when {
                 trip.isOngoing -> MaterialTheme.colorScheme.secondaryContainer
@@ -225,7 +225,7 @@ private fun TripInfoSection(
     ) {
         // Trip Dates
         InfoDataBox(
-            header = stringResource(R.string.trip_dates_section),
+            header = stringResource(R.string.home_trip_dates_section),
             data = "${trip.startDate?.format(dateFormatter)} - ${trip.endDate?.format(dateFormatter)}"
         )
 
@@ -245,26 +245,26 @@ private fun TripInfoSection(
 
         // Purpose
         InfoDataBox(
-            header = stringResource(R.string.trip_purpose_section),
+            header = stringResource(R.string.home_trip_purpose_section),
             data = when (trip.purpose) {
-                TripPurpose.TOURISM -> stringResource(uiR.string.purpose_tourism)
-                TripPurpose.BUSINESS -> stringResource(uiR.string.purpose_business)
-                TripPurpose.FAMILY -> stringResource(uiR.string.purpose_family)
-                TripPurpose.MEDICAL -> stringResource(uiR.string.purpose_medical)
-                TripPurpose.EDUCATION -> stringResource(uiR.string.purpose_education)
-                TripPurpose.OTHER -> stringResource(uiR.string.purpose_other)
+                TripPurpose.TOURISM -> stringResource(R.string.home_trip_purpose_tourism)
+                TripPurpose.BUSINESS -> stringResource(R.string.home_trip_purpose_business)
+                TripPurpose.FAMILY -> stringResource(R.string.home_trip_purpose_family)
+                TripPurpose.MEDICAL -> stringResource(R.string.home_trip_purpose_medical)
+                TripPurpose.EDUCATION -> stringResource(R.string.home_trip_purpose_education)
+                TripPurpose.OTHER -> stringResource(R.string.home_trip_purpose_other)
             }
         )
 
         // Linked Visa (if exists)
         visa?.id?.let { visaId ->
             val typeText = when (visa.visaType) {
-                VisaCategory.TYPE_C -> stringResource(ru.nikfirs.android.traveltracker.core.ui.R.string.visa_type_c_short)
-                VisaCategory.TYPE_D -> stringResource(ru.nikfirs.android.traveltracker.core.ui.R.string.visa_type_d_short)
-                VisaCategory.RESIDENCE_PERMIT -> stringResource(ru.nikfirs.android.traveltracker.core.ui.R.string.visa_type_residence_short)
+                VisaCategory.TYPE_C -> stringResource(ru.nikfirs.android.traveltracker.core.ui.R.string.visa_type_c)
+                VisaCategory.TYPE_D -> stringResource(ru.nikfirs.android.traveltracker.core.ui.R.string.visa_type_d)
+                VisaCategory.RESIDENCE_PERMIT -> stringResource(ru.nikfirs.android.traveltracker.core.ui.R.string.visa_type_residence_permit)
             }
             InfoDataBox(
-                header = stringResource(uiR.string.visa_section),
+                header = stringResource(R.string.home_trip_visa_section),
                 data = "$typeText (${visa.visaNumber}) ${visa.country}",
                 dataColor = MaterialTheme.colorScheme.primary,
                 onDataClick = { onVisaClick(visaId) }
@@ -274,7 +274,7 @@ private fun TripInfoSection(
         // Notes (if exists)
         if (!trip.notes.isNullOrBlank()) {
             InfoDataBox(
-                header = stringResource(uiR.string.notes),
+                header = stringResource(R.string.home_notes),
                 data = trip.notes ?: ""
             )
         }
@@ -308,7 +308,7 @@ private fun TripSegmentsSection(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                text = stringResource(R.string.trip_segments_section),
+                text = stringResource(R.string.home_trip_segments_section),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.primary
             )

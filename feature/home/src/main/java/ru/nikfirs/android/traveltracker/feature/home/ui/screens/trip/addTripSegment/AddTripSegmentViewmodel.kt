@@ -4,6 +4,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
 import ru.nikfirs.android.traveltracker.core.ui.ui.model.DateRangeSelection
 import ru.nikfirs.android.traveltracker.core.ui.mvi.ViewModel
+import ru.nikfirs.android.traveltracker.feature.home.R
 import ru.nikfirs.android.traveltracker.feature.home.ui.model.TripSegmentUi
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTripSegment.AddTripSegmentContract.Action
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTripSegment.AddTripSegmentContract.Effect
@@ -167,10 +168,10 @@ class AddTripSegmentViewModel @Inject constructor(
 
         return AddTripSegmentContract.ValidationErrors(
             countryError = if (country.isBlank()) {
-                CustomString.resource(uiR.string.error_segment_country_required)
+                CustomString.resource(R.string.home_error_trip_segment_country_required)
             } else null,
             datesError = if (!dateRange.isComplete) {
-                CustomString.resource(uiR.string.error_segment_dates_required)
+                CustomString.resource(R.string.home_error_trip_segment_dates_required)
             } else null
         )
     }

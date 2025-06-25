@@ -123,7 +123,7 @@ fun TripCard(
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 StatusChip(
-                    text = stringResource(uiR.string.trip_duration_days, trip.duration.toInt()),
+                    text = stringResource(R.string.trip_card_duration_days, trip.duration.toInt()),
                     backgroundColor = MaterialTheme.colorScheme.primaryContainer,
                     contentColor = MaterialTheme.colorScheme.onPrimaryContainer
                 )
@@ -131,7 +131,7 @@ fun TripCard(
                 if (isExempt) {
                     StatusChip(
                         text = stringResource(
-                            uiR.string.countable_days_count,
+                            R.string.home_trip_countable_days,
                             countableDuration
                         ),
                         backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
@@ -143,9 +143,14 @@ fun TripCard(
 
                 when {
                     trip.isOngoing -> StatusChip(
-                        text = stringResource(uiR.string.trip_ongoing),
+                        text = stringResource(R.string.trip_card_status_ongoing),
                         backgroundColor = MaterialTheme.colorScheme.secondary,
                         contentColor = MaterialTheme.colorScheme.onSecondary
+                    )
+                    trip.isFuture -> StatusChip(
+                        text = stringResource(R.string.trip_card_status_planned),
+                        backgroundColor = MaterialTheme.colorScheme.tertiaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
                     )
                 }
             }
@@ -153,7 +158,7 @@ fun TripCard(
         warning = if (trip.hasOverLimitDay) {
             {
                 StatusChip(
-                    text = stringResource(R.string.trip_over_limit_warning),
+                    text = stringResource(R.string.home_trip_over_limit_warning),
                     backgroundColor = MaterialTheme.colorScheme.error,
                     contentColor = MaterialTheme.colorScheme.onError
                 )
@@ -167,7 +172,7 @@ fun TripCard(
         if (trip.startDate != null && trip.endDate != null) {
             Text(
                 text = stringResource(
-                    uiR.string.trip_dates,
+                    R.string.trip_card_dates,
                     trip.startDate?.format(dateFormatter) ?: "",
                     trip.endDate?.format(dateFormatter) ?: "",
                 ),

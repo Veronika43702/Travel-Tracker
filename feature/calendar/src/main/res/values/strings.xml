@@ -2,18 +2,18 @@
 <resources>
     <!-- Calendar Filters -->
     <string name="calendar_filters_title">Фильтры календаря</string>
-    <string name="filter_remaining_days">Оставшиеся дни</string>
-    <string name="filter_remaining_days_desc">Показать количество оставшихся дней</string>
-    <string name="filter_day_change_indicators">Индикаторы изменения</string>
-    <string name="filter_day_change_indicators_desc">Показать точки изменения количества дней</string>
-    <string name="filter_visa_ranges">Визовые периоды</string>
-    <string name="filter_visa_ranges_desc">Показать периоды действия виз</string>
-    <string name="filter_trip_ranges">Поездки</string>
-    <string name="filter_trip_ranges_desc">Показать периоды поездок</string>
+    <string name="calendar_filter_remaining_days">Оставшиеся дни</string>
+    <string name="calendar_filter_remaining_days_description">Показать количество оставшихся дней</string>
+    <string name="calendar_filter_day_change_indicators">Индикаторы изменения</string>
+    <string name="calendar_filter_day_change_indicators_description">Показать точки изменения количества дней</string>
+    <string name="calendar_filter_visa_ranges">Визовые периоды</string>
+    <string name="calendar_filter_visa_ranges_description">Показать периоды действия виз</string>
+    <string name="calendar_filter_trip_ranges">Поездки</string>
+    <string name="calendar_filter_trip_ranges_description">Показать периоды поездок</string>
 
-    <!-- Day Information Card (new) -->
-    <string name="day_info_remaining_days">оставшиеся дни: %1$d</string>
-    <string name="day_info_details">Посмотреть детали</string>
-    <string name="day_info_day_restored_desc">180 дней назад была поездка, поэтому использованные дни восстанавливаются</string>
-    <string name="day_info_close">Закрыть</string>
+    <!-- Day Information Card -->
+    <string name="calendar_day_info_remaining_days">оставшиеся дни: %1$d</string>
+    <string name="calendar_day_info_details">Посмотреть детали</string>
+    <string name="calendar_day_info_day_restored_description">180 дней назад была поездка, поэтому использованные дни восстанавливаются</string>
+    <string name="calendar_day_info_close_description">Закрыть</string>
 </resources>
