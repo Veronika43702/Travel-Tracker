@@ -32,6 +32,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import ru.nikfirs.android.traveltracker.core.data.model.TRANSIT
+import ru.nikfirs.android.traveltracker.core.domain.model.SchengenCountries
 import ru.nikfirs.android.traveltracker.core.domain.model.Trip
 import ru.nikfirs.android.traveltracker.core.domain.model.TripPurpose
 import ru.nikfirs.android.traveltracker.core.domain.model.TripSegment
@@ -47,6 +49,7 @@ import ru.nikfirs.android.traveltracker.feature.calendar.R
 import ru.nikfirs.android.traveltracker.feature.calendar.ui.model.DateDataModel
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 import ru.nikfirs.android.traveltracker.core.ui.R as uiR
 
 @Composable
@@ -59,6 +62,7 @@ fun DayInformationCard(
     modifier: Modifier = Modifier,
     formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yy"),
 ) {
+    val locale = Locale.getDefault().language
     Dialog(
         onDismissRequest = onClose,
         properties = DialogProperties(
@@ -185,7 +189,12 @@ fun DayInformationCard(
                                     ) {
                                         trip.primaryCountry?.let { country ->
                                             Text(
-                                                text = country,
+                                                text = if (country == TRANSIT) {
+                                                    stringResource(R.string.calendar_trip_segment_transit_option)
+                                                } else {
+                                                    SchengenCountries.getCountryByCode(country)
+                                                        ?.getDisplayName(locale) ?: country
+                                                },
                                                 style = MaterialTheme.typography.bodySmall,
                                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                                             )
@@ -303,7 +312,7 @@ private fun DayInformationCardPreview() {
                 endDate = LocalDate.now().minusDays(3),
                 segments = listOf(
                     TripSegment(
-                        country = "Spain",
+                        country = "ES",
                         startDate = LocalDate.now().minusDays(10),
                         endDate = LocalDate.now().minusDays(3),
                         cities = listOf("Madrid"),

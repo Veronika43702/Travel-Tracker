@@ -34,11 +34,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import ru.nikfirs.android.traveltracker.core.domain.model.Country
 import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
 import ru.nikfirs.android.traveltracker.core.domain.model.SchengenCountries
 import ru.nikfirs.android.traveltracker.core.domain.model.VisaCategory
 import ru.nikfirs.android.traveltracker.core.domain.model.VisaEntries
-import ru.nikfirs.android.traveltracker.core.ui.R as uiR
 import ru.nikfirs.android.traveltracker.core.ui.ui.component.CustomTextField
 import ru.nikfirs.android.traveltracker.core.ui.ui.component.CustomTextFieldButton
 import ru.nikfirs.android.traveltracker.core.ui.ui.component.RadioButtonRow
@@ -48,13 +48,17 @@ import ru.nikfirs.android.traveltracker.feature.home.R
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
+import ru.nikfirs.android.traveltracker.core.ui.R as uiR
 
 @Composable
 internal fun VisaInfoBox(
     visaNumber: String,
     visaType: VisaCategory,
     selectedCountry: String,
+    countryText: String,
+    onCountryTextChanged: (value: String, language: String) -> Unit,
     isCountryDropdownExpanded: Boolean,
+    countryList: List<Country>,
     startDate: LocalDate,
     expiryDate: LocalDate,
     durationOfStay: String,
@@ -98,9 +102,12 @@ internal fun VisaInfoBox(
     // Country Selection
     CountryDropdown(
         selectedCountry = selectedCountry,
+        countryText = countryText,
+        onCountryTextChanged = { onCountryTextChanged(it, locale) },
         expanded = isCountryDropdownExpanded,
         onExpandedChange = setCountryDropdownExpanded,
         onCountrySelected = updateCountry,
+        countryList = countryList,
         locale = locale,
         isError = countryError != null,
         errorText = countryError.asString()
@@ -199,9 +206,12 @@ private fun VisaTypeSelection(
 @Composable
 private fun CountryDropdown(
     selectedCountry: String,
+    countryText: String,
     expanded: Boolean,
     onExpandedChange: (Boolean) -> Unit,
+    onCountryTextChanged: (String) -> Unit,
     onCountrySelected: (String) -> Unit,
+    countryList: List<Country>,
     locale: String,
     isError: Boolean = false,
     errorText: String? = null
@@ -210,9 +220,14 @@ private fun CountryDropdown(
         expanded = expanded,
         onExpandedChange = { onExpandedChange(it) }
     ) {
-        CustomTextFieldButton(
-            text = SchengenCountries.getCountryByCode(selectedCountry)?.getDisplayName(locale)
-                ?: selectedCountry,
+        CustomTextField(
+            value = if (selectedCountry.isNotBlank()) {
+                SchengenCountries.getCountryByCode(selectedCountry)?.getDisplayNameWithCode(locale)
+                    ?: countryText
+            } else {
+                countryText
+            },
+            onValueChange = onCountryTextChanged,
             required = true,
             label = stringResource(R.string.home_visa_country),
             trailingIconImage = Icons.Default.KeyboardArrowDown,
@@ -227,9 +242,9 @@ private fun CountryDropdown(
             expanded = expanded,
             onDismissRequest = { onExpandedChange(false) }
         ) {
-            SchengenCountries.countries.forEach { country ->
+            countryList.forEach { country ->
                 DropdownMenuItem(
-                    text = { Text(country.getDisplayName(locale)) },
+                    text = { Text(country.getDisplayNameWithCode(locale)) },
                     onClick = {
                         onCountrySelected(country.code)
                         onExpandedChange(false)

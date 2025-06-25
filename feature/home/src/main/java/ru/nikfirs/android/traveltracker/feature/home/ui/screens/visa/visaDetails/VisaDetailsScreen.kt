@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
+import ru.nikfirs.android.traveltracker.core.domain.model.SchengenCountries
 import ru.nikfirs.android.traveltracker.core.domain.model.Visa
 import ru.nikfirs.android.traveltracker.core.domain.model.VisaCategory
 import ru.nikfirs.android.traveltracker.core.domain.model.VisaEntries
@@ -155,6 +156,7 @@ fun VisaInfoBox(
     dateFormatter: DateTimeFormatter,
 ) {
     visa ?: return
+    val locale = java.util.Locale.getDefault().language
     if (!visa.isActive) {
         Text(
             text = stringResource(R.string.home_visa_details_annulled),
@@ -179,7 +181,8 @@ fun VisaInfoBox(
     )
     InfoDataBox(
         header = stringResource(R.string.home_visa_country),
-        data = visa.country,
+        data = SchengenCountries.getCountryByCode(visa.country)
+            ?.getDisplayNameWithCode(locale) ?: visa.country,
     )
     InfoDataBox(
         header = stringResource(R.string.home_visa_issue_date),
@@ -221,6 +224,7 @@ private fun AddVisaScreenPreview1() {
             state = State(
                 visa = Visa(
                     visaNumber = "123",
+                    country = "CZ",
                     startDate = LocalDate.now(),
                     expiryDate = LocalDate.now(),
                     visaType = VisaCategory.TYPE_C,

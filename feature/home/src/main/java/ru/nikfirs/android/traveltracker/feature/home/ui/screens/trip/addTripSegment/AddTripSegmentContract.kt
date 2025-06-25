@@ -1,5 +1,6 @@
 package ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTripSegment
 
+import ru.nikfirs.android.traveltracker.core.domain.model.Country
 import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
 import ru.nikfirs.android.traveltracker.core.ui.ui.model.DateRangeSelection
 import ru.nikfirs.android.traveltracker.core.ui.mvi.MviAction
@@ -12,7 +13,10 @@ import java.time.format.DateTimeFormatter
 sealed class AddTripSegmentContract {
     data class State(
         val isLoading: Boolean = false,
+        val countryText: String = "",
         val country: String = "",
+        val countryListFull: List<Country> = emptyList(),
+        val countryListToShow: List<Country> = emptyList(),
         val isCountryDropdownExpanded: Boolean = false,
         val selectedDateRange: DateRangeSelection = DateRangeSelection(),
         val startDate: LocalDate? = null,
@@ -41,15 +45,23 @@ sealed class AddTripSegmentContract {
     }
 
     data class ValidationErrors(
-        val countryError: CustomString? = null,
-        val datesError: CustomString? = null
+        val countryEmptyError: CustomString? = null,
+        val countryNotFromListError: CustomString? = null,
+        val datesError: CustomString? = null,
     ) {
-        fun isEmpty(): Boolean = countryError == null && datesError == null
+        fun isEmpty(): Boolean = countryEmptyError == null
+                && countryNotFromListError == null
+                && datesError == null
     }
 
     sealed class Action : MviAction {
         data object LoadData : Action()
 
+        data class UpdateCountryText(
+            val value: String,
+            val language: String,
+            val resetCountry: Boolean = true,
+        ) : Action()
         data class UpdateCountry(val country: String) : Action()
         data class ShowDatePicker(val value: Boolean) : Action()
         data class UpdateDateRange(val dateRange: DateRangeSelection) : Action()

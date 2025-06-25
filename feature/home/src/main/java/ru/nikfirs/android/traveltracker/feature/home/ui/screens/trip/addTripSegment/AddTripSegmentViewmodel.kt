@@ -1,7 +1,9 @@
 package ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTripSegment
 
 import dagger.hilt.android.lifecycle.HiltViewModel
+import ru.nikfirs.android.traveltracker.core.data.model.TRANSIT
 import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
+import ru.nikfirs.android.traveltracker.core.domain.model.SchengenCountries
 import ru.nikfirs.android.traveltracker.core.ui.ui.model.DateRangeSelection
 import ru.nikfirs.android.traveltracker.core.ui.mvi.ViewModel
 import ru.nikfirs.android.traveltracker.feature.home.R
@@ -16,7 +18,7 @@ import ru.nikfirs.android.traveltracker.core.ui.R as uiR
 
 @HiltViewModel
 class AddTripSegmentViewModel @Inject constructor(
-    private val addTripHolder: AddTripHolder
+    val addTripHolder: AddTripHolder
 ) : ViewModel<Action, Effect, State>() {
 
     init {
@@ -29,6 +31,12 @@ class AddTripSegmentViewModel @Inject constructor(
         when (action) {
             is Action.LoadData -> loadData()
             is Action.SetCountryDropdownExpanded -> setCountryDropdownExpanded(action.expanded)
+            is Action.UpdateCountryText -> updateCountryText(
+                action.value,
+                action.language,
+                action.resetCountry
+            )
+
             is Action.UpdateCountry -> updateCountry(action.country)
             is Action.ShowDatePicker -> setState { it.copy(showCalendar = action.value) }
             is Action.UpdateDateRange -> updateDateRange(action.dateRange)
@@ -66,6 +74,8 @@ class AddTripSegmentViewModel @Inject constructor(
 
         setState {
             it.copy(
+                countryListFull = SchengenCountries.countries,
+                countryListToShow = SchengenCountries.countries,
                 tripStartDate = tripStartDate,
                 tripEndDate = tripEndDate,
                 segmentList = addTripHolder.segmentList.filter { segment ->
@@ -89,14 +99,44 @@ class AddTripSegmentViewModel @Inject constructor(
     }
 
     /**
+     * Updates country list to view and sets value for text field.
+     * Text value for country is formed according to language.
+     * @param resetCountry true if country (value for addTripHolder) is need to be reset.
+     * If true country value is set to be Blank,
+     * if false - get values from [currentState.country][currentState]
+     */
+    private fun updateCountryText(value: String, language: String, resetCountry: Boolean) {
+        val list = currentState.countryListFull.filter {
+            if (resetCountry) {
+                if (language == "ru") {
+                    it.nameRu.lowercase().startsWith(value.lowercase())
+                } else {
+                    it.nameEn.lowercase().startsWith(value.lowercase())
+                }
+            } else true
+        }
+
+        setState {
+            it.copy(
+                countryText = value,
+                country = if (resetCountry) "" else currentState.country,
+                isCountryDropdownExpanded = resetCountry,
+                countryListToShow = list,
+            )
+        }
+    }
+
+    /**
      * Updates country for segment info, close dropdown menu and drop country error
      */
     private fun updateCountry(country: String) {
         setState {
             it.copy(
+                countryText = country,
                 country = country,
+                countryListToShow = currentState.countryListFull,
                 isCountryDropdownExpanded = false,
-                validationErrors = currentState.validationErrors.copy(countryError = null)
+                validationErrors = currentState.validationErrors.copy(countryEmptyError = null)
             )
         }
     }
@@ -167,8 +207,14 @@ class AddTripSegmentViewModel @Inject constructor(
         val dateRange = currentState.selectedDateRange
 
         return AddTripSegmentContract.ValidationErrors(
-            countryError = if (country.isBlank()) {
+            countryEmptyError = if (country.isBlank()) {
                 CustomString.resource(R.string.home_error_trip_segment_country_required)
+            } else null,
+            countryNotFromListError = if (
+                !(country == TRANSIT || currentState.countryListFull
+                    .find { it.code == country } != null)
+            ) {
+                CustomString.resource(R.string.home_error_trip_segment_country_invalid)
             } else null,
             datesError = if (!dateRange.isComplete) {
                 CustomString.resource(R.string.home_error_trip_segment_dates_required)

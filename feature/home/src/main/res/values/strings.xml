@@ -107,6 +107,7 @@
 
     <!-- Validation Errors Trip Segments -->
     <string name="home_error_trip_segment_country_required">Выберите страну для сегмента</string>
+    <string name="home_error_trip_segment_country_invalid">Выберите страну из списка</string>
     <string name="home_error_trip_segment_dates_required">Выберите даты для сегмента</string>
 
     <!-- Visa -->

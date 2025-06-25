@@ -37,6 +37,7 @@ import ru.nikfirs.android.traveltracker.feature.home.R
 import ru.nikfirs.android.traveltracker.feature.home.ui.model.TripSegmentUi
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 @Composable
 fun SwipeableTripSegmentCard(
@@ -74,6 +75,7 @@ fun TripSegmentCard(
     onClick: () -> Unit,
     dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy"),
 ) {
+    val locale = Locale.getDefault().language
     Card(
         modifier = Modifier
             .clip(MaterialTheme.shapes.card)
@@ -110,8 +112,8 @@ fun TripSegmentCard(
                             text = if (segment.country == TRANSIT) {
                                 stringResource(R.string.home_trip_segment_transit_option)
                             } else {
-                                SchengenCountries.getCountryByCode(segment.country)?.nameRu
-                                    ?: segment.country
+                                SchengenCountries.getCountryByCode(segment.country)
+                                    ?.getDisplayName(locale) ?: segment.country
                             },
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.primary,
@@ -195,7 +197,7 @@ private fun TripCardPreview() {
         ) {
             SwipeableTripSegmentCard(
                 segment = TripSegmentUi(
-                    country = "Germany",
+                    country = "DE",
                     startDate = LocalDate.now(),
                     endDate = LocalDate.now().plusDays(3),
                     cities = listOf("Berlin", "Munich"),

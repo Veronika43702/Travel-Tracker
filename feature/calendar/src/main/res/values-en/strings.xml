@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="calendar_trip_segment_transit_option">Transit</string>
+
     <!-- Calendar Filters -->
     <string name="calendar_filters_title">Calendar Filters</string>
     <string name="calendar_filter_remaining_days">Remaining Days</string>

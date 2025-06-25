@@ -4,6 +4,7 @@ import android.util.Log
 import dagger.hilt.android.lifecycle.HiltViewModel
 import ru.nikfirs.android.traveltracker.core.domain.MAX_STAY_DAYS
 import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
+import ru.nikfirs.android.traveltracker.core.domain.model.SchengenCountries
 import ru.nikfirs.android.traveltracker.core.domain.model.Visa
 import ru.nikfirs.android.traveltracker.core.domain.model.VisaCategory
 import ru.nikfirs.android.traveltracker.core.domain.model.VisaEntries
@@ -35,6 +36,12 @@ class AddOrEditVisaViewModel @Inject constructor(
             is Action.UpdateVisaNumber -> updateVisaNumber(action.number)
             is Action.UpdateVisaType -> updateVisaType(action.type)
             is Action.UpdateCountry -> updateCountry(action.country)
+            is Action.UpdateCountryText -> updateCountryText(
+                action.value,
+                action.language,
+                action.resetCountry
+            )
+
             is Action.UpdateStartDate -> updateStartDate(action.date)
             is Action.UpdateExpiryDate -> updateExpiryDate(action.date)
             is Action.UpdateDurationOfStay -> updateDurationOfStay(action.duration)
@@ -47,6 +54,7 @@ class AddOrEditVisaViewModel @Inject constructor(
     }
 
     private fun loadVisa(visaId: Long?) {
+        setState { it.copy(countryListToShow = SchengenCountries.countries) }
         visaId ?: return
         launch {
             setState { it.copy(isLoading = true) }
@@ -104,6 +112,7 @@ class AddOrEditVisaViewModel @Inject constructor(
         val stayDuration = when (currentState.visaType) {
             VisaCategory.TYPE_C -> (
                     if (visaDuration < MAX_STAY_DAYS) visaDuration else MAX_STAY_DAYS).toString()
+
             else -> (ChronoUnit.DAYS.between(
                 currentState.startDate,
                 currentState.expiryDate
@@ -116,10 +125,33 @@ class AddOrEditVisaViewModel @Inject constructor(
         setState {
             it.copy(
                 selectedCountry = country,
+                countryText = country,
+                countryListToShow = SchengenCountries.countries,
                 isCountryDropdownExpanded = false,
                 validationErrors = currentState.validationErrors.copy(
                     countryError = null
                 )
+            )
+        }
+    }
+
+    private fun updateCountryText(value: String, language: String, resetCountry: Boolean) {
+        val list = SchengenCountries.countries.filter {
+            if (resetCountry) {
+                if (language == "ru") {
+                    it.nameRu.lowercase().startsWith(value.lowercase())
+                } else {
+                    it.nameEn.lowercase().startsWith(value.lowercase())
+                }
+            } else true
+        }
+
+        setState {
+            it.copy(
+                countryText = value,
+                selectedCountry = if (resetCountry) "" else currentState.selectedCountry,
+                isCountryDropdownExpanded = resetCountry,
+                countryListToShow = list,
             )
         }
     }

@@ -104,6 +104,7 @@
 
     <!-- Validation Errors Trip Segments -->
     <string name="home_error_trip_segment_country_required">Select country for segment</string>
+    <string name="home_error_trip_segment_country_invalid">Select country from list</string>
     <string name="home_error_trip_segment_dates_required">Please select dates for the segment</string>
 
     <!-- Visa -->

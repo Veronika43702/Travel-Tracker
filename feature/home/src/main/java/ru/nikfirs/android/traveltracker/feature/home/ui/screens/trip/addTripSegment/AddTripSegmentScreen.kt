@@ -22,6 +22,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -62,7 +63,26 @@ fun AddTripSegmentScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val verticalScroll = rememberScrollState()
+    val locale = Locale.getDefault().language
+    val countryText = when {
+        viewModel.addTripHolder.currentSegment?.country == TRANSIT -> stringResource(R.string.home_trip_segment_transit_option)
+        viewModel.addTripHolder.currentSegment?.country?.isNotBlank() == true -> {
+            SchengenCountries.getCountryByCode(state.country)
+                ?.getDisplayNameWithCode(locale)
+                ?: state.country
+        }
 
+        else -> ""
+    }
+    LaunchedEffect(viewModel.addTripHolder.currentSegment) {
+        if (viewModel.addTripHolder.currentSegment != null) {
+            viewModel.setAction(
+                Action.UpdateCountryText(
+                    countryText, locale, false
+                )
+            )
+        }
+    }
     LaunchedEffectResolver(flow = viewModel.effect) { effect ->
         when (effect) {
             is Effect.NavigateBack -> navigateBack()
@@ -112,15 +132,23 @@ private fun AddTripSegmentContent(
             expanded = state.isCountryDropdownExpanded,
             onExpandedChange = { onAction(Action.SetCountryDropdownExpanded(it)) }
         ) {
-            CustomTextFieldButton(
-                text = when {
-                    state.country == TRANSIT -> stringResource(R.string.home_trip_segment_transit_option)
-                    state.country.isNotBlank() -> {
-                        SchengenCountries.getCountryByCode(state.country)?.getDisplayName(locale)
-                            ?: state.country
-                    }
+            CustomTextField(
+                value = if (state.country.isNotBlank()) {
+                    when {
+                        state.country == TRANSIT -> stringResource(R.string.home_trip_segment_transit_option)
+                        state.country.isNotBlank() -> {
+                            SchengenCountries.getCountryByCode(state.country)
+                                ?.getDisplayNameWithCode(locale)
+                                ?: state.countryText
+                        }
 
-                    else -> ""
+                        else -> ""
+                    }
+                } else {
+                    state.countryText
+                },
+                onValueChange = { value ->
+                    onAction(Action.UpdateCountryText(value, locale))
                 },
                 required = true,
                 label = stringResource(R.string.home_trip_segment_country),
@@ -128,8 +156,8 @@ private fun AddTripSegmentContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .menuAnchor(MenuAnchorType.PrimaryEditable),
-                isError = state.validationErrors.countryError != null,
-                supportingText = state.validationErrors.countryError?.asString(),
+                isError = state.validationErrors.countryEmptyError != null,
+                supportingText = state.validationErrors.countryEmptyError?.asString(),
             )
             ExposedDropdownMenu(
                 expanded = state.isCountryDropdownExpanded,
@@ -137,13 +165,19 @@ private fun AddTripSegmentContent(
             ) {
                 DropdownMenuItem(
                     text = { Text(stringResource(R.string.home_trip_segment_transit_option)) },
-                    onClick = { onAction(Action.UpdateCountry(TRANSIT)) }
+                    onClick = {
+                        focusManager.clearFocus()
+                        onAction(Action.UpdateCountry(TRANSIT))
+                    }
                 )
                 HorizontalDivider()
-                SchengenCountries.countries.forEach { country ->
+                state.countryListToShow.forEach { country ->
                     DropdownMenuItem(
-                        text = { Text(country.getDisplayName(locale)) },
-                        onClick = { onAction(Action.UpdateCountry(country.code)) }
+                        text = { Text(country.getDisplayNameWithCode(locale)) },
+                        onClick = {
+                            focusManager.clearFocus()
+                            onAction(Action.UpdateCountry(country.code))
+                        }
                     )
                 }
             }
@@ -212,7 +246,7 @@ private fun AddTripSegmentContent(
                 text = stringResource(uiR.string.action_save),
                 onClick = { onAction(Action.SaveSegment) },
                 enabled = state.selectedDateRange.isComplete && state.country.isNotBlank(),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             )
 
             if (state.isEditMode) {

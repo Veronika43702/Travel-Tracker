@@ -23,6 +23,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import ru.nikfirs.android.traveltracker.core.data.model.TRANSIT
+import ru.nikfirs.android.traveltracker.core.domain.model.SchengenCountries
 import ru.nikfirs.android.traveltracker.core.domain.model.Trip
 import ru.nikfirs.android.traveltracker.core.domain.model.TripPurpose
 import ru.nikfirs.android.traveltracker.core.domain.model.TripSegment
@@ -36,6 +38,7 @@ import ru.nikfirs.android.traveltracker.feature.home.R
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.HomeContract.Action
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 @Composable
 fun SwipeableTripCard(
@@ -147,6 +150,7 @@ fun TripCard(
                         backgroundColor = MaterialTheme.colorScheme.secondary,
                         contentColor = MaterialTheme.colorScheme.onSecondary
                     )
+
                     trip.isFuture -> StatusChip(
                         text = stringResource(R.string.trip_card_status_planned),
                         backgroundColor = MaterialTheme.colorScheme.tertiaryContainer,
@@ -188,18 +192,43 @@ private fun CountriesRow(
     trip: Trip,
     modifier: Modifier = Modifier
 ) {
+    val locale = Locale.getDefault().language
+    val countries = trip.countries.map { country ->
+        when {
+            country == TRANSIT -> stringResource(R.string.home_trip_segment_transit_option)
+            country.isNotBlank() -> {
+                SchengenCountries.getCountryByCode(country)
+                    ?.getDisplayName(locale)
+                    ?: country
+            }
+
+            else -> ""
+        }
+    }
+
+    val primaryCountry = when {
+        trip.primaryCountry == TRANSIT -> stringResource(R.string.home_trip_segment_transit_option)
+        trip.primaryCountry?.isNotBlank() == true -> {
+            trip.primaryCountry?.let {
+                SchengenCountries.getCountryByCode(it)
+                    ?.getDisplayName(locale) ?: trip.primaryCountry
+            }
+        }
+
+        else -> null
+    }
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         Text(
-            text = (trip.primaryCountry ?: trip.countries.firstOrNull() ?: "") +
-                    (if (trip.countries.size >= 2) {
-                        ", " + (trip.countries.firstOrNull { it != trip.primaryCountry }
+            text = (primaryCountry ?: countries.firstOrNull() ?: "") +
+                    (if (countries.size >= 2) {
+                        ", " + (countries.firstOrNull { it != primaryCountry }
                             ?: "")
                     } else "")
-                    + if (trip.countries.size > 2) "..." else "",
+                    + if (countries.size > 2) "..." else "",
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Medium,
             maxLines = 1,
@@ -224,7 +253,7 @@ private fun TripCardPreview() {
                     endDate = LocalDate.now().plusDays(5),
                     segments = listOf(
                         TripSegment(
-                            country = "Germany",
+                            country = "DE",
                             startDate = LocalDate.now().minusDays(5),
                             endDate = LocalDate.now(),
                             isExempt = false

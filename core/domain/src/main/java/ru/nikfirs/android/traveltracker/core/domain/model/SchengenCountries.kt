@@ -5,9 +5,13 @@ data class Country(
     val nameEn: String,
     val nameRu: String
 ) {
-    fun getDisplayName(locale: String): String {
+    fun getDisplayNameWithCode(locale: String): String {
         val name = if (locale.startsWith("ru")) nameRu else nameEn
         return "$name ($code)"
+    }
+
+    fun getDisplayName(locale: String): String {
+        return if (locale.startsWith("ru")) nameRu else nameEn
     }
 }
 

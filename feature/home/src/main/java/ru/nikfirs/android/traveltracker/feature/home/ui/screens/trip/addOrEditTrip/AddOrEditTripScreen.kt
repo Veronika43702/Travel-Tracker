@@ -61,6 +61,7 @@ import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addOrEditTr
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addOrEditTrip.AddOrEditTripContract.Effect
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addOrEditTrip.AddOrEditTripContract.State
 import ru.nikfirs.android.traveltracker.feature.home.R
+import ru.nikfirs.android.traveltracker.feature.home.ui.model.TripSegmentUi
 import java.time.LocalDate
 import java.time.YearMonth
 
@@ -557,23 +558,23 @@ private fun AddTripScreenPreview() {
                         entries = VisaEntries.MULTI
                     )
                 ),
-//                segments = listOf(
-//                    TripSegmentUi(
-//                        country = "Germany",
-//                        startDate = LocalDate.now(),
-//                        endDate = LocalDate.now().plusDays(3),
-//                        cities = listOf("Berlin", "Munich"),
-//                        isExempt = false
-//                    ),
-//                    TripSegmentUi(
-//                        country = "Poland",
-//                        startDate = LocalDate.now().plusDays(3),
-//                        endDate = LocalDate.now().plusDays(7),
-//                        // cities = listOf("Warsaw"),
-//                        color = Color.Magenta,
-//                        isExempt = true
-//                    )
-//                ),
+                segments = listOf(
+                    TripSegmentUi(
+                        country = "Germany",
+                        startDate = LocalDate.now(),
+                        endDate = LocalDate.now().plusDays(3),
+                        cities = listOf("Berlin", "Munich"),
+                        isExempt = false
+                    ),
+                    TripSegmentUi(
+                        country = "Poland",
+                        startDate = LocalDate.now().plusDays(3),
+                        endDate = LocalDate.now().plusDays(7),
+                        // cities = listOf("Warsaw"),
+                       // color = Color.Magenta,
+                        isExempt = true
+                    )
+                ),
                 daysAvailableAtStart = AddOrEditTripContract.DaysAvailableInfo(
                     used = 60,
                     remaining = 30
