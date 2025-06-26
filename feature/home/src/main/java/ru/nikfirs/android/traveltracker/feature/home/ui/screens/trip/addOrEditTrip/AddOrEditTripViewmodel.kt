@@ -9,6 +9,7 @@ import ru.nikfirs.android.traveltracker.core.domain.model.Trip
 import ru.nikfirs.android.traveltracker.core.domain.model.TripPurpose
 import ru.nikfirs.android.traveltracker.core.domain.model.TripSegment
 import ru.nikfirs.android.traveltracker.core.domain.model.Visa
+import ru.nikfirs.android.traveltracker.core.domain.model.VisaCategory
 import ru.nikfirs.android.traveltracker.core.ui.domain.usecase.CalculateDaysInPeriodUseCase
 import ru.nikfirs.android.traveltracker.core.ui.ui.model.BlockDateModel
 import ru.nikfirs.android.traveltracker.core.ui.ui.model.DateType
@@ -23,6 +24,7 @@ import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.trip.SaveTri
 import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.trip.UpdateTripUseCase
 import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.visa.GetAvailableVisasByDateUseCase
 import ru.nikfirs.android.traveltracker.core.ui.domain.usecase.visa.GetVisaByIdUseCase
+import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.visa.GetVisaDurationUsedUseCase
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addOrEditTrip.AddOrEditTripContract.Action
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addOrEditTrip.AddOrEditTripContract.DaysAvailableInfo
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addOrEditTrip.AddOrEditTripContract.Effect
@@ -44,6 +46,7 @@ class AddOrEditTripViewModel @Inject constructor(
     private val getTripsByDatesUseCase: GetTripsByDatesUseCase,
     private val getTripByIdUseCase: GetTripByIdUseCase,
     private val getVisaByIdUseCase: GetVisaByIdUseCase,
+    private val getVisaDurationUsedUseCase: GetVisaDurationUsedUseCase,
     val addTripHolder: AddTripHolder,
 ) : ViewModel<Action, Effect, State>() {
 
@@ -589,9 +592,11 @@ class AddOrEditTripViewModel @Inject constructor(
             val blockTripDates =
                 currentState.blockedPeriods.filter { it.type is DateType.Trip }.toSet()
             val blockDayLimitDates = calculateBlockDayLimitDates(startDate)
+            val blockDaysVisaDuration = calculateBlockDayByVIsaDuration(startDate)
 
             blockDates.addAll(blockTripDates)
             blockDates.addAll(blockDayLimitDates)
+            blockDates.addAll(blockDaysVisaDuration)
 
             setState { it.copy(blockedPeriods = blockDates) }
         }
@@ -630,6 +635,29 @@ class AddOrEditTripViewModel @Inject constructor(
         blockDayLimitDates.add(
             BlockDateModel(
                 startDate = firstLimitDay,
+                endDate = visa.expiryDate,
+                type = DateType.Other,
+            )
+        )
+
+        return blockDayLimitDates
+    }
+
+    private suspend fun calculateBlockDayByVIsaDuration(startDate: LocalDate?): Set<BlockDateModel> {
+        val blockDayLimitDates: MutableSet<BlockDateModel> = mutableSetOf()
+        val visa = currentState.selectedVisa
+        if (startDate == null
+            || visa == null
+            || visa.visaType != VisaCategory.TYPE_C
+        ) return blockDayLimitDates
+
+        val usedDaysByTripsWithVisa =  getVisaDurationUsedUseCase.invoke(visa.id)
+        val visaRemainingDuration = visa.durationOfStay - usedDaysByTripsWithVisa
+        val firstBlockDateOutDuration = startDate.plusDays(visaRemainingDuration.toLong())
+
+        blockDayLimitDates.add(
+            BlockDateModel(
+                startDate = firstBlockDateOutDuration,
                 endDate = visa.expiryDate,
                 type = DateType.Other,
             )

@@ -63,7 +63,7 @@ class VisaRepositoryImpl @Inject constructor(
         visaDao.deactivateVisaById(visaId)
     }
 
-    override suspend fun hasExemptionForCountry(country: String): Boolean {
-        return visaDao.hasExemptionForCountry(country, LocalDate.now())
+    override suspend fun visaDurationUsed(visaId: Long): Int {
+        return visaDao.visaDurationUsed(visaId)
     }
 }
