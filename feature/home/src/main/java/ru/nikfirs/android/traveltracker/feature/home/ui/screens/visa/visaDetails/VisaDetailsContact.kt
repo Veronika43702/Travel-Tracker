@@ -12,6 +12,7 @@ sealed class VisaDetailsContract {
     data class State(
         val isLoading: Boolean = false,
         val visa: Visa? = null,
+        val daysLeft: Int? = null,
         val error: CustomString? = null,
         val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy"),
         val dialogText: CustomString? = null,

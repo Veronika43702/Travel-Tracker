@@ -91,7 +91,7 @@ private fun AddVisaScreenContent(
             .verticalScroll(verticalScroll),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        VisaInfoBox(state.visa, state.dateFormatter)
+        VisaInfoBox(state.visa, state.daysLeft, state.dateFormatter)
         if (isEditable) {
             Spacer(Modifier.weight(1f))
             Column(
@@ -153,6 +153,7 @@ private fun AddVisaScreenContent(
 @Composable
 fun VisaInfoBox(
     visa: Visa?,
+    daysLeft: Int?,
     dateFormatter: DateTimeFormatter,
 ) {
     visa ?: return
@@ -198,6 +199,12 @@ fun VisaInfoBox(
             header = stringResource(R.string.home_visa_visa_duration),
             data = visa.durationOfStay.toString(),
         )
+        daysLeft?.let {
+            InfoDataBox(
+                header = stringResource(R.string.home_visa_details_duration_left),
+                data = it.toString(),
+            )
+        }
         InfoDataBox(
             header = stringResource(R.string.home_visa_entries_type),
             data = when (visa.entries) {

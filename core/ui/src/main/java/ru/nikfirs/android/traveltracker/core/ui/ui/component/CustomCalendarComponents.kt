@@ -249,10 +249,11 @@ internal fun CalendarMonthGrid(
     onDateClick: (LocalDate) -> Unit,
     smallCells: Boolean,
     selectedRange: DateRangeSelection,
+    modifier: Modifier = Modifier,
     dateList: List<DayCalculation> = emptyList(),
     showDots: Boolean = true,
     showRemainingDays: Boolean = true,
-    blockedDays: Set<LocalDate> = emptySet(), // TODO
+    blockedDays: Set<LocalDate> = emptySet(),
     blockedPeriods: Set<BlockDateModel> = emptySet(),
 ) {
     val weekFields = WeekFields.of(Locale.getDefault())
@@ -273,17 +274,17 @@ internal fun CalendarMonthGrid(
     LazyVerticalGrid(
         columns = GridCells.Fixed(7),
         userScrollEnabled = false,
-        verticalArrangement = Arrangement.spacedBy(getVerticalPadding(smallCells)),
-        modifier = Modifier
+        verticalArrangement = Arrangement.Center,
+        modifier = modifier
             .then(
                 if (smallCells) {
                     Modifier
                         .width(pickerCellSize * 7 + pickerHorizontalPadding * 6)
-                        .height(pickerCellSize * rows + pickerVerticalPadding * (rows - 1))
+                        .height(pickerCellSize * rows + pickerVerticalPadding * (rows + 1))
                 } else {
                     Modifier
                         .fillMaxWidth()
-                        .height(calendarCellSize * rows + calendarVerticalPadding * (rows - 1))
+                        .height(calendarCellSize * rows + calendarVerticalPadding * (rows + 1))
                 }
             )
     ) {
@@ -295,6 +296,7 @@ internal fun CalendarMonthGrid(
                     isSelected = isDateInRange(date, selectedRange),
                     isRangeStart = selectedRange.startDate == date,
                     isRangeEnd = selectedRange.endDate == date,
+                    isStartEqualEnd = selectedRange.startDate == selectedRange.endDate,
                     isEndSelected = selectedRange.endDate != null,
                     existingSegments = existingSegments.filter {
                         date >= it.startDate && date <= it.endDate
@@ -311,6 +313,8 @@ internal fun CalendarMonthGrid(
                     dateList = dateList,
                     showDots = showDots,
                     showRemainingDays = showRemainingDays,
+                    modifier = Modifier
+                        .padding(vertical = getVerticalPadding(smallCells) / 2)
                 )
             } else {
                 // Empty cell for dates from previous/next month
@@ -343,10 +347,12 @@ internal fun CalendarRangeDay(
     isRangeStart: Boolean,
     isRangeEnd: Boolean,
     isEndSelected: Boolean,
+    isStartEqualEnd: Boolean,
     isAvailable: Boolean,
     existingSegments: List<ExistingRange>,
     onClick: () -> Unit,
     smallCells: Boolean,
+    modifier: Modifier = Modifier,
     dateList: List<DayCalculation> = emptyList(),
     showDots: Boolean = true,
     showRemainingDays: Boolean = true,
@@ -360,7 +366,7 @@ internal fun CalendarRangeDay(
     )
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .then(
                 if (smallCells) {
                     Modifier
@@ -394,6 +400,7 @@ internal fun CalendarRangeDay(
             isRangeStart = isRangeStart,
             isRangeEnd = isRangeEnd,
             isEndSelected = isEndSelected,
+            isStartEqualEnd = isStartEqualEnd,
         )
 
         // Today indicator
@@ -503,6 +510,7 @@ private fun SelectedRangeBackground(
     isRangeStart: Boolean,
     isRangeEnd: Boolean,
     isEndSelected: Boolean,
+    isStartEqualEnd: Boolean,
 ) {
     val density = LocalDensity.current
     var width by remember { mutableIntStateOf(0) }
@@ -516,7 +524,7 @@ private fun SelectedRangeBackground(
             },
         contentAlignment = Alignment.Center
     ) {
-        if (isSelected) {
+        if (isSelected && !isStartEqualEnd) {
             Box(
                 modifier = Modifier
                     .height(pickerCellSize)

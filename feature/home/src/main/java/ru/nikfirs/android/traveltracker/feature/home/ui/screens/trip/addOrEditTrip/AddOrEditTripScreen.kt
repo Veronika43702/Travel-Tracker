@@ -62,6 +62,7 @@ import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addOrEditTr
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addOrEditTrip.AddOrEditTripContract.State
 import ru.nikfirs.android.traveltracker.feature.home.R
 import ru.nikfirs.android.traveltracker.feature.home.ui.model.TripSegmentUi
+import ru.nikfirs.android.traveltracker.feature.home.ui.model.VisaUi
 import java.time.LocalDate
 import java.time.YearMonth
 
@@ -89,10 +90,6 @@ fun AddOrEditTripScreen(
             }
 
             is Effect.ScrollUp -> scope.launch { verticalScroll.scrollTo(0) }
-            is Effect.ShowMessage -> {
-                // TODO: Показать snackbar
-            }
-
             is Effect.OpenSegmentEditor -> navigateToTripSegment()
         }
     }
@@ -155,7 +152,7 @@ private fun AddTripScreenContent(
                 CustomTextFieldButton(
                     text = when {
                         state.selectedVisa != null -> {
-                            val visa = state.selectedVisa
+                            val visa = state.selectedVisa.visa
                             val typeText = when (visa.visaType) {
                                 VisaCategory.TYPE_C -> stringResource(uiR.string.visa_type_c)
                                 VisaCategory.TYPE_D -> stringResource(uiR.string.visa_type_d)
@@ -188,53 +185,82 @@ private fun AddTripScreenContent(
                             enabled = false
                         )
                     } else {
-                        state.availableVisas.forEach { visa ->
+                        state.availableVisas.forEach { visaUi ->
                             DropdownMenuItem(
                                 text = {
-                                    Column {
-                                        val typeText = when (visa.visaType) {
-                                            VisaCategory.TYPE_C -> stringResource(uiR.string.visa_type_c)
-                                            VisaCategory.TYPE_D -> stringResource(uiR.string.visa_type_d)
-                                            VisaCategory.RESIDENCE_PERMIT -> stringResource(uiR.string.visa_type_residence_permit)
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically,
+                                    ) {
+                                        Column {
+                                            val typeText = when (visaUi.visa.visaType) {
+                                                VisaCategory.TYPE_C -> stringResource(uiR.string.visa_type_c)
+                                                VisaCategory.TYPE_D -> stringResource(uiR.string.visa_type_d)
+                                                VisaCategory.RESIDENCE_PERMIT -> stringResource(uiR.string.visa_type_residence_permit)
+                                            }
+                                            Text("$typeText (${visaUi.visa.visaNumber}) ${visaUi.visa.country}")
+                                            Text(
+                                                text = stringResource(
+                                                    R.string.home_visa_validity_period,
+                                                    visaUi.visa.startDate.format(state.dateFormatter),
+                                                    visaUi.visa.expiryDate.format(state.dateFormatter)
+                                                ),
+                                                style = MaterialTheme.typography.bodySmall,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                            )
                                         }
-                                        Text("$typeText (${visa.visaNumber}) ${visa.country}")
-                                        Text(
-                                            text = stringResource(
-                                                R.string.home_visa_validity_period,
-                                                visa.startDate.format(state.dateFormatter),
-                                                visa.expiryDate.format(state.dateFormatter)
-                                            ),
-                                            style = MaterialTheme.typography.bodySmall,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                                        )
+                                        if (visaUi.visa.visaType == VisaCategory.TYPE_C) {
+                                            Text(
+                                                text = "(${visaUi.durationLeft})",
+                                                style = MaterialTheme.typography.bodySmall,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                            )
+                                        }
                                     }
                                 },
                                 onClick = {
-                                    onAction(Action.UpdateSelectedVisa(visa))
-                                }
+                                    onAction(Action.UpdateSelectedVisa(visaUi))
+                                },
+                                enabled = visaUi.durationLeft > 0
                             )
                         }
                     }
                 }
             }
             // Visa info
-            state.selectedVisa?.let { visa ->
+            state.selectedVisa?.let { visaUi ->
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
                     )
                 ) {
-                    Text(
-                        text = stringResource(
-                            R.string.home_trip_selected_visa_validity,
-                            visa.startDate.format(state.dateFormatter),
-                            visa.expiryDate.format(state.dateFormatter)
-                        ),
+                    Column(
                         modifier = Modifier.padding(12.dp),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
-                    )
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Text(
+                            text = stringResource(
+                                R.string.home_trip_selected_visa_validity,
+                                visaUi.visa.startDate.format(state.dateFormatter),
+                                visaUi.visa.expiryDate.format(state.dateFormatter)
+                            ),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                        if (visaUi.visa.visaType == VisaCategory.TYPE_C) {
+                            Text(
+                                text = stringResource(
+                                    R.string.home_trip_selected_visa_days_left,
+                                    visaUi.durationLeft,
+                                    visaUi.visa.durationOfStay
+                                ),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -492,11 +518,11 @@ private fun AddTripScreenContent(
     if (state.showDatePicker) {
         CustomCalendarRangePicker(
             selectedRange = DateRangeSelection(state.startDate, state.endDate),
-            availableDateRange = state.selectedVisa?.expiryDate?.let {
-                state.selectedVisa.startDate..it
+            availableDateRange = state.selectedVisa?.visa?.expiryDate?.let {
+                state.selectedVisa.visa.startDate..it
             },
             onDateRangeSelected = { range ->
-                if (range.startDate != null && range.endDate == null)
+                if (range.endDate == null)
                     onAction(Action.CalculateBlockDaysByStartDate(range.startDate))
             },
             onConfirmClick = { startDate, endDate ->
@@ -536,18 +562,8 @@ private fun AddTripScreenPreview() {
                 showDatePicker = false,
                 startDate = LocalDate.now(),
                 endDate = LocalDate.now().plusDays(7),
-                selectedVisa = Visa(
-                    id = 1,
-                    visaNumber = "C123456789",
-                    visaType = VisaCategory.TYPE_C,
-                    country = "DE",
-                    startDate = LocalDate.now().minusMonths(3),
-                    expiryDate = LocalDate.now().plusMonths(3),
-                    durationOfStay = 90,
-                    entries = VisaEntries.MULTI
-                ),
-                availableVisas = listOf(
-                    Visa(
+                selectedVisa = VisaUi(
+                    visa = Visa(
                         id = 1,
                         visaNumber = "C123456789",
                         visaType = VisaCategory.TYPE_C,
@@ -556,6 +572,22 @@ private fun AddTripScreenPreview() {
                         expiryDate = LocalDate.now().plusMonths(3),
                         durationOfStay = 90,
                         entries = VisaEntries.MULTI
+                    ),
+                    durationLeft = 20,
+                ),
+                availableVisas = listOf(
+                    VisaUi(
+                        visa = Visa(
+                            id = 1,
+                            visaNumber = "C123456789",
+                            visaType = VisaCategory.TYPE_C,
+                            country = "DE",
+                            startDate = LocalDate.now().minusMonths(3),
+                            expiryDate = LocalDate.now().plusMonths(3),
+                            durationOfStay = 90,
+                            entries = VisaEntries.MULTI
+                        ),
+                        durationLeft = 20
                     )
                 ),
                 segments = listOf(
@@ -571,7 +603,7 @@ private fun AddTripScreenPreview() {
                         startDate = LocalDate.now().plusDays(3),
                         endDate = LocalDate.now().plusDays(7),
                         // cities = listOf("Warsaw"),
-                       // color = Color.Magenta,
+                        // color = Color.Magenta,
                         isExempt = true
                     )
                 ),

@@ -10,6 +10,8 @@ import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.visa.Deactiv
 import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.visa.DeleteVisaUseCase
 import ru.nikfirs.android.traveltracker.core.ui.domain.usecase.visa.GetVisaByIdUseCase
 import ru.nikfirs.android.traveltracker.feature.home.R
+import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.visa.GetVisaDurationUsedUseCase
+import ru.nikfirs.android.traveltracker.feature.home.ui.model.VisaUi
 import ru.nikfirs.android.traveltracker.feature.home.ui.utils.VisaAction
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.visaDetails.VisaDetailsContract.Action
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.visaDetails.VisaDetailsContract.Effect
@@ -21,6 +23,7 @@ class VisaDetailsViewModel @Inject constructor(
     private val getVisaByIdUseCase: GetVisaByIdUseCase,
     private val deactivateVisaByIdUseCase: DeactivateVisaByIdUseCase,
     private val deleteVisaUseCase: DeleteVisaUseCase,
+    private val getVisaDurationUsedUseCase: GetVisaDurationUsedUseCase,
 ) : ViewModel<Action, Effect, State>() {
 
     override fun createInitialState(): State = State()
@@ -42,9 +45,17 @@ class VisaDetailsViewModel @Inject constructor(
             setState { it.copy(isLoading = true) }
             try {
                 val visa = getVisaByIdUseCase.invoke(visaId)
-                visa?.let { setState { it.copy(isLoading = false, visa = visa) } } ?: setError(
-                    CustomString.resource(R.string.home_error_visa_not_found)
-                )
+                visa?.let {
+                    val durationUsed = getVisaDurationUsedUseCase.invoke(visa.id)
+                    val durationLeft = visa.durationOfStay - durationUsed
+                    setState {
+                        it.copy(
+                            isLoading = false,
+                            visa = visa,
+                            daysLeft = durationLeft
+                        )
+                    }
+                } ?: setError(CustomString.resource(R.string.home_error_visa_not_found))
             } catch (e: Exception) {
                 setError(CustomString.resource(R.string.home_error_visa_loading))
                 Log.e(null, "loadVisa", e)

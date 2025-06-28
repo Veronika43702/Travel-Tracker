@@ -11,6 +11,7 @@ import ru.nikfirs.android.traveltracker.core.ui.mvi.MviAction
 import ru.nikfirs.android.traveltracker.core.ui.mvi.MviEffect
 import ru.nikfirs.android.traveltracker.core.ui.mvi.MviState
 import ru.nikfirs.android.traveltracker.feature.home.ui.model.TripSegmentUi
+import ru.nikfirs.android.traveltracker.feature.home.ui.model.VisaUi
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -19,9 +20,9 @@ sealed class AddOrEditTripContract {
         val isLoading: Boolean = false,
         val tripId: Long? = null,
 
-        val selectedVisa: Visa? = null,
+        val selectedVisa: VisaUi? = null,
         val isVisaDropdownExpanded: Boolean = false,
-        val availableVisas: List<Visa> = emptyList(),
+        val availableVisas: List<VisaUi> = emptyList(),
 
         val startDate: LocalDate? = null,
         val endDate: LocalDate? = null,
@@ -59,8 +60,8 @@ sealed class AddOrEditTripContract {
             get() = startDate != null && endDate != null
 
         val exemptVisaCountry: String?
-            get() = if (selectedVisa?.visaType != VisaCategory.TYPE_C) {
-                selectedVisa?.country
+            get() = if (selectedVisa?.visa?.visaType != VisaCategory.TYPE_C) {
+                selectedVisa?.visa?.country
             } else null
     }
 
@@ -90,7 +91,7 @@ sealed class AddOrEditTripContract {
         data object UpdateSegmentList : Action()
 
         data class SetVisaDropdownExpanded(val expanded: Boolean) : Action()
-        data class UpdateSelectedVisa(val visa: Visa?) : Action()
+        data class UpdateSelectedVisa(val visa: VisaUi?) : Action()
 
         data class UpdateDates(val startDate: LocalDate, val endDate: LocalDate) : Action()
         data class CalculateBlockDaysByStartDate(val startDate: LocalDate?) : Action()
@@ -113,7 +114,6 @@ sealed class AddOrEditTripContract {
     sealed class Effect : MviEffect {
         data object NavigateBack : Effect()
         data object ScrollUp : Effect()
-        data class ShowMessage(val message: CustomString) : Effect()
         data object OpenSegmentEditor : Effect()
     }
 }

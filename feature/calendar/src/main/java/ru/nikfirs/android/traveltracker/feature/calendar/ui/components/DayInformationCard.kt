@@ -170,7 +170,7 @@ fun DayInformationCard(
 
                         // Trip information
                         dateInfo.trip?.let { trip ->
-                            InfoSection {
+                            InfoSection(onClick = { onTripClick() }) {
                                 Row(
                                     verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -212,13 +212,6 @@ fun DayInformationCard(
                                                 )
                                             }
                                         }
-
-                                        Text(
-                                            text = stringResource(R.string.calendar_day_info_details),
-                                            style = MaterialTheme.typography.labelMedium,
-                                            color = MaterialTheme.colorScheme.primary,
-                                            modifier = Modifier.clickableOnce { onTripClick() }
-                                        )
                                     }
                                 }
                             }
@@ -226,7 +219,7 @@ fun DayInformationCard(
 
                         // Visa information
                         dateInfo.visa?.let { visa ->
-                            InfoSection {
+                            InfoSection(onClick = { onVisaClick() }) {
                                 Row(
                                     verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -260,13 +253,6 @@ fun DayInformationCard(
                                             style = MaterialTheme.typography.bodyMedium,
                                             color = MaterialTheme.colorScheme.onSurface
                                         )
-
-                                        Text(
-                                            text = stringResource(R.string.calendar_day_info_details),
-                                            style = MaterialTheme.typography.labelMedium,
-                                            color = MaterialTheme.colorScheme.primary,
-                                            modifier = Modifier.clickableOnce { onVisaClick() }
-                                        )
                                     }
                                 }
                             }
@@ -280,10 +266,13 @@ fun DayInformationCard(
 
 @Composable
 private fun InfoSection(
+    onClick: () -> Unit = {},
     content: @Composable () -> Unit,
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickableOnce { onClick() },
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
         ),

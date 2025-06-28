@@ -43,6 +43,7 @@
     <string name="home_trip_edit_title">Редактирование поездки</string>
     <string name="home_trip_select_visa">Выберите визу</string>
     <string name="home_trip_selected_visa_validity">Виза действует: %1$s — %2$s</string>
+    <string name="home_trip_selected_visa_days_left">Неиспользованных дней: %1$d/%2$d</string>
     <string name="home_trip_dates_section">Даты поездки</string>
     <string name="home_trip_duration">Общая длительность</string>
     <string name="home_trip_countable_days">учитывается %d дн.</string>
@@ -122,6 +123,7 @@
     <string name="home_visa_validity_period">%1$s — %2$s</string>
     <string name="home_visa_visa_duration">Продолжительность пребывания</string>
     <string name="home_visa_duration_suffix">дней</string>
+    <string name="home_visa_duration_left">Неиспользованных дней: %1$d</string>
     <string name="home_visa_entries_type">Тип въезда</string>
     <string name="home_visa_entries_single">Однократная</string>
     <string name="home_visa_entries_double">Двукратная</string>
@@ -133,6 +135,7 @@
     <!-- Visa Details Screen -->
     <string name="home_visa_details_title">Виза</string>
     <string name="home_visa_details_annulled">Аннулирована</string>
+    <string name="home_visa_details_duration_left">Неиспользованных дней</string>
 
     <!-- Error Messages for Visa -->
     <string name="home_error_visa_not_found">Виза не найдена</string>

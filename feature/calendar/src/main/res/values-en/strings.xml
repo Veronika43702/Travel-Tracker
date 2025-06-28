@@ -15,7 +15,6 @@
 
     <!-- Day Information Card -->
     <string name="calendar_day_info_remaining_days">remaining days: %1$d</string>
-    <string name="calendar_day_info_details">View details</string>
     <string name="calendar_day_info_day_restored_description">180 days ago there was a trip, so used days are being restored</string>
     <string name="calendar_day_info_close_description">Close</string>
 </resources>

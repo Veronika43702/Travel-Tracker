@@ -25,6 +25,7 @@ import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.trip.UpdateT
 import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.visa.GetAvailableVisasByDateUseCase
 import ru.nikfirs.android.traveltracker.core.ui.domain.usecase.visa.GetVisaByIdUseCase
 import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.visa.GetVisaDurationUsedUseCase
+import ru.nikfirs.android.traveltracker.feature.home.ui.model.VisaUi
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addOrEditTrip.AddOrEditTripContract.Action
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addOrEditTrip.AddOrEditTripContract.DaysAvailableInfo
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addOrEditTrip.AddOrEditTripContract.Effect
@@ -91,19 +92,38 @@ class AddOrEditTripViewModel @Inject constructor(
                 val visas = getAvailableVisasByDateUseCase.invoke(
                     LocalDate.now().minusMonths(6)
                 )
-                setState { it.copy(availableVisas = visas) }
 
                 if (!currentState.hasSelectedVisa) {
                     tripId?.let {
                         loadTripData(tripId)
+                    }
+                }
+
+                val visaWithDurationLeft = visas.map { visa ->
+                    val usedDaysByTripsWithVisa = getVisaDurationUsedUseCase.invoke(visa.id)
+                    VisaUi(
+                        visa = visa,
+                        durationLeft = visa.durationOfStay
+                                - usedDaysByTripsWithVisa
+                                + if (tripId != null) currentState.countableDuration else 0
+                    )
+                }
+
+                if (!currentState.hasSelectedVisa) {
+                    tripId?.let {
                         setDataForHolder()
                         recalculateAvailableDays()
-                        currentState.selectedVisa?.let { visa ->
+                        currentState.selectedVisa?.visa?.let { visa ->
                             val blockedTripPeriods = calculateBlockedTripDates(visa, tripId)
                             setState { it.copy(blockedPeriods = blockedTripPeriods) }
                         }
                     }
                 }
+
+
+
+                setState { it.copy(availableVisas = visaWithDurationLeft) }
+
                 setState { it.copy(isLoading = false, tripId = tripId) }
             } catch (e: Exception) {
                 setError(CustomString.resource(uiR.string.error_loading_data))
@@ -121,6 +141,15 @@ class AddOrEditTripViewModel @Inject constructor(
             }
 
             val visa = trip.visaId?.let { getVisaByIdUseCase.invoke(it) }
+            val visaWithDurationLeft = visa?.let {
+                val usedDaysByTripsWithVisa = getVisaDurationUsedUseCase.invoke(visa.id)
+                VisaUi(
+                    visa = visa,
+                    durationLeft = visa.durationOfStay
+                            - usedDaysByTripsWithVisa
+                            + trip.countableDays
+                )
+            }
 
             val segments =
                 trip.segments.mapIndexed { index, segment ->
@@ -135,7 +164,7 @@ class AddOrEditTripViewModel @Inject constructor(
                 }
             setState {
                 it.copy(
-                    selectedVisa = visa,
+                    selectedVisa = visaWithDurationLeft,
                     startDate = trip.startDate,
                     endDate = trip.endDate,
                     countableDuration = trip.countableDays,
@@ -198,7 +227,7 @@ class AddOrEditTripViewModel @Inject constructor(
         setState { it.copy(isVisaDropdownExpanded = expanded) }
     }
 
-    private fun updateSelectedVisa(visa: Visa?) {
+    private fun updateSelectedVisa(visa: VisaUi?) {
         launchIO {
             setState {
                 it.copy(
@@ -216,7 +245,7 @@ class AddOrEditTripViewModel @Inject constructor(
 
             // calculate block dates when other trips exist
             visa?.let {
-                val blockedTripPeriods = calculateBlockedTripDates(visa)
+                val blockedTripPeriods = calculateBlockedTripDates(visa.visa)
                 setState { it.copy(blockedPeriods = blockedTripPeriods) }
             }
         }
@@ -385,7 +414,7 @@ class AddOrEditTripViewModel @Inject constructor(
                 try {
                     val trip = Trip(
                         id = id ?: 0,
-                        visaId = currentState.selectedVisa?.id,
+                        visaId = currentState.selectedVisa?.visa?.id,
                         startDate = currentState.startDate,
                         endDate = currentState.endDate,
                         segments = currentState.segments.map { segmentUi ->
@@ -519,7 +548,7 @@ class AddOrEditTripViewModel @Inject constructor(
 
                 val trip = Trip(
                     id = id ?: 0,
-                    visaId = currentState.selectedVisa?.id,
+                    visaId = currentState.selectedVisa?.visa?.id,
                     startDate = currentState.startDate,
                     endDate = currentState.endDate,
                     segments = segments.sortedWith(compareBy({ it.startDate }, { it.endDate })),
@@ -604,15 +633,16 @@ class AddOrEditTripViewModel @Inject constructor(
 
     private suspend fun calculateBlockDayLimitDates(startDate: LocalDate?): Set<BlockDateModel> {
         val blockDayLimitDates: MutableSet<BlockDateModel> = mutableSetOf()
-        val visa = currentState.selectedVisa
-        if (startDate == null || visa == null) return blockDayLimitDates
+        val visaUi = currentState.selectedVisa
+        if (startDate == null || visaUi == null) return blockDayLimitDates
 
         val dayOfFirstTripAfterStartDate = currentState.blockedPeriods
             .filter { it.type is DateType.Trip }
             .sortedBy { it.startDate }
-            .firstOrNull { it.startDate.isAfter(startDate) }?.startDate ?: visa.expiryDate.plusDays(
-            1
-        )
+            .firstOrNull { it.startDate.isAfter(startDate) }?.startDate
+            ?: visaUi.visa.expiryDate.plusDays(
+                1
+            )
 
         var checkDate: LocalDate = startDate
         while (!checkDate.isAfter(dayOfFirstTripAfterStartDate)) {
@@ -635,7 +665,7 @@ class AddOrEditTripViewModel @Inject constructor(
         blockDayLimitDates.add(
             BlockDateModel(
                 startDate = firstLimitDay,
-                endDate = visa.expiryDate,
+                endDate = visaUi.visa.expiryDate,
                 type = DateType.Other,
             )
         )
@@ -643,22 +673,29 @@ class AddOrEditTripViewModel @Inject constructor(
         return blockDayLimitDates
     }
 
-    private suspend fun calculateBlockDayByVIsaDuration(startDate: LocalDate?): Set<BlockDateModel> {
+    private fun calculateBlockDayByVIsaDuration(startDate: LocalDate?): Set<BlockDateModel> {
         val blockDayLimitDates: MutableSet<BlockDateModel> = mutableSetOf()
-        val visa = currentState.selectedVisa
+        val visaUi = currentState.selectedVisa
         if (startDate == null
-            || visa == null
-            || visa.visaType != VisaCategory.TYPE_C
+            || visaUi == null
+            || visaUi.visa.visaType != VisaCategory.TYPE_C
         ) return blockDayLimitDates
 
-        val usedDaysByTripsWithVisa =  getVisaDurationUsedUseCase.invoke(visa.id)
-        val visaRemainingDuration = visa.durationOfStay - usedDaysByTripsWithVisa
-        val firstBlockDateOutDuration = startDate.plusDays(visaRemainingDuration.toLong())
+        val firstBlockDateOutDurationAfter = startDate.plusDays(visaUi.durationLeft.toLong())
+        val lastBlockDateOutDurationBefore = startDate.minusDays(visaUi.durationLeft.toLong())
 
         blockDayLimitDates.add(
             BlockDateModel(
-                startDate = firstBlockDateOutDuration,
-                endDate = visa.expiryDate,
+                startDate = firstBlockDateOutDurationAfter,
+                endDate = visaUi.visa.expiryDate,
+                type = DateType.Other,
+            )
+        )
+
+        blockDayLimitDates.add(
+            BlockDateModel(
+                startDate = visaUi.visa.startDate,
+                endDate = lastBlockDateOutDurationBefore,
                 type = DateType.Other,
             )
         )
