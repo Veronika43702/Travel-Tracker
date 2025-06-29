@@ -24,21 +24,21 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import ru.nikfirs.android.traveltracker.core.ui.component.CustomCalendar
-import ru.nikfirs.android.traveltracker.core.ui.component.CustomSwitch
-import ru.nikfirs.android.traveltracker.core.ui.component.ErrorDialog
-import ru.nikfirs.android.traveltracker.core.ui.component.FullScreenLoadingIndicator
-import ru.nikfirs.android.traveltracker.core.ui.component.LightRUScreenPreview
-import ru.nikfirs.android.traveltracker.core.ui.component.Screen
-import ru.nikfirs.android.traveltracker.core.ui.extension.clickableOnce
-import ru.nikfirs.android.traveltracker.core.ui.model.DateType
-import ru.nikfirs.android.traveltracker.core.ui.model.DayCalculation
-import ru.nikfirs.android.traveltracker.core.ui.model.ExistingRange
-import ru.nikfirs.android.traveltracker.core.ui.model.IconType
-import ru.nikfirs.android.traveltracker.core.ui.model.TopBarActionModel
+import ru.nikfirs.android.traveltracker.core.ui.ui.component.CustomCalendar
+import ru.nikfirs.android.traveltracker.core.ui.ui.component.CustomSwitch
+import ru.nikfirs.android.traveltracker.core.ui.ui.component.ErrorDialog
+import ru.nikfirs.android.traveltracker.core.ui.ui.component.FullScreenLoadingIndicator
+import ru.nikfirs.android.traveltracker.core.ui.ui.component.LightRUScreenPreview
+import ru.nikfirs.android.traveltracker.core.ui.ui.component.Screen
+import ru.nikfirs.android.traveltracker.core.ui.ui.extension.clickableOnce
+import ru.nikfirs.android.traveltracker.core.ui.ui.model.DateType
+import ru.nikfirs.android.traveltracker.core.ui.ui.model.DayCalculation
+import ru.nikfirs.android.traveltracker.core.ui.ui.model.ExistingRange
+import ru.nikfirs.android.traveltracker.core.ui.ui.model.IconType
+import ru.nikfirs.android.traveltracker.core.ui.ui.model.TopBarActionModel
 import ru.nikfirs.android.traveltracker.core.ui.mvi.LaunchedEffectResolver
 import ru.nikfirs.android.traveltracker.core.ui.navigation.BottomNavBarRoute
-import ru.nikfirs.android.traveltracker.core.ui.theme.AppTheme
+import ru.nikfirs.android.traveltracker.core.ui.ui.theme.AppTheme
 import ru.nikfirs.android.traveltracker.feature.calendar.R
 import ru.nikfirs.android.traveltracker.feature.calendar.ui.components.DayInformationCard
 import ru.nikfirs.android.traveltracker.feature.calendar.ui.main.CalendarContract.*
@@ -177,8 +177,8 @@ fun FilterMenu(
                 onCheckedChange = { isChecked ->
                     onFiltersChange(filters.copy(showRemainingDays = isChecked))
                 },
-                title = stringResource(R.string.filter_remaining_days),
-                description = stringResource(R.string.filter_remaining_days_desc)
+                title = stringResource(R.string.calendar_filter_remaining_days),
+                description = stringResource(R.string.calendar_filter_remaining_days_description)
             )
 
             HorizontalDivider(
@@ -192,8 +192,8 @@ fun FilterMenu(
                 onCheckedChange = { isChecked ->
                     onFiltersChange(filters.copy(showDayChangeDot = isChecked))
                 },
-                title = stringResource(R.string.filter_day_change_indicators),
-                description = stringResource(R.string.filter_day_change_indicators_desc)
+                title = stringResource(R.string.calendar_filter_day_change_indicators),
+                description = stringResource(R.string.calendar_filter_day_change_indicators_description)
             )
 
             HorizontalDivider(
@@ -207,8 +207,8 @@ fun FilterMenu(
                 onCheckedChange = { isChecked ->
                     onFiltersChange(filters.copy(showVisaRange = isChecked))
                 },
-                title = stringResource(R.string.filter_visa_ranges),
-                description = stringResource(R.string.filter_visa_ranges_desc)
+                title = stringResource(R.string.calendar_filter_visa_ranges),
+                description = stringResource(R.string.calendar_filter_visa_ranges_description)
             )
 
             HorizontalDivider(
@@ -222,8 +222,8 @@ fun FilterMenu(
                 onCheckedChange = { isChecked ->
                     onFiltersChange(filters.copy(showTripRange = isChecked))
                 },
-                title = stringResource(R.string.filter_trip_ranges),
-                description = stringResource(R.string.filter_trip_ranges_desc)
+                title = stringResource(R.string.calendar_filter_trip_ranges),
+                description = stringResource(R.string.calendar_filter_trip_ranges_description)
             )
         }
     }

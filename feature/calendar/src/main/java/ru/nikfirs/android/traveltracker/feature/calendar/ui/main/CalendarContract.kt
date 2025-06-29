@@ -1,12 +1,12 @@
 package ru.nikfirs.android.traveltracker.feature.calendar.ui.main
 
 import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
-import ru.nikfirs.android.traveltracker.core.ui.model.DayCalculation
-import ru.nikfirs.android.traveltracker.core.ui.model.ExistingRange
+import ru.nikfirs.android.traveltracker.core.ui.ui.model.DayCalculation
+import ru.nikfirs.android.traveltracker.core.ui.ui.model.ExistingRange
 import ru.nikfirs.android.traveltracker.core.ui.mvi.MviAction
 import ru.nikfirs.android.traveltracker.core.ui.mvi.MviEffect
 import ru.nikfirs.android.traveltracker.core.ui.mvi.MviState
-import ru.nikfirs.android.traveltracker.feature.calendar.domain.model.DateDataModel
+import ru.nikfirs.android.traveltracker.feature.calendar.ui.model.DateDataModel
 import java.time.LocalDate
 
 sealed class CalendarContract {

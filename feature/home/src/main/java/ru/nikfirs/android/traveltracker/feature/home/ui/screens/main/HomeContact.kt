@@ -7,9 +7,9 @@ import ru.nikfirs.android.traveltracker.core.domain.model.Visa
 import ru.nikfirs.android.traveltracker.core.ui.mvi.MviAction
 import ru.nikfirs.android.traveltracker.core.ui.mvi.MviEffect
 import ru.nikfirs.android.traveltracker.core.ui.mvi.MviState
-import ru.nikfirs.android.traveltracker.feature.home.domain.model.HomeItem
-import ru.nikfirs.android.traveltracker.feature.home.domain.model.HomeTab
-import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.utils.HomeActionModel
+import ru.nikfirs.android.traveltracker.feature.home.ui.model.HomeItem
+import ru.nikfirs.android.traveltracker.feature.home.ui.model.HomeTab
+import ru.nikfirs.android.traveltracker.feature.home.ui.utils.HomeActionModel
 
 sealed class HomeContract {
     data class State(

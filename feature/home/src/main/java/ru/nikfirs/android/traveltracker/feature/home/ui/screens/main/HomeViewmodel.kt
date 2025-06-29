@@ -1,30 +1,29 @@
 package ru.nikfirs.android.traveltracker.feature.home.ui.screens.main
 
+import android.util.Log
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.runBlocking
 import ru.nikfirs.android.traveltracker.core.domain.PERIOD_DAYS
 import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
 import ru.nikfirs.android.traveltracker.core.domain.model.Trip
 import ru.nikfirs.android.traveltracker.core.domain.model.Visa
-import ru.nikfirs.android.traveltracker.core.ui.R
+import ru.nikfirs.android.traveltracker.core.ui.domain.usecase.CalculateDaysInPeriodUseCase
 import ru.nikfirs.android.traveltracker.core.ui.mvi.ViewModel
 import ru.nikfirs.android.traveltracker.core.ui.mvi.launch
-import ru.nikfirs.android.traveltracker.core.ui.mvi.launchDefault
-import ru.nikfirs.android.traveltracker.feature.home.domain.model.HomeTab
-import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.CalculateDaysInPeriodUseCase
+import ru.nikfirs.android.traveltracker.feature.home.R
+import ru.nikfirs.android.traveltracker.feature.home.ui.model.HomeTab
 import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.trip.DeleteTripUseCase
 import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.visa.DeleteVisaUseCase
 import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.GetHomeDataUseCase
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.HomeContract.Action
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.HomeContract.State
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.HomeContract.Effect
-import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.utils.HomeAction
-import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.utils.HomeActionModel
+import ru.nikfirs.android.traveltracker.feature.home.ui.utils.HomeAction
+import ru.nikfirs.android.traveltracker.feature.home.ui.utils.HomeActionModel
 import java.time.LocalDate
 import javax.inject.Inject
-import ru.nikfirs.android.traveltracker.core.ui.R as UiR
+import ru.nikfirs.android.traveltracker.core.ui.R as uiR
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
@@ -85,7 +84,8 @@ class HomeViewModel @Inject constructor(
                         updateDaysCalculation()
                     }
             } catch (e: Exception) {
-                setError(CustomString.text(e.message))
+                setError(CustomString.Resource(uiR.string.error_loading_data))
+                Log.e(null, "loadData", e)
             }
         }
     }
@@ -109,7 +109,7 @@ class HomeViewModel @Inject constructor(
                     return true
                 }
             } catch (e: Exception) {
-
+                Log.e(null, "checkTripHasOverLimitDay", e)
             }
             currentDate = currentDate.plusDays(1)
         }
@@ -125,6 +125,8 @@ class HomeViewModel @Inject constructor(
                 )
                 setState { it.copy(daysCalculation = calculation) }
             } catch (e: Exception) {
+                setError(CustomString.internal())
+                Log.e(null, "updateDaysCalculation", e)
             }
         }
     }
@@ -162,10 +164,11 @@ class HomeViewModel @Inject constructor(
             try {
                 deleteTripUseCase(trip)
                 setEffect {
-                    Effect.ShowMessage(CustomString.resource(UiR.string.trip_deleted_successfully))
+                    Effect.ShowMessage(CustomString.resource(R.string.home_trip_deleted_successfully))
                 }
             } catch (e: Exception) {
-                setError(CustomString.text(e.message))
+                setError(CustomString.resource(R.string.home_error_trip_deleting))
+                Log.e(null, "deleteTrip", e)
             }
         }
     }
@@ -175,10 +178,11 @@ class HomeViewModel @Inject constructor(
             try {
                 deleteVisaUseCase(visa)
                 setEffect {
-                    Effect.ShowMessage(CustomString.resource(UiR.string.visa_deleted_successfully))
+                    Effect.ShowMessage(CustomString.resource(R.string.home_visa_deleted_successfully))
                 }
             } catch (e: Exception) {
-                setError(CustomString.text(e.message))
+                setError(CustomString.resource(R.string.home_error_visa_deleting))
+                Log.e(null, "deleteVisa", e)
             }
         }
     }
@@ -186,7 +190,7 @@ class HomeViewModel @Inject constructor(
     private fun showDeleteVisaDialog(visa: Visa) {
         setState {
             it.copy(
-                dialogText = CustomString.resource(R.string.visa_delete_dialog),
+                dialogText = CustomString.resource(R.string.home_visa_dialog_delete),
                 action = HomeActionModel(
                     action = HomeAction.DELETE_VISA,
                     visa = visa,
@@ -198,7 +202,7 @@ class HomeViewModel @Inject constructor(
     private fun showDeleteTripDialog(trip: Trip) {
         setState {
             it.copy(
-                dialogText = CustomString.resource(R.string.trip_delete_dialog),
+                dialogText = CustomString.resource(R.string.home_trip_dialog_delete),
                 action = HomeActionModel(
                     action = HomeAction.DELETE_TRIP,
                     trip = trip,

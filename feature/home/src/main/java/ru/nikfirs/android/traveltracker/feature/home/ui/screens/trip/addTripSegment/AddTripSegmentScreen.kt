@@ -22,6 +22,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,19 +35,20 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ru.nikfirs.android.traveltracker.core.data.model.TRANSIT
 import ru.nikfirs.android.traveltracker.core.domain.model.SchengenCountries
-import ru.nikfirs.android.traveltracker.core.ui.R
-import ru.nikfirs.android.traveltracker.core.ui.component.CustomButton
-import ru.nikfirs.android.traveltracker.core.ui.component.CustomCalendarRangePicker
-import ru.nikfirs.android.traveltracker.core.ui.component.CustomTextField
-import ru.nikfirs.android.traveltracker.core.ui.component.CustomTextFieldButton
-import ru.nikfirs.android.traveltracker.core.ui.component.ErrorDialog
-import ru.nikfirs.android.traveltracker.core.ui.component.Screen
-import ru.nikfirs.android.traveltracker.core.ui.extension.asString
-import ru.nikfirs.android.traveltracker.core.ui.model.DateRangeSelection
-import ru.nikfirs.android.traveltracker.core.ui.model.ExistingRange
+import ru.nikfirs.android.traveltracker.core.ui.R as uiR
+import ru.nikfirs.android.traveltracker.core.ui.ui.component.CustomButton
+import ru.nikfirs.android.traveltracker.core.ui.ui.component.CustomCalendarRangePicker
+import ru.nikfirs.android.traveltracker.core.ui.ui.component.CustomTextField
+import ru.nikfirs.android.traveltracker.core.ui.ui.component.CustomTextFieldButton
+import ru.nikfirs.android.traveltracker.core.ui.ui.component.ErrorDialog
+import ru.nikfirs.android.traveltracker.core.ui.ui.component.Screen
+import ru.nikfirs.android.traveltracker.core.ui.ui.extension.asString
+import ru.nikfirs.android.traveltracker.core.ui.ui.model.DateRangeSelection
+import ru.nikfirs.android.traveltracker.core.ui.ui.model.ExistingRange
 import ru.nikfirs.android.traveltracker.core.ui.mvi.LaunchedEffectResolver
-import ru.nikfirs.android.traveltracker.core.ui.theme.AppTheme
-import ru.nikfirs.android.traveltracker.feature.home.domain.model.TripSegmentUi
+import ru.nikfirs.android.traveltracker.core.ui.ui.theme.AppTheme
+import ru.nikfirs.android.traveltracker.feature.home.R
+import ru.nikfirs.android.traveltracker.feature.home.ui.model.TripSegmentUi
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTripSegment.AddTripSegmentContract.Action
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTripSegment.AddTripSegmentContract.Effect
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTripSegment.AddTripSegmentContract.State
@@ -61,7 +63,26 @@ fun AddTripSegmentScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val verticalScroll = rememberScrollState()
+    val locale = Locale.getDefault().language
+    val countryText = when {
+        viewModel.addTripHolder.currentSegment?.country == TRANSIT -> stringResource(R.string.home_trip_segment_transit_option)
+        viewModel.addTripHolder.currentSegment?.country?.isNotBlank() == true -> {
+            SchengenCountries.getCountryByCode(state.country)
+                ?.getDisplayNameWithCode(locale)
+                ?: state.country
+        }
 
+        else -> ""
+    }
+    LaunchedEffect(viewModel.addTripHolder.currentSegment) {
+        if (viewModel.addTripHolder.currentSegment != null) {
+            viewModel.setAction(
+                Action.UpdateCountryText(
+                    countryText, locale, false
+                )
+            )
+        }
+    }
     LaunchedEffectResolver(flow = viewModel.effect) { effect ->
         when (effect) {
             is Effect.NavigateBack -> navigateBack()
@@ -70,8 +91,8 @@ fun AddTripSegmentScreen(
 
     Screen(
         topTitle = stringResource(
-            if (state.isEditMode) R.string.edit_segment_title
-            else R.string.add_segment_title
+            if (state.isEditMode) R.string.home_trip_segment_edit_title
+            else R.string.home_trip_segment_add_title
         ),
         navigateBack = navigateBack,
     ) {
@@ -111,38 +132,52 @@ private fun AddTripSegmentContent(
             expanded = state.isCountryDropdownExpanded,
             onExpandedChange = { onAction(Action.SetCountryDropdownExpanded(it)) }
         ) {
-            CustomTextFieldButton(
-                text = when {
-                    state.country == TRANSIT -> stringResource(R.string.segment_transit_option)
-                    state.country.isNotBlank() -> {
-                        SchengenCountries.getCountryByCode(state.country)?.getDisplayName(locale)
-                            ?: state.country
-                    }
+            CustomTextField(
+                value = if (state.country.isNotBlank()) {
+                    when {
+                        state.country == TRANSIT -> stringResource(R.string.home_trip_segment_transit_option)
+                        state.country.isNotBlank() -> {
+                            SchengenCountries.getCountryByCode(state.country)
+                                ?.getDisplayNameWithCode(locale)
+                                ?: state.countryText
+                        }
 
-                    else -> ""
+                        else -> ""
+                    }
+                } else {
+                    state.countryText
+                },
+                onValueChange = { value ->
+                    onAction(Action.UpdateCountryText(value, locale))
                 },
                 required = true,
-                label = stringResource(R.string.segment_country),
+                label = stringResource(R.string.home_trip_segment_country),
                 trailingIconImage = Icons.Default.KeyboardArrowDown,
                 modifier = Modifier
                     .fillMaxWidth()
                     .menuAnchor(MenuAnchorType.PrimaryEditable),
-                isError = state.validationErrors.countryError != null,
-                supportingText = state.validationErrors.countryError?.asString(),
+                isError = state.validationErrors.countryEmptyError != null,
+                supportingText = state.validationErrors.countryEmptyError?.asString(),
             )
             ExposedDropdownMenu(
                 expanded = state.isCountryDropdownExpanded,
                 onDismissRequest = { onAction(Action.SetCountryDropdownExpanded(false)) }
             ) {
                 DropdownMenuItem(
-                    text = { Text(stringResource(R.string.segment_transit_option)) },
-                    onClick = { onAction(Action.UpdateCountry(TRANSIT)) }
+                    text = { Text(stringResource(R.string.home_trip_segment_transit_option)) },
+                    onClick = {
+                        focusManager.clearFocus()
+                        onAction(Action.UpdateCountry(TRANSIT))
+                    }
                 )
                 HorizontalDivider()
-                SchengenCountries.countries.forEach { country ->
+                state.countryListToShow.forEach { country ->
                     DropdownMenuItem(
-                        text = { Text(country.getDisplayName(locale)) },
-                        onClick = { onAction(Action.UpdateCountry(country.code)) }
+                        text = { Text(country.getDisplayNameWithCode(locale)) },
+                        onClick = {
+                            focusManager.clearFocus()
+                            onAction(Action.UpdateCountry(country.code))
+                        }
                     )
                 }
             }
@@ -150,7 +185,7 @@ private fun AddTripSegmentContent(
 
         // Date Range
         Text(
-            text = stringResource(R.string.segment_dates),
+            text = stringResource(R.string.home_trip_segment_dates),
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.primary
         )
@@ -159,9 +194,9 @@ private fun AddTripSegmentContent(
                 state.startDate.format(state.dateFormatter) +
                         " - " + state.endDate.format(state.dateFormatter)
             } else "",
-            label = stringResource(R.string.calendar_select_dates),
+            label = stringResource(uiR.string.calendar_select_dates),
             required = true,
-            trailingIcon = R.drawable.ic_calendar_today,
+            trailingIcon = uiR.drawable.ic_calendar_today,
             onClick = {
                 focusManager.clearFocus()
                 onAction(Action.ShowDatePicker(true))
@@ -180,7 +215,7 @@ private fun AddTripSegmentContent(
                 )
             ) {
                 Text(
-                    text = stringResource(R.string.segment_duration, state.duration),
+                    text = stringResource(R.string.home_trip_segment_duration, state.duration),
                     modifier = Modifier.padding(16.dp),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onTertiaryContainer
@@ -192,7 +227,7 @@ private fun AddTripSegmentContent(
         CustomTextField(
             value = state.cities,
             onValueChange = { onAction(Action.UpdateCities(it)) },
-            label = stringResource(R.string.add_segment_cities),
+            label = stringResource(R.string.home_trip_segment_cities),
             modifier = Modifier.fillMaxWidth(),
             minLines = 3,
             maxLines = 4,
@@ -208,15 +243,15 @@ private fun AddTripSegmentContent(
                 .padding(bottom = 20.dp)
         ) {
             CustomButton(
-                text = stringResource(R.string.action_save),
+                text = stringResource(uiR.string.action_save),
                 onClick = { onAction(Action.SaveSegment) },
                 enabled = state.selectedDateRange.isComplete && state.country.isNotBlank(),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             )
 
             if (state.isEditMode) {
                 CustomButton(
-                    text = stringResource(R.string.action_delete),
+                    text = stringResource(uiR.string.action_delete),
                     onClick = { onAction(Action.DeleteSegment) },
                     secondaryBtn = true,
                     contentColor = MaterialTheme.colorScheme.error,

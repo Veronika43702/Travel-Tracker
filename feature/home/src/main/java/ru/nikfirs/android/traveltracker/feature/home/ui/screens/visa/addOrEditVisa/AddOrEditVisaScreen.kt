@@ -24,19 +24,22 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
+import ru.nikfirs.android.traveltracker.core.domain.model.SchengenCountries
 import ru.nikfirs.android.traveltracker.core.domain.model.VisaCategory
-import ru.nikfirs.android.traveltracker.core.ui.component.CustomButton
-import ru.nikfirs.android.traveltracker.core.ui.component.DarkENScreenPreview
-import ru.nikfirs.android.traveltracker.core.ui.component.ErrorDialog
-import ru.nikfirs.android.traveltracker.core.ui.component.FullScreenLoadingIndicator
-import ru.nikfirs.android.traveltracker.core.ui.component.LightRUScreenPreview
-import ru.nikfirs.android.traveltracker.core.ui.component.Screen
+import ru.nikfirs.android.traveltracker.core.ui.ui.component.CustomButton
+import ru.nikfirs.android.traveltracker.core.ui.ui.component.DarkENScreenPreview
+import ru.nikfirs.android.traveltracker.core.ui.ui.component.ErrorDialog
+import ru.nikfirs.android.traveltracker.core.ui.ui.component.FullScreenLoadingIndicator
+import ru.nikfirs.android.traveltracker.core.ui.ui.component.LightRUScreenPreview
+import ru.nikfirs.android.traveltracker.core.ui.ui.component.Screen
 import ru.nikfirs.android.traveltracker.core.ui.mvi.LaunchedEffectResolver
-import ru.nikfirs.android.traveltracker.core.ui.theme.AppTheme
+import ru.nikfirs.android.traveltracker.core.ui.ui.theme.AppTheme
+import ru.nikfirs.android.traveltracker.feature.home.R
 import ru.nikfirs.android.traveltracker.feature.home.ui.components.VisaInfoBox
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.addOrEditVisa.AddOrEditVisaContract.Action
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.addOrEditVisa.AddOrEditVisaContract.Effect
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.addOrEditVisa.AddOrEditVisaContract.State
+import java.util.Locale
 import ru.nikfirs.android.traveltracker.core.ui.R as uiR
 
 @Composable
@@ -48,8 +51,27 @@ fun AddOrEditVisaScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
     val verticalScroll = rememberScrollState()
+    val locale = Locale.getDefault().language
+    val countryText = when {
+        state.selectedCountry.isNotBlank() -> {
+            SchengenCountries.getCountryByCode(state.selectedCountry)
+                ?.getDisplayNameWithCode(locale)
+                ?: state.countryText
+        }
+
+        else -> ""
+    }
     LaunchedEffect(visaId) {
         viewModel.setAction(Action.LoadData(visaId))
+    }
+    LaunchedEffect(state.visaId) {
+        if (state.visaId != null && state.visaId == visaId) {
+            viewModel.setAction(
+                Action.UpdateCountryText(
+                    countryText, locale, false
+                )
+            )
+        }
     }
     LaunchedEffectResolver(flow = viewModel.effect) { effect ->
         when (effect) {
@@ -58,7 +80,11 @@ fun AddOrEditVisaScreen(
         }
     }
     Screen(
-        topTitle = stringResource(uiR.string.visa_edit_title),
+        topTitle = if (visaId == null) {
+            stringResource(R.string.home_visa_add_title)
+        } else {
+            stringResource(R.string.home_visa_edit_title)
+        },
         navigateBack = navigateBack,
     ) {
         AddVisaScreenContent(
@@ -76,6 +102,7 @@ private fun AddVisaScreenContent(
     verticalScroll: ScrollState = rememberScrollState(),
 ) {
     val focusManager = LocalFocusManager.current
+    LaunchedEffect(state.visaId) { }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -91,8 +118,13 @@ private fun AddVisaScreenContent(
         VisaInfoBox(
             visaNumber = state.visaNumber,
             visaType = state.visaType,
+            countryText = state.countryText,
             selectedCountry = state.selectedCountry,
+            onCountryTextChanged = { value, language ->
+                onAction(Action.UpdateCountryText(value, language))
+            },
             isCountryDropdownExpanded = state.isCountryDropdownExpanded,
+            countryList = state.countryListToShow,
             startDate = state.startDate,
             expiryDate = state.expiryDate,
             durationOfStay = state.durationOfStay,
@@ -106,7 +138,10 @@ private fun AddVisaScreenContent(
             updateVisaNumber = { onAction(Action.UpdateVisaNumber(it)) },
             updateVisaType = { onAction(Action.UpdateVisaType(it)) },
             setCountryDropdownExpanded = { onAction(Action.SetCountryDropdownExpanded(it)) },
-            updateCountry = { onAction(Action.UpdateCountry(it)) },
+            updateCountry = {
+                focusManager.clearFocus()
+                onAction(Action.UpdateCountry(it))
+            },
             updateStartDate = { onAction(Action.UpdateStartDate(it)) },
             updateExpiryDate = { onAction(Action.UpdateExpiryDate(it)) },
             updateDurationOfStay = { onAction(Action.UpdateDurationOfStay(it)) },

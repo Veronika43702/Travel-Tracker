@@ -1,14 +1,15 @@
 package ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.tripDetails
 
+import android.util.Log
 import dagger.hilt.android.lifecycle.HiltViewModel
 import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
 import ru.nikfirs.android.traveltracker.core.ui.mvi.ViewModel
 import ru.nikfirs.android.traveltracker.core.ui.mvi.launch
 import ru.nikfirs.android.traveltracker.feature.home.R
-import ru.nikfirs.android.traveltracker.feature.home.domain.model.TripSegmentUi
+import ru.nikfirs.android.traveltracker.feature.home.ui.model.TripSegmentUi
 import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.trip.DeleteTripUseCase
-import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.trip.GetTripByIdUseCase
-import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.visa.GetVisaByIdUseCase
+import ru.nikfirs.android.traveltracker.core.ui.domain.usecase.trip.GetTripByIdUseCase
+import ru.nikfirs.android.traveltracker.core.ui.domain.usecase.visa.GetVisaByIdUseCase
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.tripDetails.TripDetailsContract.Action
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.tripDetails.TripDetailsContract.Effect
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.tripDetails.TripDetailsContract.State
@@ -32,9 +33,7 @@ class TripDetailsViewModel @Inject constructor(
             Action.Delete -> deleteTrip()
             is Action.SetError -> setError(action.error)
             Action.HideDialog -> hideDialog()
-            Action.ChangeExpandSegment -> {
-                setState { it.copy(expandSegments = !currentState.expandSegments) }
-            }
+            Action.ChangeExpandSegment -> expandSegments()
         }
     }
 
@@ -44,7 +43,7 @@ class TripDetailsViewModel @Inject constructor(
             try {
                 val trip = getTripByIdUseCase.invoke(tripId)
                 if (trip == null) {
-                    setError(CustomString.resource(R.string.error_trip_not_found))
+                    setError(CustomString.resource(R.string.home_error_trip_not_found))
                     return@launch
                 }
 
@@ -71,7 +70,8 @@ class TripDetailsViewModel @Inject constructor(
                     )
                 }
             } catch (e: Exception) {
-                setError(CustomString.resource(R.string.error_loading_trip))
+                setError(CustomString.resource(R.string.home_error_trip_loading))
+                Log.e(null, "loadTrip", e)
             }
         }
     }
@@ -79,7 +79,7 @@ class TripDetailsViewModel @Inject constructor(
     private fun showDeleteDialog() {
         setState {
             it.copy(
-                dialogText = CustomString.resource(uiR.string.trip_delete_dialog)
+                dialogText = CustomString.resource(R.string.home_trip_dialog_delete)
             )
         }
     }
@@ -90,16 +90,21 @@ class TripDetailsViewModel @Inject constructor(
             try {
                 currentState.trip?.let { trip ->
                     deleteTripUseCase.invoke(trip)
-                } ?: setError(CustomString.resource(R.string.error_trip_not_found))
+                } ?: setError(CustomString.resource(R.string.home_error_trip_not_found))
                 setEffect { Effect.NavigateBack }
             } catch (e: Exception) {
-                setError(CustomString.resource(R.string.error_deleting_trip))
+                setError(CustomString.resource(R.string.home_error_trip_deleting))
+                Log.e(null, "deleteTrip", e)
             }
         }
     }
 
     private fun hideDialog() {
         setState { it.copy(dialogText = null) }
+    }
+
+    private fun expandSegments() {
+        setState { it.copy(expandSegments = !currentState.expandSegments) }
     }
 
     private fun setError(error: CustomString?) {

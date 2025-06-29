@@ -19,6 +19,26 @@ interface VisaDao {
     """)
     fun getVisaFlowByDate(startDate: LocalDate, onlyActive: Boolean): Flow<List<VisaEntity>>
 
+    @Query("""
+        SELECT v.* FROM visas v
+        LEFT JOIN (
+            SELECT visaId, COUNT(*) as trip_count 
+            FROM trips 
+            WHERE visaId IS NOT NULL 
+            GROUP BY visaId
+        ) t ON v.id = t.visaId
+        WHERE v.isActive = 1
+        AND v.expiryDate > :startDate
+        AND (
+            (v.entries = 'SINGLE' AND COALESCE(t.trip_count, 0) < 1) OR
+            (v.entries = 'DOUBLE' AND COALESCE(t.trip_count, 0) < 2) OR
+            (v.entries = 'MULTI')
+        )
+        ORDER BY v.startDate DESC
+    """)
+    fun getAvailableVisaByDate(startDate: LocalDate): List<VisaEntity>
+
+
     @Query("SELECT * FROM visas WHERE visaCategory = :category ORDER BY expiryDate DESC")
     fun getVisasByCategory(category: VisaCategory): Flow<List<VisaEntity>>
 
@@ -38,11 +58,28 @@ interface VisaDao {
     suspend fun deactivateVisaById(visaId: Long)
 
     @Query("""
-        SELECT COUNT(*) > 0 FROM visas 
-        WHERE country = :country 
-        AND (visaCategory = 'TYPE_D' OR visaCategory = 'RESIDENCE_PERMIT')
-        AND isActive = 1
-        AND expiryDate >= :currentDate
+        WITH RECURSIVE dates(day, segment_id) AS (
+            SELECT
+                DATE(s.startDate) AS day,
+                s.id
+            FROM trip_segments s
+            INNER JOIN trips t ON t.id = s.tripId
+            WHERE t.visaId = :visaId
+            AND s.isExempt = 0
+
+            UNION ALL
+
+            SELECT DATE(day, '+1 day'), segment_id
+            FROM dates
+            WHERE DATE(day, '+1 day') <= (
+                SELECT DATE(endDate)
+                FROM trip_segments
+                WHERE id = segment_id
+            )
+        )
+
+        SELECT COUNT(DISTINCT day) AS dayCount
+        FROM dates
     """)
-    suspend fun hasExemptionForCountry(country: String, currentDate: LocalDate): Boolean
+    suspend fun visaDurationUsed(visaId: Long): Int
 }

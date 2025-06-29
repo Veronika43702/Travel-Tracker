@@ -1,28 +1,157 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Home Screen -->
+    <string name="home_tab_visas">Визы</string>
+    <string name="home_tab_trips">Поездки</string>
+    <string name="home_empty_state">Нет данных для отображения</string>
+    <string name="home_add_first_visa">Добавьте первую визу</string>
+    <string name="home_add_first_trip">Добавьте первую поездку</string>
+
+    <!-- Days Counter -->
+    <string name="visa_days_counter_title">Дней в ЕС</string>
+    <string name="visa_days_counter_format">%1$d / %2$d</string>
+    <string name="visa_days_counter_period">За последние 180 дней</string>
+    <plurals name="visa_days_remaining">
+        <item quantity="one">Осталося %d день</item>
+        <item quantity="few">Осталось %d дня</item>
+        <item quantity="many">Осталось %d дней</item>
+    </plurals>
+    <string name="visa_days_limit_warning">Приближаетесь к лимиту!</string>
+    <string name="visa_days_limit_exceeded">Лимит превышен!</string>
+    <plurals name="visa_day_counter_warning">
+        <item quantity="one">Виза истекает через %1$d день</item>
+        <item quantity="few">Виза истекает через %1$d дня</item>
+        <item quantity="many">Виза истекает через %1$d дней</item>
+    </plurals>
+
+    <!-- Empty states -->
+    <string name="home_empty_all">Нет данных для отображения.\nДобавьте первую визу!</string>
+    <string name="home_empty_visas">У вас пока нет активных виз.\nДобавьте первую визу!</string>
+    <string name="home_empty_trips">У вас пока нет поездок.\nДобавьте первую поездку!</string>
+
+    <!-- Common Trip and Visa -->
+    <string name="home_notes_optional">Заметки (необязательно)</string>
+    <string name="home_notes">Заметки</string>
+
+    <!-- Trip sections -->
+    <string name="home_trips_section_ongoing">Текущие поездки</string>
+    <string name="home_trips_section_planned">Запланированные</string>
+    <string name="home_trips_section_past">Прошедшие</string>
+
+    <!-- Trip-->
+    <string name="home_trip_add_title">Добавление поездки</string>
+    <string name="home_trip_edit_title">Редактирование поездки</string>
+    <string name="home_trip_select_visa">Выберите визу</string>
+    <string name="home_trip_selected_visa_validity">Виза действует: %1$s — %2$s</string>
+    <string name="home_trip_selected_visa_days_left">Неиспользованных дней: %1$d/%2$d</string>
+    <string name="home_trip_dates_section">Даты поездки</string>
+    <string name="home_trip_duration">Общая длительность</string>
+    <string name="home_trip_countable_days">учитывается %d дн.</string>
+    <string name="home_trip_days_available_at_start">Доступно дней на начало</string>
+    <string name="home_trip_days_available_at_end">Доступно дней на конец</string>
+    <string name="home_trip_purpose_section">Цель поездки</string>
+    <string name="home_trip_purpose_select">Выберите цель поездки</string>
+    <string name="home_trip_purpose_tourism">Туризм</string>
+    <string name="home_trip_purpose_business">Бизнес</string>
+    <string name="home_trip_purpose_family">Семейные обстоятельства</string>
+    <string name="home_trip_purpose_medical">Медицинские цели</string>
+    <string name="home_trip_purpose_education">Образование</string>
+    <string name="home_trip_purpose_other">Другое</string>
+    <string name="home_trip_segments_section">Сегменты поездки</string>
+    <string name="home_trip_add_segment">Добавить сегмент</string>
+    <string name="home_trip_visa_section">Виза</string>
+    <string name="home_trip_over_limit_warning">В поездке есть дни, превышающие лимит. Обновите данные</string>
+    <plurals name="days_count">
+        <item quantity="one">%d день</item>
+        <item quantity="few">%d дня</item>
+        <item quantity="many">%d дней</item>
+    </plurals>
+    <string name="home_trip_dialog_delete">Вы уверены, что хотите удалить поездку? Отменить действие будет невозможно.</string>
+
+    <!-- Trip Card -->
+    <string name="trip_card_duration_days">%1$d дн.</string>
+    <string name="trip_card_status_ongoing">Текущая поездка</string>
+    <string name="trip_card_status_planned">Запланирована</string>
+    <string name="trip_card_dates">%1$s\n%2$s</string>
+
     <!-- Trip Details Screen -->
-    <string name="trip_details_title">Детали поездки</string>
-    <string name="trip_details_dates">Даты поездки</string>
-    <string name="trip_duration_info">Продолжительность</string>
-    <string name="trip_purpose">Цель поездки</string>
-    <string name="linked_visa">Связанная виза</string>
-    <string name="trip_segments">Сегменты поездки</string>
-    <string name="days_total_counted">%1$d дн. всего, %2$d дн. учитывается</string>
-    <string name="days_total_only">%1$d дн. всего</string>
-    <string name="no_linked_visa">Виза не указана</string>
+    <string name="home_trip_details_title">Детали поездки</string>
+    <string name="home_trip_details_duration">Продолжительность</string>
+    <string name="home_trip_details_days_total_counted">%1$d дн. всего, %2$d дн. учитывается</string>
+    <string name="home_trip_details_days_total_only">%1$d дн. всего</string>
+    <string name="home_trip_details_status_ongoing">Текущая</string>
+    <string name="home_trip_details_status_planned">Запланированная</string>
+    <string name="home_trip_details_trip_status_completed">Завершенная</string>
 
-    <!-- Trip Status -->
-    <string name="trip_status_ongoing_details">Текущая</string>
-    <string name="trip_status_planned_details">Запланированная</string>
-    <string name="trip_status_completed_details">Завершенная</string>
+    <!-- Trip Segment Card -->
+    <string name="home_trip_segment_add_title">Добавление сегмента</string>
+    <string name="home_trip_segment_edit_title">Редактирование сегмента</string>
+    <string name="home_trip_segment_country">Страна</string>
+    <string name="home_trip_segment_transit_option">Транзит (любая страна)</string>
+    <string name="home_trip_segment_exempt">Не учитывается</string>
+    <string name="home_trip_segment_dates">Даты пребывания</string>
+    <string name="home_trip_segment_duration">Длительность: %d дн.</string>
+    <string name="home_trip_segment_cities">Города (опционально)</string>
+    <string name="home_trip_cities_placeholder">Например: Берлин, Мюнхен</string>
 
-    <!-- Error Messages for Trip Details -->
-    <string name="error_trip_not_found">Поездка не найдена</string>
-    <string name="error_loading_trip">Ошибка загрузки поездки</string>
-    <string name="error_deleting_trip">Ошибка удаления поездки</string>
+    <!-- Error Messages for Trip -->
+    <string name="home_error_trip_not_found">Поездка не найдена</string>
+    <string name="home_error_trip_loading">Ошибка загрузки поездки</string>
+    <string name="home_error_trip_saving">Ошибка при сохранении поездки</string>
+    <string name="home_error_trip_deleting">Ошибка удаления поездки</string>
 
-    <string name="trip_over_limit_warning">В поездке есть дни, превышающие лимит. Обновите данные</string>
+    <!-- Validation Errors Trip-->
+    <string name="home_error_trip_visa_required">Выберите визу для поездки</string>
+    <string name="home_error_trip_no_segments">Добавьте хотя бы один сегмент поездки</string>
+    <string name="home_error_trip_segment_gap">Между сегментами есть пробелы. При сохранении автоматически добавятся транзитные сегменты.</string>
+    <string name="home_error_trip_days_limit_exceeded">Поездка превышает лимит дней пребывания</string>
+
+    <!-- Validation Errors Trip Segments -->
+    <string name="home_error_trip_segment_country_required">Выберите страну для сегмента</string>
+    <string name="home_error_trip_segment_country_invalid">Выберите страну из списка</string>
+    <string name="home_error_trip_segment_dates_required">Выберите даты для сегмента</string>
+
+    <!-- Visa -->
+    <string name="home_visa_add_title">Добавление визы</string>
+    <string name="home_visa_edit_title">Редактирование визы</string>
+    <string name="home_visa_no_visas">Нет доступных виз</string>
+    <string name="home_visa_number">Номер визы</string>
+    <string name="home_visa_type">Тип визы</string>
+    <string name="home_visa_country">Страна</string>
+    <string name="home_visa_issue_date">Дата начала</string>
+    <string name="home_visa_expiry_date">Дата окончания</string>
+    <string name="home_visa_validity_period">%1$s — %2$s</string>
+    <string name="home_visa_visa_duration">Продолжительность пребывания</string>
+    <string name="home_visa_duration_suffix">дней</string>
+    <string name="home_visa_duration_left">Неиспользованных дней: %1$d</string>
+    <string name="home_visa_entries_type">Тип въезда</string>
+    <string name="home_visa_entries_single">Однократная</string>
+    <string name="home_visa_entries_double">Двукратная</string>
+    <string name="home_visa_entries_multi">Многократная</string>
+    <string name="home_visa_expiry_warning">Истекает через %1$d дн.</string>
+    <string name="home_visa_dialog_annul">Вы уверены, что хотите аннулировать визу? Визу будет невозможно использовать для создания или редактирования поездок. Отменить действие будет невозможно.</string>
+    <string name="home_visa_dialog_delete">Вы уверены, что хотите удалить визу? Все связанные с ней поездки также будут удалены. Отменить действие будет невозможно.</string>
+
+    <!-- Visa Details Screen -->
+    <string name="home_visa_details_title">Виза</string>
+    <string name="home_visa_details_annulled">Аннулирована</string>
+    <string name="home_visa_details_duration_left">Неиспользованных дней</string>
+
+    <!-- Error Messages for Visa -->
+    <string name="home_error_visa_not_found">Виза не найдена</string>
+    <string name="home_error_visa_loading">Ошибка загрузки визы</string>
+    <string name="home_error_visa_saving">Ошибка при сохранении визы</string>
+    <string name="home_error_visa_deleting">Ошибка удаления визы</string>
+
+    <!-- Validation Errors -->
+    <string name="error_visa_number_required">Номер визы обязателен</string>
+    <string name="error_country_required">Выберите страну выдачи</string>
+    <string name="error_expiry_date_invalid">Дата окончания должна быть позже даты выдачи</string>
+    <string name="error_duration_required">Укажите продолжительность пребывания</string>
+    <string name="error_duration_invalid">Введите корректное число</string>
+    <string name="error_duration_positive">Продолжительность должна быть больше 0</string>
 
     <!-- Success Messages -->
-    <string name="trip_deleted_successfully">Поездка успешно удалена</string>
+    <string name="home_trip_deleted_successfully">Поездка успешно удалена</string>
+    <string name="home_visa_deleted_successfully">Виза и связанные с ней поездки удалены</string>
 </resources>

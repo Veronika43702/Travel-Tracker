@@ -1,16 +1,19 @@
 package ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.addOrEditVisa
 
+import android.util.Log
 import dagger.hilt.android.lifecycle.HiltViewModel
+import ru.nikfirs.android.traveltracker.core.domain.MAX_STAY_DAYS
 import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
+import ru.nikfirs.android.traveltracker.core.domain.model.SchengenCountries
 import ru.nikfirs.android.traveltracker.core.domain.model.Visa
 import ru.nikfirs.android.traveltracker.core.domain.model.VisaCategory
 import ru.nikfirs.android.traveltracker.core.domain.model.VisaEntries
 import ru.nikfirs.android.traveltracker.core.ui.mvi.ViewModel
 import ru.nikfirs.android.traveltracker.core.ui.mvi.launch
-import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.visa.GetVisaByIdUseCase
+import ru.nikfirs.android.traveltracker.core.ui.domain.usecase.visa.GetVisaByIdUseCase
+import ru.nikfirs.android.traveltracker.feature.home.R
 import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.visa.SaveVisaUseCase
 import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.visa.UpdateVisaUseCase
-import ru.nikfirs.android.traveltracker.core.ui.R as uiR
 import java.time.LocalDate
 import javax.inject.Inject
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.addOrEditVisa.AddOrEditVisaContract.Action
@@ -33,6 +36,12 @@ class AddOrEditVisaViewModel @Inject constructor(
             is Action.UpdateVisaNumber -> updateVisaNumber(action.number)
             is Action.UpdateVisaType -> updateVisaType(action.type)
             is Action.UpdateCountry -> updateCountry(action.country)
+            is Action.UpdateCountryText -> updateCountryText(
+                action.value,
+                action.language,
+                action.resetCountry
+            )
+
             is Action.UpdateStartDate -> updateStartDate(action.date)
             is Action.UpdateExpiryDate -> updateExpiryDate(action.date)
             is Action.UpdateDurationOfStay -> updateDurationOfStay(action.duration)
@@ -45,6 +54,7 @@ class AddOrEditVisaViewModel @Inject constructor(
     }
 
     private fun loadVisa(visaId: Long?) {
+        setState { it.copy(countryListToShow = SchengenCountries.countries) }
         visaId ?: return
         launch {
             setState { it.copy(isLoading = true) }
@@ -66,10 +76,11 @@ class AddOrEditVisaViewModel @Inject constructor(
                         )
                     }
                 } ?: setError(
-                    CustomString.resource(uiR.string.error_visa_not_found)
+                    CustomString.resource(R.string.home_error_visa_not_found)
                 )
             } catch (e: Exception) {
-                setError(CustomString.resource(uiR.string.error_loading_data))
+                setError(CustomString.resource(R.string.home_error_visa_loading))
+                Log.e(null, "loadVisa", e)
             }
         }
     }
@@ -80,7 +91,7 @@ class AddOrEditVisaViewModel @Inject constructor(
                 visaNumber = number,
                 validationErrors = currentState.validationErrors.copy(
                     visaNumberError = if (number.isBlank())
-                        CustomString.resource(uiR.string.error_visa_number_required)
+                        CustomString.resource(R.string.error_visa_number_required)
                     else null
                 )
             )
@@ -99,7 +110,9 @@ class AddOrEditVisaViewModel @Inject constructor(
         ) + 1)
 
         val stayDuration = when (currentState.visaType) {
-            VisaCategory.TYPE_C -> (if (visaDuration < 90) visaDuration else 90).toString()
+            VisaCategory.TYPE_C -> (
+                    if (visaDuration < MAX_STAY_DAYS) visaDuration else MAX_STAY_DAYS).toString()
+
             else -> (ChronoUnit.DAYS.between(
                 currentState.startDate,
                 currentState.expiryDate
@@ -108,15 +121,37 @@ class AddOrEditVisaViewModel @Inject constructor(
         setState { it.copy(durationOfStay = stayDuration) }
     }
 
-
     private fun updateCountry(country: String) {
         setState {
             it.copy(
                 selectedCountry = country,
+                countryText = country,
+                countryListToShow = SchengenCountries.countries,
                 isCountryDropdownExpanded = false,
                 validationErrors = currentState.validationErrors.copy(
                     countryError = null
                 )
+            )
+        }
+    }
+
+    private fun updateCountryText(value: String, language: String, resetCountry: Boolean) {
+        val list = SchengenCountries.countries.filter {
+            if (resetCountry) {
+                if (language == "ru") {
+                    it.nameRu.lowercase().startsWith(value.lowercase())
+                } else {
+                    it.nameEn.lowercase().startsWith(value.lowercase())
+                }
+            } else true
+        }
+
+        setState {
+            it.copy(
+                countryText = value,
+                selectedCountry = if (resetCountry) "" else currentState.selectedCountry,
+                isCountryDropdownExpanded = resetCountry,
+                countryListToShow = list,
             )
         }
     }
@@ -201,12 +236,8 @@ class AddOrEditVisaViewModel @Inject constructor(
                     setEffect { Effect.NavigateBack }
 
                 } catch (e: Exception) {
-                    setState {
-                        it.copy(
-                            isLoading = false,
-                            error = CustomString.resource(uiR.string.error_saving_visa)
-                        )
-                    }
+                    setError(CustomString.resource(R.string.home_error_visa_saving))
+                    Log.e(null, "saveOrUpdateVisa", e)
                 }
             }
         } else {
@@ -218,13 +249,13 @@ class AddOrEditVisaViewModel @Inject constructor(
     private fun validateForm(): AddOrEditVisaContract.ValidationErrors {
         return AddOrEditVisaContract.ValidationErrors(
             visaNumberError = if (currentState.visaNumber.isBlank())
-                CustomString.resource(uiR.string.error_visa_number_required) else null,
+                CustomString.resource(R.string.error_visa_number_required) else null,
             countryError = if (currentState.selectedCountry.isBlank())
-                CustomString.resource(uiR.string.error_country_required) else null,
+                CustomString.resource(R.string.error_country_required) else null,
             durationError = validateDuration(currentState.durationOfStay),
             startDateError = null, // Issue date is always valid as it's set by date picker
             expiryDateError = if (currentState.expiryDate <= currentState.startDate)
-                CustomString.resource(uiR.string.error_expiry_date_invalid) else null
+                CustomString.resource(R.string.error_expiry_date_invalid) else null
         )
     }
 
@@ -234,15 +265,15 @@ class AddOrEditVisaViewModel @Inject constructor(
     ): AddOrEditVisaContract.ValidationErrors {
         return currentState.validationErrors.copy(
             expiryDateError = if (expiryDate <= startDate)
-                CustomString.resource(uiR.string.error_expiry_date_invalid) else null
+                CustomString.resource(R.string.error_expiry_date_invalid) else null
         )
     }
 
     private fun validateDuration(duration: String): CustomString? {
         return when {
-            duration.isBlank() -> CustomString.resource(uiR.string.error_duration_required)
-            duration.toIntOrNull() == null -> CustomString.resource(uiR.string.error_duration_invalid)
-            duration.toInt() <= 0 -> CustomString.resource(uiR.string.error_duration_positive)
+            duration.isBlank() -> CustomString.resource(R.string.error_duration_required)
+            duration.toIntOrNull() == null -> CustomString.resource(R.string.error_duration_invalid)
+            duration.toInt() <= 0 -> CustomString.resource(R.string.error_duration_positive)
             else -> null
         }
     }

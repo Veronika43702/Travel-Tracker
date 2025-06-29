@@ -7,7 +7,7 @@ import androidx.compose.material.icons.outlined.DateRange
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.runtime.Immutable
 import kotlinx.serialization.Serializable
-import ru.nikfirs.android.traveltracker.core.ui.model.IconType
+import ru.nikfirs.android.traveltracker.core.ui.ui.model.IconType
 
 @Immutable
 @Serializable

@@ -1,11 +1,13 @@
 package ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.addOrEditVisa
 
+import ru.nikfirs.android.traveltracker.core.domain.model.Country
 import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
 import ru.nikfirs.android.traveltracker.core.domain.model.VisaCategory
 import ru.nikfirs.android.traveltracker.core.domain.model.VisaEntries
 import ru.nikfirs.android.traveltracker.core.ui.mvi.MviAction
 import ru.nikfirs.android.traveltracker.core.ui.mvi.MviEffect
 import ru.nikfirs.android.traveltracker.core.ui.mvi.MviState
+import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTripSegment.AddTripSegmentContract.Action
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -15,7 +17,9 @@ sealed class AddOrEditVisaContract {
         val visaId: Long? = null,
         val visaNumber: String = "",
         val visaType: VisaCategory = VisaCategory.TYPE_C,
+        val countryText: String = "",
         val selectedCountry: String = "",
+        val countryListToShow: List<Country> = emptyList(),
         val startDate: LocalDate = LocalDate.now(),
         val expiryDate: LocalDate = LocalDate.now(),
         val durationOfStay: String = "1",
@@ -46,6 +50,11 @@ sealed class AddOrEditVisaContract {
         data class UpdateVisaNumber(val number: String) : Action()
         data class UpdateVisaType(val type: VisaCategory) : Action()
         data class UpdateCountry(val country: String) : Action()
+        data class UpdateCountryText(
+            val value: String,
+            val language: String,
+            val resetCountry: Boolean = true,
+        ) : Action()
         data class UpdateStartDate(val date: LocalDate) : Action()
         data class UpdateExpiryDate(val date: LocalDate) : Action()
         data class UpdateDurationOfStay(val duration: String) : Action()

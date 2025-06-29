@@ -23,19 +23,22 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import ru.nikfirs.android.traveltracker.core.data.model.TRANSIT
+import ru.nikfirs.android.traveltracker.core.domain.model.SchengenCountries
 import ru.nikfirs.android.traveltracker.core.domain.model.Trip
 import ru.nikfirs.android.traveltracker.core.domain.model.TripPurpose
 import ru.nikfirs.android.traveltracker.core.domain.model.TripSegment
 import ru.nikfirs.android.traveltracker.core.ui.R as uiR
-import ru.nikfirs.android.traveltracker.core.ui.component.EditAndDeleteRow
-import ru.nikfirs.android.traveltracker.core.ui.component.StatusChip
-import ru.nikfirs.android.traveltracker.core.ui.component.SwipeableCard
-import ru.nikfirs.android.traveltracker.core.ui.component.TravelCard
-import ru.nikfirs.android.traveltracker.core.ui.theme.AppTheme
+import ru.nikfirs.android.traveltracker.core.ui.ui.component.EditAndDeleteRow
+import ru.nikfirs.android.traveltracker.core.ui.ui.component.StatusChip
+import ru.nikfirs.android.traveltracker.core.ui.ui.component.SwipeableCard
+import ru.nikfirs.android.traveltracker.core.ui.ui.component.TravelCard
+import ru.nikfirs.android.traveltracker.core.ui.ui.theme.AppTheme
 import ru.nikfirs.android.traveltracker.feature.home.R
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.HomeContract.Action
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 @Composable
 fun SwipeableTripCard(
@@ -123,7 +126,7 @@ fun TripCard(
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
                 StatusChip(
-                    text = stringResource(uiR.string.trip_duration_days, trip.duration.toInt()),
+                    text = stringResource(R.string.trip_card_duration_days, trip.duration.toInt()),
                     backgroundColor = MaterialTheme.colorScheme.primaryContainer,
                     contentColor = MaterialTheme.colorScheme.onPrimaryContainer
                 )
@@ -131,7 +134,7 @@ fun TripCard(
                 if (isExempt) {
                     StatusChip(
                         text = stringResource(
-                            uiR.string.countable_days_count,
+                            R.string.home_trip_countable_days,
                             countableDuration
                         ),
                         backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
@@ -143,9 +146,15 @@ fun TripCard(
 
                 when {
                     trip.isOngoing -> StatusChip(
-                        text = stringResource(uiR.string.trip_ongoing),
+                        text = stringResource(R.string.trip_card_status_ongoing),
                         backgroundColor = MaterialTheme.colorScheme.secondary,
                         contentColor = MaterialTheme.colorScheme.onSecondary
+                    )
+
+                    trip.isFuture -> StatusChip(
+                        text = stringResource(R.string.trip_card_status_planned),
+                        backgroundColor = MaterialTheme.colorScheme.tertiaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
                     )
                 }
             }
@@ -153,7 +162,7 @@ fun TripCard(
         warning = if (trip.hasOverLimitDay) {
             {
                 StatusChip(
-                    text = stringResource(R.string.trip_over_limit_warning),
+                    text = stringResource(R.string.home_trip_over_limit_warning),
                     backgroundColor = MaterialTheme.colorScheme.error,
                     contentColor = MaterialTheme.colorScheme.onError
                 )
@@ -167,7 +176,7 @@ fun TripCard(
         if (trip.startDate != null && trip.endDate != null) {
             Text(
                 text = stringResource(
-                    uiR.string.trip_dates,
+                    R.string.trip_card_dates,
                     trip.startDate?.format(dateFormatter) ?: "",
                     trip.endDate?.format(dateFormatter) ?: "",
                 ),
@@ -183,18 +192,43 @@ private fun CountriesRow(
     trip: Trip,
     modifier: Modifier = Modifier
 ) {
+    val locale = Locale.getDefault().language
+    val countries = trip.countries.map { country ->
+        when {
+            country == TRANSIT -> stringResource(R.string.home_trip_segment_transit_option)
+            country.isNotBlank() -> {
+                SchengenCountries.getCountryByCode(country)
+                    ?.getDisplayName(locale)
+                    ?: country
+            }
+
+            else -> ""
+        }
+    }
+
+    val primaryCountry = when {
+        trip.primaryCountry == TRANSIT -> stringResource(R.string.home_trip_segment_transit_option)
+        trip.primaryCountry?.isNotBlank() == true -> {
+            trip.primaryCountry?.let {
+                SchengenCountries.getCountryByCode(it)
+                    ?.getDisplayName(locale) ?: trip.primaryCountry
+            }
+        }
+
+        else -> null
+    }
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         Text(
-            text = (trip.primaryCountry ?: trip.countries.firstOrNull() ?: "") +
-                    (if (trip.countries.size >= 2) {
-                        ", " + (trip.countries.firstOrNull { it != trip.primaryCountry }
+            text = (primaryCountry ?: countries.firstOrNull() ?: "") +
+                    (if (countries.size >= 2) {
+                        ", " + (countries.firstOrNull { it != primaryCountry }
                             ?: "")
                     } else "")
-                    + if (trip.countries.size > 2) "..." else "",
+                    + if (countries.size > 2) "..." else "",
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Medium,
             maxLines = 1,
@@ -219,7 +253,7 @@ private fun TripCardPreview() {
                     endDate = LocalDate.now().plusDays(5),
                     segments = listOf(
                         TripSegment(
-                            country = "Germany",
+                            country = "DE",
                             startDate = LocalDate.now().minusDays(5),
                             endDate = LocalDate.now(),
                             isExempt = false

@@ -54,24 +54,25 @@ import ru.nikfirs.android.traveltracker.core.domain.model.Visa
 import ru.nikfirs.android.traveltracker.core.domain.model.VisaCategory
 import ru.nikfirs.android.traveltracker.core.domain.model.VisaEntries
 import ru.nikfirs.android.traveltracker.core.domain.model.asString
-import ru.nikfirs.android.traveltracker.core.ui.R
-import ru.nikfirs.android.traveltracker.core.ui.component.CustomButton
-import ru.nikfirs.android.traveltracker.core.ui.component.DialogTwoRowButton
-import ru.nikfirs.android.traveltracker.core.ui.component.ErrorDialog
-import ru.nikfirs.android.traveltracker.core.ui.component.Screen
+import ru.nikfirs.android.traveltracker.core.ui.R as uiR
+import ru.nikfirs.android.traveltracker.core.ui.ui.component.CustomButton
+import ru.nikfirs.android.traveltracker.core.ui.ui.component.DialogTwoRowButton
+import ru.nikfirs.android.traveltracker.core.ui.ui.component.ErrorDialog
+import ru.nikfirs.android.traveltracker.core.ui.ui.component.Screen
 import ru.nikfirs.android.traveltracker.core.ui.mvi.LaunchedEffectResolver
 import ru.nikfirs.android.traveltracker.core.ui.navigation.BottomNavBarRoute
-import ru.nikfirs.android.traveltracker.core.ui.theme.AppTheme
-import ru.nikfirs.android.traveltracker.core.ui.theme.button
-import ru.nikfirs.android.traveltracker.core.ui.theme.tab
-import ru.nikfirs.android.traveltracker.feature.home.domain.model.HomeTab
+import ru.nikfirs.android.traveltracker.core.ui.ui.theme.AppTheme
+import ru.nikfirs.android.traveltracker.core.ui.ui.theme.button
+import ru.nikfirs.android.traveltracker.core.ui.ui.theme.tab
+import ru.nikfirs.android.traveltracker.feature.home.R
+import ru.nikfirs.android.traveltracker.feature.home.ui.model.HomeTab
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.HomeContract.Action
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.HomeContract.Effect
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.HomeContract.State
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.components.DaysCounterCard
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.components.SwipeableTripCard
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.components.SwipeableVisaCard
-import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.utils.HomeAction
+import ru.nikfirs.android.traveltracker.feature.home.ui.utils.HomeAction
 import java.time.LocalDate
 
 @Composable
@@ -134,8 +135,8 @@ fun HomeScreen(
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = when (state.selectedTab) {
-                            HomeTab.VISAS -> stringResource(R.string.action_add_visa)
-                            HomeTab.TRIPS -> stringResource(R.string.action_add_trip)
+                            HomeTab.VISAS -> stringResource(uiR.string.action_add_visa)
+                            HomeTab.TRIPS -> stringResource(uiR.string.action_add_trip)
                         }
                     )
                 }
@@ -312,7 +313,7 @@ private fun TripsTabContent(
         if (state.ongoingTrips.isNotEmpty()) {
             item {
                 Text(
-                    text = stringResource(R.string.trips_section_ongoing),
+                    text = stringResource(R.string.home_trips_section_ongoing),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.padding(bottom = 8.dp)
@@ -337,7 +338,7 @@ private fun TripsTabContent(
             item {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = stringResource(R.string.trips_section_planned),
+                    text = stringResource(R.string.home_trips_section_planned),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.padding(bottom = 8.dp)
@@ -362,7 +363,7 @@ private fun TripsTabContent(
             item {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = stringResource(R.string.trips_section_past),
+                    text = stringResource(R.string.home_trips_section_past),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.padding(bottom = 8.dp)
@@ -403,8 +404,8 @@ private fun EmptyState(
     ) {
         Icon(
             painter = when (tab) {
-                HomeTab.VISAS -> painterResource(R.drawable.ic_badge)
-                HomeTab.TRIPS -> painterResource(R.drawable.ic_luggage)
+                HomeTab.VISAS -> painterResource(uiR.drawable.ic_badge)
+                HomeTab.TRIPS -> painterResource(uiR.drawable.ic_luggage)
             },
             contentDescription = null,
             modifier = Modifier.size(64.dp),
@@ -431,11 +432,11 @@ private fun EmptyState(
 
         CustomButton(
             text = when (tab) {
-                HomeTab.VISAS -> stringResource(R.string.action_add_visa)
+                HomeTab.VISAS -> stringResource(uiR.string.action_add_visa)
                 HomeTab.TRIPS -> if (isVisaListEmpty) {
-                    stringResource(R.string.action_add_visa)
+                    stringResource(uiR.string.action_add_visa)
                 } else {
-                    stringResource(R.string.action_add_trip)
+                    stringResource(uiR.string.action_add_trip)
                 }
             },
             iconImage = Icons.Default.Add,
@@ -534,8 +535,8 @@ private fun HomeScreenWithDataPreview() {
                 trips = listOf(
                     Trip(
                         id = 1,
-                        startDate = LocalDate.now().minusDays(5),
-                        endDate = LocalDate.now().plusDays(5),
+                        startDate = LocalDate.now().minusDays(10),
+                        endDate = LocalDate.now().minusDays(5),
                         segments = listOf(
                             TripSegment(
                                 country = "Germany",
@@ -550,7 +551,7 @@ private fun HomeScreenWithDataPreview() {
                                 isExempt = false
                             )
                         ),
-                        purpose = TripPurpose.TOURISM,
+                        purpose = TripPurpose.MEDICAL,
                     ),
                     Trip(
                         id = 3,

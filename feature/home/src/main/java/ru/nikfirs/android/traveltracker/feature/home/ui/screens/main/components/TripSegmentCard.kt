@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -22,21 +21,23 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ru.nikfirs.android.traveltracker.core.data.model.TRANSIT
 import ru.nikfirs.android.traveltracker.core.domain.model.SchengenCountries
-import ru.nikfirs.android.traveltracker.core.ui.R
-import ru.nikfirs.android.traveltracker.core.ui.component.EditAndDeleteRow
-import ru.nikfirs.android.traveltracker.core.ui.component.LightRUScreenPreview
-import ru.nikfirs.android.traveltracker.core.ui.component.StatusChip
-import ru.nikfirs.android.traveltracker.core.ui.component.SwipeableCard
-import ru.nikfirs.android.traveltracker.core.ui.extension.clickableOnce
-import ru.nikfirs.android.traveltracker.core.ui.theme.AppTheme
-import ru.nikfirs.android.traveltracker.core.ui.theme.card
-import ru.nikfirs.android.traveltracker.feature.home.domain.model.TripSegmentUi
+import ru.nikfirs.android.traveltracker.core.ui.ui.component.EditAndDeleteRow
+import ru.nikfirs.android.traveltracker.core.ui.ui.component.LightRUScreenPreview
+import ru.nikfirs.android.traveltracker.core.ui.ui.component.StatusChip
+import ru.nikfirs.android.traveltracker.core.ui.ui.component.SwipeableCard
+import ru.nikfirs.android.traveltracker.core.ui.ui.extension.clickableOnce
+import ru.nikfirs.android.traveltracker.core.ui.ui.theme.AppTheme
+import ru.nikfirs.android.traveltracker.core.ui.ui.theme.card
+import ru.nikfirs.android.traveltracker.feature.home.R
+import ru.nikfirs.android.traveltracker.feature.home.ui.model.TripSegmentUi
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 @Composable
 fun SwipeableTripSegmentCard(
@@ -74,6 +75,7 @@ fun TripSegmentCard(
     onClick: () -> Unit,
     dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy"),
 ) {
+    val locale = Locale.getDefault().language
     Card(
         modifier = Modifier
             .clip(MaterialTheme.shapes.card)
@@ -102,30 +104,39 @@ fun TripSegmentCard(
                                 shape = CircleShape
                             )
                     )
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.weight(1f),
+                    ) {
                         Text(
                             text = if (segment.country == TRANSIT) {
-                                stringResource(R.string.segment_transit_option)
+                                stringResource(R.string.home_trip_segment_transit_option)
                             } else {
-                                SchengenCountries.getCountryByCode(segment.country)?.nameRu
-                                    ?: segment.country
+                                SchengenCountries.getCountryByCode(segment.country)
+                                    ?.getDisplayName(locale) ?: segment.country
                             },
                             style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.primary
+                            color = MaterialTheme.colorScheme.primary,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.weight(1f),
                         )
                         if (segment.isExempt) {
                             Text(
-                                text = " (${stringResource(R.string.exempt_badge).lowercase()})",
+                                text = " (${stringResource(R.string.home_trip_segment_exempt).lowercase()})",
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.weight(1f),
                             )
                         }
                     }
 
-                    Spacer(modifier = Modifier.weight(1f))
-
                     StatusChip(
-                        text = pluralStringResource(R.plurals.days_count, segment.duration.toInt(), segment.duration),
+                        text = pluralStringResource(
+                            R.plurals.days_count,
+                            segment.duration.toInt(),
+                            segment.duration
+                        ),
                         backgroundColor = if (segment.isExempt) {
                             MaterialTheme.colorScheme.surfaceVariant
                         } else {
@@ -186,7 +197,7 @@ private fun TripCardPreview() {
         ) {
             SwipeableTripSegmentCard(
                 segment = TripSegmentUi(
-                    country = "Germany",
+                    country = "DE",
                     startDate = LocalDate.now(),
                     endDate = LocalDate.now().plusDays(3),
                     cities = listOf("Berlin", "Munich"),

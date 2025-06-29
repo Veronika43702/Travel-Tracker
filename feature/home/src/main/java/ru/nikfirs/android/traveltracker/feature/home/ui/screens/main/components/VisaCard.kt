@@ -16,12 +16,13 @@ import androidx.compose.ui.unit.dp
 import ru.nikfirs.android.traveltracker.core.domain.model.Visa
 import ru.nikfirs.android.traveltracker.core.domain.model.VisaEntries
 import ru.nikfirs.android.traveltracker.core.domain.model.VisaCategory
-import ru.nikfirs.android.traveltracker.core.ui.R
-import ru.nikfirs.android.traveltracker.core.ui.component.EditAndDeleteRow
-import ru.nikfirs.android.traveltracker.core.ui.component.StatusChip
-import ru.nikfirs.android.traveltracker.core.ui.component.SwipeableCard
-import ru.nikfirs.android.traveltracker.core.ui.component.TravelCard
-import ru.nikfirs.android.traveltracker.core.ui.theme.*
+import ru.nikfirs.android.traveltracker.core.ui.R as uiR
+import ru.nikfirs.android.traveltracker.core.ui.ui.component.EditAndDeleteRow
+import ru.nikfirs.android.traveltracker.core.ui.ui.component.StatusChip
+import ru.nikfirs.android.traveltracker.core.ui.ui.component.SwipeableCard
+import ru.nikfirs.android.traveltracker.core.ui.ui.component.TravelCard
+import ru.nikfirs.android.traveltracker.core.ui.ui.theme.AppTheme
+import ru.nikfirs.android.traveltracker.feature.home.R
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.HomeContract.Action
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -83,7 +84,7 @@ fun VisaCard(
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    painter = painterResource(R.drawable.ic_badge),
+                    painter = painterResource(uiR.drawable.ic_badge),
                     contentDescription = null,
                     modifier = Modifier.size(24.dp),
                     tint = when {
@@ -104,9 +105,9 @@ fun VisaCard(
                 // Тип визы
                 StatusChip(
                     text = when (visa.visaType) {
-                        VisaCategory.TYPE_C -> stringResource(R.string.visa_type_c_short)
-                        VisaCategory.TYPE_D -> stringResource(R.string.visa_type_d_short)
-                        VisaCategory.RESIDENCE_PERMIT -> stringResource(R.string.visa_type_residence_short)
+                        VisaCategory.TYPE_C -> stringResource(uiR.string.visa_type_c)
+                        VisaCategory.TYPE_D -> stringResource(uiR.string.visa_type_d)
+                        VisaCategory.RESIDENCE_PERMIT -> stringResource(uiR.string.visa_type_residence_permit)
                     },
                     backgroundColor = when (visa.visaType) {
                         VisaCategory.TYPE_C -> MaterialTheme.colorScheme.primaryContainer
@@ -124,9 +125,9 @@ fun VisaCard(
                 if (visa.visaType == VisaCategory.TYPE_C) {
                     StatusChip(
                         text = when (visa.entries) {
-                            VisaEntries.SINGLE -> stringResource(R.string.visa_entries_single)
-                            VisaEntries.DOUBLE -> stringResource(R.string.visa_entries_double)
-                            VisaEntries.MULTI -> stringResource(R.string.visa_entries_multi)
+                            VisaEntries.SINGLE -> stringResource(R.string.home_visa_entries_single)
+                            VisaEntries.DOUBLE -> stringResource(R.string.home_visa_entries_double)
+                            VisaEntries.MULTI -> stringResource(R.string.home_visa_entries_multi)
                         },
                         backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
                         contentColor = MaterialTheme.colorScheme.onSurfaceVariant
@@ -136,7 +137,7 @@ fun VisaCard(
                 // Статус
                 when {
                     visa.validVisa && visa.daysUntilExpiry <= 30 -> StatusChip(
-                        text = stringResource(R.string.visa_expires_in_days, visa.daysUntilExpiry),
+                        text = stringResource(R.string.home_visa_expiry_warning, visa.daysUntilExpiry),
                         backgroundColor = MaterialTheme.colorScheme.tertiary,
                         contentColor = MaterialTheme.colorScheme.onTertiary
                     )
@@ -168,7 +169,7 @@ fun VisaCard(
             // Срок действия
             Text(
                 text = stringResource(
-                    R.string.visa_valid_period,
+                    R.string.home_visa_validity_period,
                     visa.startDate.format(dateFormatter),
                     visa.expiryDate.format(dateFormatter)
                 ),

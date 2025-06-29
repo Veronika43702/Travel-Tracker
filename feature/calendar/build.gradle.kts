@@ -23,7 +23,6 @@ dependencies {
     testImplementation(libs.bundles.tests)
     androidTestImplementation(libs.bundles.androidTest)
 
-    implementation(project(":core:ui"))
-    implementation(project(":core:data"))
     implementation(project(":core:domain"))
+    implementation(project(":core:ui"))
 }

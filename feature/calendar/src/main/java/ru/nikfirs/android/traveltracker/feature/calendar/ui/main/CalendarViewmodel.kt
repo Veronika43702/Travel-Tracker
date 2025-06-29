@@ -1,5 +1,6 @@
 package ru.nikfirs.android.traveltracker.feature.calendar.ui.main
 
+import android.util.Log
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.collectLatest
@@ -8,22 +9,23 @@ import ru.nikfirs.android.traveltracker.core.domain.PERIOD_DAYS
 import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
 import ru.nikfirs.android.traveltracker.core.domain.model.Trip
 import ru.nikfirs.android.traveltracker.core.domain.model.Visa
-import ru.nikfirs.android.traveltracker.core.ui.model.DateType
-import ru.nikfirs.android.traveltracker.core.ui.model.DayCalculation
-import ru.nikfirs.android.traveltracker.core.ui.model.ExistingRange
+import ru.nikfirs.android.traveltracker.core.ui.R as uiR
+import ru.nikfirs.android.traveltracker.core.ui.ui.model.DateType
+import ru.nikfirs.android.traveltracker.core.ui.ui.model.DayCalculation
+import ru.nikfirs.android.traveltracker.core.ui.ui.model.ExistingRange
 import ru.nikfirs.android.traveltracker.core.ui.mvi.ViewModel
 import ru.nikfirs.android.traveltracker.core.ui.mvi.launch
 import ru.nikfirs.android.traveltracker.core.ui.mvi.launchIO
-import ru.nikfirs.android.traveltracker.core.ui.theme.CalendarGray
-import ru.nikfirs.android.traveltracker.core.ui.theme.Primary
-import ru.nikfirs.android.traveltracker.core.ui.theme.SuccessGreen
-import ru.nikfirs.android.traveltracker.core.ui.theme.VisaCalendar
-import ru.nikfirs.android.traveltracker.feature.calendar.domain.model.DateDataModel
-import ru.nikfirs.android.traveltracker.feature.calendar.domain.usecase.CalculateDaysInPeriodUseCase
-import ru.nikfirs.android.traveltracker.feature.calendar.domain.usecase.GetTripByIdUseCase
-import ru.nikfirs.android.traveltracker.feature.calendar.domain.usecase.GetTripsFlowByDatesUseCase
-import ru.nikfirs.android.traveltracker.feature.calendar.domain.usecase.GetVisaByIdUseCase
-import ru.nikfirs.android.traveltracker.feature.calendar.domain.usecase.GetVisaFlowByDateUseCase
+import ru.nikfirs.android.traveltracker.core.ui.ui.theme.CalendarGray
+import ru.nikfirs.android.traveltracker.core.ui.ui.theme.Primary
+import ru.nikfirs.android.traveltracker.core.ui.ui.theme.SuccessGreen
+import ru.nikfirs.android.traveltracker.core.ui.ui.theme.VisaCalendar
+import ru.nikfirs.android.traveltracker.feature.calendar.ui.model.DateDataModel
+import ru.nikfirs.android.traveltracker.core.ui.domain.usecase.CalculateDaysInPeriodUseCase
+import ru.nikfirs.android.traveltracker.core.ui.domain.usecase.trip.GetTripByIdUseCase
+import ru.nikfirs.android.traveltracker.core.ui.domain.usecase.trip.GetTripsFlowByDatesUseCase
+import ru.nikfirs.android.traveltracker.core.ui.domain.usecase.visa.GetVisaByIdUseCase
+import ru.nikfirs.android.traveltracker.core.ui.domain.usecase.visa.GetVisaFlowByDateUseCase
 import ru.nikfirs.android.traveltracker.feature.calendar.ui.main.CalendarContract.Action
 import ru.nikfirs.android.traveltracker.feature.calendar.ui.main.CalendarContract.Effect
 import ru.nikfirs.android.traveltracker.feature.calendar.ui.main.CalendarContract.Filters
@@ -74,7 +76,7 @@ class CalendarViewmodel @Inject constructor(
                 }.collectLatest { (trips, visas) ->
                     val dateRange = calculateAvailableDateRange(
                         trips = trips,
-                        visaExpiryDate = visas.maxOf { it.expiryDate }
+                        visaExpiryDate = visas.maxOfOrNull { it.expiryDate }
                     )
                     val tripRanges = createTripRanges(trips)
                     val visaRanges = createVisaRanges(visas)
@@ -91,7 +93,8 @@ class CalendarViewmodel @Inject constructor(
                     }
                 }
             } catch (e: Exception) {
-                setError(CustomString.text(e.message ?: "Unknown error"))
+                setError(CustomString.Resource(uiR.string.error_loading_data))
+                Log.e(null, "loadData", e)
             }
         }
     }
@@ -104,7 +107,7 @@ class CalendarViewmodel @Inject constructor(
      */
     private fun calculateAvailableDateRange(
         trips: List<Trip>,
-        visaExpiryDate: LocalDate,
+        visaExpiryDate: LocalDate?,
     ): ClosedRange<LocalDate> {
         val today = LocalDate.now()
         val defaultStartDate = today.minusDays(PERIOD_DAYS.toLong())
@@ -123,7 +126,8 @@ class CalendarViewmodel @Inject constructor(
             .filter { it.isFuture && it.endDate != null }
             .maxByOrNull { it.endDate ?: defaultEndDate }
 
-        val endDate = maxOf(latestFutureTrip?.endDate ?: defaultEndDate, visaExpiryDate)
+        val endDate =
+            maxOf(latestFutureTrip?.endDate ?: defaultEndDate, visaExpiryDate ?: defaultEndDate)
 
         return startDate.withDayOfMonth(1)..endDate.withDayOfMonth(endDate.lengthOfMonth())
     }
