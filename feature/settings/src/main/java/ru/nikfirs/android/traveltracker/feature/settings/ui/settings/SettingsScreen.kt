@@ -34,6 +34,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import ru.nikfirs.android.traveltracker.core.domain.model.AppDateFormatModel
 import ru.nikfirs.android.traveltracker.core.domain.model.AppThemeModel
 import ru.nikfirs.android.traveltracker.core.ui.navigation.BottomNavBarRoute
 import ru.nikfirs.android.traveltracker.core.ui.ui.component.DarkENScreenPreview
@@ -45,10 +46,12 @@ import ru.nikfirs.android.traveltracker.core.ui.ui.extension.getLanguage
 import ru.nikfirs.android.traveltracker.core.ui.ui.model.IconType
 import ru.nikfirs.android.traveltracker.core.ui.ui.theme.AppTheme
 import ru.nikfirs.android.traveltracker.feature.settings.R
+import ru.nikfirs.android.traveltracker.feature.settings.ui.components.DateFormatSelectionDialog
 import ru.nikfirs.android.traveltracker.feature.settings.ui.components.LanguageSelectionDialog
 import ru.nikfirs.android.traveltracker.feature.settings.ui.components.ThemeSelectionDialog
 import ru.nikfirs.android.traveltracker.feature.settings.ui.settings.SettingsContract.Action
 import ru.nikfirs.android.traveltracker.feature.settings.ui.settings.SettingsContract.State
+import java.time.LocalDate
 
 @Composable
 fun SettingsScreen(
@@ -136,10 +139,8 @@ fun SettingsContent(
                     SettingsItem(
                         icon = IconType.DrawableRes(R.drawable.ic_schedule),
                         title = stringResource(R.string.settings_date_format_title),
-                        currentValue = getCurrentDateFormatText(),
-                        onClick = {
-                            // TODO: Открыть диалог выбора формата даты
-                        }
+                        currentValue = getCurrentDateFormatDisplay(state.selectedDateFormatInDialog),
+                        onClick = { onAction(Action.ShowDateFormatDialog()) }
                     )
                 }
             )
@@ -177,6 +178,15 @@ fun SettingsContent(
             onThemeSelected = { theme -> onAction(Action.SelectThemeInDialog(theme)) },
             onApply = { onAction(Action.ShowThemeDialog(false)) },
             onDismiss = { onAction(Action.ShowThemeDialog(false)) }
+        )
+    }
+
+    if (state.showDateFormatDialog) {
+        DateFormatSelectionDialog(
+            selectedDateFormat = state.selectedDateFormatInDialog,
+            onDateFormatSelected = { format -> onAction(Action.SelectDateFormatInDialog(format)) },
+            onApply = { onAction(Action.ShowDateFormatDialog(false)) },
+            onDismiss = { onAction(Action.ShowDateFormatDialog(false)) }
         )
     }
 }
@@ -309,9 +319,17 @@ private fun getCurrentThemeText(theme: AppThemeModel): String {
 }
 
 @Composable
-private fun getCurrentDateFormatText(): String {
-    // TODO: Получить реальный формат даты из настроек
-    return stringResource(R.string.settings_date_format_dd_mm_yyyy) // Заглушка
+private fun getCurrentDateFormatDisplay(format: AppDateFormatModel): String {
+    val currentDate = LocalDate.now()
+    val formatName = when (format) {
+        AppDateFormatModel.DD_MM_YYYY_DOTS -> stringResource(R.string.settings_date_format_dd_mm_yyyy_dots)
+        AppDateFormatModel.DD_MM_YYYY_SLASHES -> stringResource(R.string.settings_date_format_dd_mm_yyyy_slashes)
+        AppDateFormatModel.MM_DD_YYYY -> stringResource(R.string.settings_date_format_mm_dd_yyyy)
+        AppDateFormatModel.YYYY_MM_DD -> stringResource(R.string.settings_date_format_yyyy_mm_dd)
+        AppDateFormatModel.DD_MMM_YYYY -> stringResource(R.string.settings_date_format_dd_mmm_yyyy)
+    }
+    val example = currentDate.format(format.getFormatter())
+    return "$formatName ($example)"
 }
 
 private fun openSystemLanguageSettings(context: android.content.Context) {

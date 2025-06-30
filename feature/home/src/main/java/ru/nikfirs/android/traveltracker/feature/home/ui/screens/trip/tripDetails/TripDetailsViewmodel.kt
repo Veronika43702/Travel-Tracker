@@ -2,7 +2,9 @@ package ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.tripDetail
 
 import android.util.Log
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.collectLatest
 import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
+import ru.nikfirs.android.traveltracker.core.ui.domain.usecase.dataStore.GetDateFormatUseCase
 import ru.nikfirs.android.traveltracker.core.ui.mvi.ViewModel
 import ru.nikfirs.android.traveltracker.core.ui.mvi.launch
 import ru.nikfirs.android.traveltracker.feature.home.R
@@ -10,6 +12,7 @@ import ru.nikfirs.android.traveltracker.feature.home.ui.model.TripSegmentUi
 import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.trip.DeleteTripUseCase
 import ru.nikfirs.android.traveltracker.core.ui.domain.usecase.trip.GetTripByIdUseCase
 import ru.nikfirs.android.traveltracker.core.ui.domain.usecase.visa.GetVisaByIdUseCase
+import ru.nikfirs.android.traveltracker.core.ui.mvi.launchIO
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.tripDetails.TripDetailsContract.Action
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.tripDetails.TripDetailsContract.Effect
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.tripDetails.TripDetailsContract.State
@@ -22,6 +25,7 @@ class TripDetailsViewModel @Inject constructor(
     private val getTripByIdUseCase: GetTripByIdUseCase,
     private val getVisaByIdUseCase: GetVisaByIdUseCase,
     private val deleteTripUseCase: DeleteTripUseCase,
+    private val getDateFormatUseCase: GetDateFormatUseCase,
 ) : ViewModel<Action, Effect, State>() {
 
     override fun createInitialState(): State = State()
@@ -38,13 +42,23 @@ class TripDetailsViewModel @Inject constructor(
     }
 
     private fun loadTrip(tripId: Long) {
-        launch {
-            setState { it.copy(isLoading = true) }
+        setState { it.copy(isLoading = true) }
+        launchIO {
+            try {
+                getDateFormatUseCase.invoke().collectLatest { dateFormat ->
+                    setState { it.copy(dateFormatter = dateFormat.getFormatter()) }
+                }
+            } catch (exception: Exception) {
+                Log.e("TripDetailsViewModel", "loadTrip, date format", exception)
+            }
+        }
+
+        launchIO {
             try {
                 val trip = getTripByIdUseCase.invoke(tripId)
                 if (trip == null) {
                     setError(CustomString.resource(R.string.home_error_trip_not_found))
-                    return@launch
+                    return@launchIO
                 }
 
                 val visa = trip.visaId?.let { getVisaByIdUseCase.invoke(it) }

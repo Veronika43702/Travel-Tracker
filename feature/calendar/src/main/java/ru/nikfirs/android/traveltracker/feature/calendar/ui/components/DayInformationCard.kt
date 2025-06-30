@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import ru.nikfirs.android.traveltracker.core.data.model.TRANSIT
+import ru.nikfirs.android.traveltracker.core.domain.model.AppDateFormatModel
 import ru.nikfirs.android.traveltracker.core.domain.model.SchengenCountries
 import ru.nikfirs.android.traveltracker.core.domain.model.Trip
 import ru.nikfirs.android.traveltracker.core.domain.model.TripPurpose
@@ -60,7 +61,7 @@ fun DayInformationCard(
     onTripClick: () -> Unit,
     onVisaClick: () -> Unit,
     modifier: Modifier = Modifier,
-    formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yy"),
+    dateFormatter: DateTimeFormatter,
 ) {
     val locale = Locale.getDefault().language
     Dialog(
@@ -102,7 +103,7 @@ fun DayInformationCard(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = date.format(formatter),
+                            text = date.format(dateFormatter),
                             style = MaterialTheme.typography.bodyLarge,
                             fontWeight = FontWeight.Medium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -204,9 +205,9 @@ fun DayInformationCard(
                                             trip.endDate?.let { endDate ->
                                                 Text(
                                                     text =
-                                                    startDate.format(formatter)
+                                                    startDate.format(dateFormatter)
                                                             + " — " +
-                                                            endDate.format(formatter),
+                                                            endDate.format(dateFormatter),
                                                     style = MaterialTheme.typography.bodyMedium,
                                                     color = MaterialTheme.colorScheme.onSurface
                                                 )
@@ -248,8 +249,8 @@ fun DayInformationCard(
 
                                         Text(
                                             text =
-                                            visa.startDate.format(formatter) + " — " +
-                                                    visa.expiryDate.format(formatter),
+                                            visa.startDate.format(dateFormatter) + " — " +
+                                                    visa.expiryDate.format(dateFormatter),
                                             style = MaterialTheme.typography.bodyMedium,
                                             color = MaterialTheme.colorScheme.onSurface
                                         )
@@ -328,6 +329,7 @@ private fun DayInformationCardPreview() {
             onClose = {},
             onTripClick = {},
             onVisaClick = {},
+            dateFormatter = AppDateFormatModel.getDefault().getFormatter()
         )
     }
 }

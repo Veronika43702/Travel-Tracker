@@ -281,6 +281,7 @@ private fun VisasTabContent(
         ) { visa ->
             SwipeableVisaCard(
                 visa = visa,
+                dateFormatter = state.dateFormatter,
                 onAction = onAction,
             )
         }
@@ -329,6 +330,7 @@ private fun TripsTabContent(
                     isExempt = trip.hasExemptSegment,
                     countableDuration = trip.countableDays,
                     onAction = onAction,
+                    dateFormatter = state.dateFormatter,
                 )
             }
         }
@@ -354,6 +356,7 @@ private fun TripsTabContent(
                     isExempt = trip.hasExemptSegment,
                     countableDuration = trip.countableDays,
                     onAction = onAction,
+                    dateFormatter = state.dateFormatter,
                 )
             }
         }
@@ -379,6 +382,7 @@ private fun TripsTabContent(
                     isExempt = trip.hasExemptSegment,
                     countableDuration = trip.countableDays,
                     onAction = onAction,
+                    dateFormatter = state.dateFormatter,
                 )
             }
         }

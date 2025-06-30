@@ -14,7 +14,8 @@
 
     <string name="settings_date_format_title">Формат даты</string>
     <string name="settings_date_format_description">Выберите формат отображения дат</string>
-    <string name="settings_date_format_dd_mm_yyyy">дд.мм.гггг</string>
+    <string name="settings_date_format_dd_mm_yyyy_dots">дд.мм.гггг</string>
+    <string name="settings_date_format_dd_mm_yyyy_slashes">дд/мм/гггг</string>
     <string name="settings_date_format_mm_dd_yyyy">мм/дд/гггг</string>
     <string name="settings_date_format_yyyy_mm_dd">гггг-мм-дд</string>
     <string name="settings_date_format_dd_mmm_yyyy">дд ммм гггг</string>

@@ -8,9 +8,11 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import ru.nikfirs.android.traveltracker.core.data.model.DATE_FORMAT
 import ru.nikfirs.android.traveltracker.core.data.model.LANGUAGE
 import ru.nikfirs.android.traveltracker.core.data.model.SETTINGS
 import ru.nikfirs.android.traveltracker.core.data.model.THEME
+import ru.nikfirs.android.traveltracker.core.domain.model.AppDateFormatModel
 import ru.nikfirs.android.traveltracker.core.domain.model.AppThemeModel
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -52,6 +54,24 @@ class DatastoreHelper @Inject constructor(val context: Context) {
     suspend fun setTheme(theme: AppThemeModel) {
         context.dataStore.edit { settings ->
             settings[themeKey] = theme.name
+        }
+    }
+
+    /**
+    * returns app date format from dataStore
+    */
+    private val dateFormatKey = stringPreferencesKey(DATE_FORMAT)
+    val dateFormatFlow: Flow<AppDateFormatModel> = context.dataStore.data
+        .map { preferences ->
+            AppDateFormatModel.fromString(preferences[dateFormatKey])
+        }
+
+    /**
+     * saves app date format settings in dataStore
+     */
+    suspend fun setDateFormat(dateFormat: AppDateFormatModel) {
+        context.dataStore.edit { settings ->
+            settings[dateFormatKey] = dateFormat.name
         }
     }
 }

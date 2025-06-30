@@ -1,5 +1,6 @@
 package ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.tripDetails
 
+import ru.nikfirs.android.traveltracker.core.domain.model.AppDateFormatModel
 import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
 import ru.nikfirs.android.traveltracker.core.domain.model.Trip
 import ru.nikfirs.android.traveltracker.core.domain.model.Visa
@@ -17,7 +18,7 @@ sealed class TripDetailsContract {
         val segmentsForView: List<TripSegmentUi> = emptyList(),
         val expandSegments: Boolean = false,
         val error: CustomString? = null,
-        val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy"),
+        val dateFormatter: DateTimeFormatter = AppDateFormatModel.getDefault().getFormatter(),
         val dialogText: CustomString? = null,
     ) : MviState
 

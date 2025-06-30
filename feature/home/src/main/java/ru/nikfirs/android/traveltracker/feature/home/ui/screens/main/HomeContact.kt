@@ -1,5 +1,6 @@
 package ru.nikfirs.android.traveltracker.feature.home.ui.screens.main
 
+import ru.nikfirs.android.traveltracker.core.domain.model.AppDateFormatModel
 import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
 import ru.nikfirs.android.traveltracker.core.domain.model.DaysCalculation
 import ru.nikfirs.android.traveltracker.core.domain.model.Trip
@@ -10,6 +11,7 @@ import ru.nikfirs.android.traveltracker.core.ui.mvi.MviState
 import ru.nikfirs.android.traveltracker.feature.home.ui.model.HomeItem
 import ru.nikfirs.android.traveltracker.feature.home.ui.model.HomeTab
 import ru.nikfirs.android.traveltracker.feature.home.ui.utils.HomeActionModel
+import java.time.format.DateTimeFormatter
 
 sealed class HomeContract {
     data class State(
@@ -21,6 +23,7 @@ sealed class HomeContract {
         val error: CustomString? = null,
         val dialogText: CustomString? = null,
         val action: HomeActionModel? = null,
+        val dateFormatter: DateTimeFormatter = AppDateFormatModel.getDefault().getFormatter(),
     ) : MviState {
 
         val activeVisas: List<Visa>

@@ -2,6 +2,7 @@ package ru.nikfirs.android.traveltracker.feature.settings.data
 
 import kotlinx.coroutines.flow.Flow
 import ru.nikfirs.android.traveltracker.core.data.datastore.DatastoreHelper
+import ru.nikfirs.android.traveltracker.core.domain.model.AppDateFormatModel
 import ru.nikfirs.android.traveltracker.core.domain.model.AppThemeModel
 import ru.nikfirs.android.traveltracker.feature.settings.domain.Repository
 import javax.inject.Inject
@@ -23,5 +24,9 @@ class RepositoryImpl @Inject constructor(
 
     override fun getTheme(): Flow<AppThemeModel> {
         return datastoreHelper.themeFlow
+    }
+
+    override suspend fun setDateFormat(dateFormat: AppDateFormatModel) {
+        datastoreHelper.setDateFormat(dateFormat)
     }
 }

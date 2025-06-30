@@ -4,13 +4,17 @@ import android.os.Build
 import android.util.Log
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import ru.nikfirs.android.traveltracker.core.domain.model.AppDateFormatModel
 import ru.nikfirs.android.traveltracker.core.domain.model.AppThemeModel
 import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
 import ru.nikfirs.android.traveltracker.core.ui.R as uiR
 import ru.nikfirs.android.traveltracker.core.ui.mvi.ViewModel
 import ru.nikfirs.android.traveltracker.core.ui.mvi.launchIO
+import ru.nikfirs.android.traveltracker.core.ui.domain.usecase.dataStore.GetDateFormatUseCase
 import ru.nikfirs.android.traveltracker.feature.settings.domain.usecase.GetLanguageUseCase
 import ru.nikfirs.android.traveltracker.feature.settings.domain.usecase.GetThemeUseCase
+import ru.nikfirs.android.traveltracker.feature.settings.domain.usecase.SaveDateFormatUseCase
 import ru.nikfirs.android.traveltracker.feature.settings.domain.usecase.SaveLanguageUseCase
 import ru.nikfirs.android.traveltracker.feature.settings.domain.usecase.SaveThemeUseCase
 import ru.nikfirs.android.traveltracker.feature.settings.ui.settings.SettingsContract.Action
@@ -24,6 +28,8 @@ class SettingsViewmodel @Inject constructor(
     private val saveLanguageUseCase: SaveLanguageUseCase,
     private val getThemeUseCase: GetThemeUseCase,
     private val saveThemeUseCase: SaveThemeUseCase,
+    private val getDateFormatUseCase: GetDateFormatUseCase,
+    private val saveDateFormatUseCase: SaveDateFormatUseCase,
 ) : ViewModel<Action, Effect, State>() {
     override fun createInitialState(): State = State()
 
@@ -40,6 +46,10 @@ class SettingsViewmodel @Inject constructor(
             // Theme actions
             is Action.ShowThemeDialog -> showThemeDialog(action.value)
             is Action.SelectThemeInDialog -> selectThemeInDialog(action.theme)
+
+            // Date format actions
+            is Action.ShowDateFormatDialog -> showDateFormatDialog(action.value)
+            is Action.SelectDateFormatInDialog -> selectDateFormatInDialog(action.format)
         }
     }
 
@@ -47,22 +57,40 @@ class SettingsViewmodel @Inject constructor(
         launchIO {
             try {
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-                    getLanguageUseCase.invoke().collectLatest { data ->
+                    combine(
+                        getLanguageUseCase.invoke(),
+                        getThemeUseCase.invoke(),
+                        getDateFormatUseCase.invoke()
+                    ) { language, theme, dateFormat ->
+                        Triple(language, theme, dateFormat)
+                    }.collectLatest { (language, theme, dateFormat) ->
                         setState {
                             it.copy(
-                                language = data,
-                                selectedLanguageInDialog = data
+                                language = language,
+                                selectedLanguageInDialog = language,
+                                selectedThemeInDialog = theme,
+                                selectedDateFormatInDialog = dateFormat
+                            )
+                        }
+                    }
+                } else {
+                    combine(
+                        getThemeUseCase.invoke(),
+                        getDateFormatUseCase.invoke()
+                    ) { theme, dateFormat ->
+                        Pair(theme, dateFormat)
+                    }.collectLatest { (theme, dateFormat) ->
+                        setState {
+                            it.copy(
+                                selectedThemeInDialog = theme,
+                                selectedDateFormatInDialog = dateFormat
                             )
                         }
                     }
                 }
-
-                getThemeUseCase.invoke().collectLatest { theme ->
-                    setState { it.copy(selectedThemeInDialog = theme) }
-                }
             } catch (e: Exception) {
-                setError(CustomString.resource(uiR.string.error_loading_data))
-                Log.e(null, "loadData", e)
+                Log.e("SettingsViewmodel", "loadData", e)
+                setError(CustomString.Resource(uiR.string.error_loading_data))
             }
         }
     }
@@ -100,7 +128,22 @@ class SettingsViewmodel @Inject constructor(
                 saveThemeUseCase.invoke(theme)
             } catch (e: Exception) {
                 setError(CustomString.resource(uiR.string.error_updating_data))
-                Log.e(null, "applySelectedTheme", e)
+                Log.e(null, "selectThemeInDialog", e)
+            }
+        }
+    }
+
+    private fun showDateFormatDialog(show: Boolean) {
+        setState { it.copy(showDateFormatDialog = show) }
+    }
+
+    private fun selectDateFormatInDialog(format: AppDateFormatModel) {
+        launchIO {
+            try {
+                saveDateFormatUseCase.invoke(format)
+            } catch (e: Exception) {
+                Log.e(null, "selectDateFormatInDialog", e)
+                setError(CustomString.Resource(uiR.string.error_updating_data))
             }
         }
     }

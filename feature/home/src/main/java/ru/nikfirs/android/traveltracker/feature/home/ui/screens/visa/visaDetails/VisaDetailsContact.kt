@@ -1,5 +1,6 @@
 package ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.visaDetails
 
+import ru.nikfirs.android.traveltracker.core.domain.model.AppDateFormatModel
 import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
 import ru.nikfirs.android.traveltracker.core.domain.model.Visa
 import ru.nikfirs.android.traveltracker.core.ui.mvi.MviAction
@@ -14,7 +15,7 @@ sealed class VisaDetailsContract {
         val visa: Visa? = null,
         val daysLeft: Int? = null,
         val error: CustomString? = null,
-        val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy"),
+        val dateFormatter: DateTimeFormatter = AppDateFormatModel.getDefault().getFormatter(),
         val dialogText: CustomString? = null,
         val action: VisaAction? = null,
     ) : MviState

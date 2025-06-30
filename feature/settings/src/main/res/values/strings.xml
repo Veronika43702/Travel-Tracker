@@ -16,7 +16,8 @@
 
     <string name="settings_date_format_title">Date Format</string>
     <string name="settings_date_format_description">Choose date display format</string>
-    <string name="settings_date_format_dd_mm_yyyy">dd.mm.yyyy</string>
+    <string name="settings_date_format_dd_mm_yyyy_dots">dd.mm.yyyy</string>
+    <string name="settings_date_format_dd_mm_yyyy_slashes">dd/mm/yyyy</string>
     <string name="settings_date_format_mm_dd_yyyy">mm/dd/yyyy</string>
     <string name="settings_date_format_yyyy_mm_dd">yyyy-mm-dd</string>
     <string name="settings_date_format_dd_mmm_yyyy">dd mmm yyyy</string>

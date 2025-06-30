@@ -1,11 +1,15 @@
 package ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTripSegment
 
+import android.util.Log
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.collectLatest
 import ru.nikfirs.android.traveltracker.core.data.model.TRANSIT
 import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
 import ru.nikfirs.android.traveltracker.core.domain.model.SchengenCountries
+import ru.nikfirs.android.traveltracker.core.ui.domain.usecase.dataStore.GetDateFormatUseCase
 import ru.nikfirs.android.traveltracker.core.ui.ui.model.DateRangeSelection
 import ru.nikfirs.android.traveltracker.core.ui.mvi.ViewModel
+import ru.nikfirs.android.traveltracker.core.ui.mvi.launchIO
 import ru.nikfirs.android.traveltracker.feature.home.R
 import ru.nikfirs.android.traveltracker.feature.home.ui.model.TripSegmentUi
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTripSegment.AddTripSegmentContract.Action
@@ -18,7 +22,8 @@ import ru.nikfirs.android.traveltracker.core.ui.R as uiR
 
 @HiltViewModel
 class AddTripSegmentViewModel @Inject constructor(
-    val addTripHolder: AddTripHolder
+    val addTripHolder: AddTripHolder,
+    private val getDateFormatUseCase: GetDateFormatUseCase,
 ) : ViewModel<Action, Effect, State>() {
 
     init {
@@ -52,6 +57,16 @@ class AddTripSegmentViewModel @Inject constructor(
      * Loads data concerning segment and trip and saves to State().
      */
     private fun loadData() {
+        launchIO {
+            try {
+                getDateFormatUseCase.invoke().collectLatest { dateFormat ->
+                    setState { it.copy(dateFormatter = dateFormat.getFormatter()) }
+                }
+            } catch (exception: Exception) {
+                Log.e("AddTripSegmentViewModel", "loadTrip, date format", exception)
+            }
+        }
+
         if (!addTripHolder.hasTripData()) {
             setError(CustomString.resource(uiR.string.error_loading_data))
             return

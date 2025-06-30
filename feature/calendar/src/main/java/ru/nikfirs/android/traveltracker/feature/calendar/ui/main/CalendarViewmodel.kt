@@ -22,6 +22,7 @@ import ru.nikfirs.android.traveltracker.core.ui.ui.theme.SuccessGreen
 import ru.nikfirs.android.traveltracker.core.ui.ui.theme.VisaCalendar
 import ru.nikfirs.android.traveltracker.feature.calendar.ui.model.DateDataModel
 import ru.nikfirs.android.traveltracker.core.ui.domain.usecase.CalculateDaysInPeriodUseCase
+import ru.nikfirs.android.traveltracker.core.ui.domain.usecase.dataStore.GetDateFormatUseCase
 import ru.nikfirs.android.traveltracker.core.ui.domain.usecase.trip.GetTripByIdUseCase
 import ru.nikfirs.android.traveltracker.core.ui.domain.usecase.trip.GetTripsFlowByDatesUseCase
 import ru.nikfirs.android.traveltracker.core.ui.domain.usecase.visa.GetVisaByIdUseCase
@@ -40,6 +41,7 @@ class CalendarViewmodel @Inject constructor(
     private val calculateDaysInPeriodUseCase: CalculateDaysInPeriodUseCase,
     private val getTripByIdUseCase: GetTripByIdUseCase,
     private val getVisaByIdUseCase: GetVisaByIdUseCase,
+    private val getDateFormatUseCase: GetDateFormatUseCase,
 ) : ViewModel<Action, Effect, State>() {
 
     init {
@@ -63,6 +65,18 @@ class CalendarViewmodel @Inject constructor(
 
     private fun loadData() {
         setState { it.copy(isLoading = true, error = null) }
+
+        launchIO {
+            launchIO {
+                try {
+                    getDateFormatUseCase.invoke().collectLatest { dateFormat ->
+                        setState { it.copy(dateFormatter = dateFormat.getFormatter()) }
+                    }
+                } catch (e: Exception) {
+                    Log.e("CalendarViewmodel", "loadData, date format", e)
+                }
+            }
+        }
 
         launch {
             try {

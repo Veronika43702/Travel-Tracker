@@ -79,6 +79,7 @@ internal fun VisaInfoBox(
     updateEntries: (VisaEntries) -> Unit,
     updateNotes: (String) -> Unit,
     focusManager: FocusManager,
+    dateFormatter: DateTimeFormatter,
 ) {
     val locale = Locale.getDefault().language
     // Visa Number Field
@@ -121,6 +122,7 @@ internal fun VisaInfoBox(
         isError = startDateError != null,
         errorText = startDateError?.asString(),
         clearFocus = { focusManager.clearFocus() },
+        dateFormatter = dateFormatter,
     )
 
     // Expiry Date
@@ -131,6 +133,7 @@ internal fun VisaInfoBox(
         isError = expiryDateError != null,
         errorText = expiryDateError?.asString(),
         clearFocus = { focusManager.clearFocus() },
+        dateFormatter = dateFormatter,
     )
 
     // Duration of Stay
@@ -263,9 +266,9 @@ private fun DatePickerField(
     isError: Boolean = false,
     errorText: String? = null,
     clearFocus: () -> Unit,
+    dateFormatter: DateTimeFormatter,
 ) {
     var showDatePicker by remember { mutableStateOf(false) }
-    val dateFormatter = remember { DateTimeFormatter.ofPattern("dd.MM.yyyy") }
 
     Box {
 

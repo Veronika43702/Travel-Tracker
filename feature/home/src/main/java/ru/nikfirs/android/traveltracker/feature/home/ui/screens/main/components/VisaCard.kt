@@ -13,6 +13,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import ru.nikfirs.android.traveltracker.core.domain.model.AppDateFormatModel
 import ru.nikfirs.android.traveltracker.core.domain.model.Visa
 import ru.nikfirs.android.traveltracker.core.domain.model.VisaEntries
 import ru.nikfirs.android.traveltracker.core.domain.model.VisaCategory
@@ -30,12 +31,14 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun SwipeableVisaCard(
     visa: Visa,
+    dateFormatter: DateTimeFormatter,
     onAction: (Action) -> Unit,
 ) {
     SwipeableCard(
         primaryContent = { onPrimaryClick ->
             VisaCard(
                 visa = visa,
+                dateFormatter = dateFormatter,
                 onClick = {
                     onPrimaryClick?.let { it() }
                         ?: onAction(Action.NavigateToVisaDetails(visa.id))
@@ -59,11 +62,10 @@ fun SwipeableVisaCard(
 @Composable
 fun VisaCard(
     visa: Visa,
+    dateFormatter: DateTimeFormatter,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
-
     TravelCard(
         modifier = modifier,
         onClick = onClick,
@@ -202,7 +204,8 @@ private fun VisaCardPreview() {
                     entries = VisaEntries.MULTI,
                     durationOfStay = 1,
                 ),
-                onClick = {}
+                onClick = {},
+                dateFormatter = AppDateFormatModel.getDefault().getFormatter(),
             )
 
             VisaCard(
@@ -216,7 +219,8 @@ private fun VisaCardPreview() {
                     entries = VisaEntries.MULTI,
                     durationOfStay = 1,
                 ),
-                onClick = {}
+                onClick = {},
+                dateFormatter = AppDateFormatModel.getDefault().getFormatter(),
             )
 
             VisaCard(
@@ -230,7 +234,8 @@ private fun VisaCardPreview() {
                     entries = VisaEntries.MULTI,
                     durationOfStay = 1,
                 ),
-                onClick = {}
+                onClick = {},
+                dateFormatter = AppDateFormatModel.getDefault().getFormatter(),
             )
 
             VisaCard(
@@ -243,7 +248,8 @@ private fun VisaCardPreview() {
                     entries = VisaEntries.SINGLE,
                     durationOfStay = 1,
                 ),
-                onClick = {}
+                onClick = {},
+                dateFormatter = AppDateFormatModel.getDefault().getFormatter(),
             )
 
             VisaCard(
@@ -257,7 +263,8 @@ private fun VisaCardPreview() {
                     durationOfStay = 1,
                     isActive = false,
                 ),
-                onClick = {}
+                onClick = {},
+                dateFormatter = AppDateFormatModel.getDefault().getFormatter(),
             )
         }
     }

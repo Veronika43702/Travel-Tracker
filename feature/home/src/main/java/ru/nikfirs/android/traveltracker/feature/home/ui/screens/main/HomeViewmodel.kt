@@ -9,8 +9,10 @@ import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
 import ru.nikfirs.android.traveltracker.core.domain.model.Trip
 import ru.nikfirs.android.traveltracker.core.domain.model.Visa
 import ru.nikfirs.android.traveltracker.core.ui.domain.usecase.CalculateDaysInPeriodUseCase
+import ru.nikfirs.android.traveltracker.core.ui.domain.usecase.dataStore.GetDateFormatUseCase
 import ru.nikfirs.android.traveltracker.core.ui.mvi.ViewModel
 import ru.nikfirs.android.traveltracker.core.ui.mvi.launch
+import ru.nikfirs.android.traveltracker.core.ui.mvi.launchIO
 import ru.nikfirs.android.traveltracker.feature.home.R
 import ru.nikfirs.android.traveltracker.feature.home.ui.model.HomeTab
 import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.trip.DeleteTripUseCase
@@ -31,6 +33,7 @@ class HomeViewModel @Inject constructor(
     private val calculateDaysInPeriodUseCase: CalculateDaysInPeriodUseCase,
     private val deleteTripUseCase: DeleteTripUseCase,
     private val deleteVisaUseCase: DeleteVisaUseCase,
+    private val getDateFormatUseCase: GetDateFormatUseCase,
 ) : ViewModel<Action, Effect, State>() {
 
     init {
@@ -61,9 +64,19 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun loadData() {
-        launch {
-            setState { it.copy(isLoading = true, error = null) }
+        setState { it.copy(isLoading = true, error = null) }
 
+        launchIO {
+            try {
+                getDateFormatUseCase.invoke().collectLatest { dateFormat ->
+                    setState { it.copy(dateFormatter = dateFormat.getFormatter()) }
+                }
+            } catch (e: Exception) {
+                Log.e("HomeViewModel", "loadData, date format", e)
+            }
+        }
+
+        launchIO {
             try {
                 getHomeDataUseCase(LocalDate.now().minusDays(PERIOD_DAYS.toLong()))
                     .catch { exception ->

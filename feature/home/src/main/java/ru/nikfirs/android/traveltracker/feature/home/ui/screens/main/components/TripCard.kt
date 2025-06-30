@@ -24,6 +24,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ru.nikfirs.android.traveltracker.core.data.model.TRANSIT
+import ru.nikfirs.android.traveltracker.core.domain.model.AppDateFormatModel
 import ru.nikfirs.android.traveltracker.core.domain.model.SchengenCountries
 import ru.nikfirs.android.traveltracker.core.domain.model.Trip
 import ru.nikfirs.android.traveltracker.core.domain.model.TripPurpose
@@ -45,6 +46,7 @@ fun SwipeableTripCard(
     trip: Trip,
     isExempt: Boolean,
     countableDuration: Int,
+    dateFormatter: DateTimeFormatter,
     onAction: (Action) -> Unit,
 ) {
     SwipeableCard(
@@ -53,6 +55,7 @@ fun SwipeableTripCard(
                 trip = trip,
                 isExempt = isExempt,
                 countableDuration = countableDuration,
+                dateFormatter = dateFormatter,
                 onClick = {
                     onPrimaryClick?.let { it() }
                         ?: onAction(Action.NavigateToTripDetails(trip.id))
@@ -80,10 +83,9 @@ fun TripCard(
     isExempt: Boolean,
     countableDuration: Int,
     onClick: () -> Unit,
+    dateFormatter: DateTimeFormatter,
     modifier: Modifier = Modifier
 ) {
-    val dateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
-
     TravelCard(
         modifier = modifier,
         onClick = onClick,
@@ -270,7 +272,8 @@ private fun TripCardPreview() {
                 ),
                 isExempt = true,
                 countableDuration = 0,
-                onClick = {}
+                onClick = {},
+                dateFormatter = AppDateFormatModel.getDefault().getFormatter(),
             )
 
             TripCard(
@@ -305,7 +308,8 @@ private fun TripCardPreview() {
                 ),
                 isExempt = true,
                 countableDuration = 3,
-                onClick = {}
+                onClick = {},
+                dateFormatter = AppDateFormatModel.getDefault().getFormatter(),
             )
         }
     }
