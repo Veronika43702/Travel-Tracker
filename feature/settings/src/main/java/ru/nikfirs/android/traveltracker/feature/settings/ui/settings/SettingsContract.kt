@@ -1,5 +1,6 @@
 package ru.nikfirs.android.traveltracker.feature.settings.ui.settings
 
+import ru.nikfirs.android.traveltracker.core.domain.model.AppThemeModel
 import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
 import ru.nikfirs.android.traveltracker.core.ui.mvi.MviAction
 import ru.nikfirs.android.traveltracker.core.ui.mvi.MviEffect
@@ -7,11 +8,12 @@ import ru.nikfirs.android.traveltracker.core.ui.mvi.MviState
 
 sealed class SettingsContract {
     data class State(
-        val loading: Boolean = false,
-
         val language: String? = null,
         val showLanguageDialog: Boolean = false,
-        val selectedLanguageInDialog: String = "ru",
+        val selectedLanguageInDialog: String? = null,
+
+        val showThemeDialog: Boolean = false,
+        val selectedThemeInDialog: AppThemeModel = AppThemeModel.SYSTEM,
 
         val error: CustomString? = null,
     ) : MviState
@@ -22,6 +24,9 @@ sealed class SettingsContract {
         data class ShowLanguageDialog(val value: Boolean = true) : Action()
         data class SelectLanguageInDialog(val language: String) : Action()
         data object ApplySelectedLanguage : Action()
+
+        data class ShowThemeDialog(val value: Boolean = true) : Action()
+        data class SelectThemeInDialog(val theme: AppThemeModel) : Action()
 
         data class SetError(val error: CustomString? = null) : Action()
     }

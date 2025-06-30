@@ -7,6 +7,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
@@ -15,6 +19,8 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import ru.nikfirs.android.traveltracker.core.data.datastore.DatastoreHelper
+import ru.nikfirs.android.traveltracker.core.domain.model.AppThemeModel
+import ru.nikfirs.android.traveltracker.core.ui.ui.extension.getLanguage
 import ru.nikfirs.android.traveltracker.core.ui.ui.theme.AppTheme
 import java.util.Locale
 import javax.inject.Inject
@@ -34,11 +40,28 @@ class MainActivity : ComponentActivity() {
 
         enableEdgeToEdge()
         setContent {
-            AppTheme {
+            ThemedApp {
                 val navController = rememberNavController()
                 NavigationHost(navController = navController)
             }
         }
+    }
+
+    @Composable
+    private fun ThemedApp(content: @Composable () -> Unit) {
+        val themeSettings by datastoreHelper.themeFlow.collectAsState(initial = AppThemeModel.SYSTEM)
+        val systemInDarkTheme = isSystemInDarkTheme()
+
+        val darkTheme = when (themeSettings) {
+            AppThemeModel.SYSTEM -> systemInDarkTheme
+            AppThemeModel.LIGHT -> false
+            AppThemeModel.DARK -> true
+        }
+
+        AppTheme(
+            darkTheme = darkTheme,
+            content = content
+        )
     }
 
     private fun observeLanguageChanges() {
@@ -47,7 +70,7 @@ class MainActivity : ComponentActivity() {
                 // checking new language is set
                 // (excludes recreation when activity is firstly created)
                 val currentLocale = resources.configuration.locales[0]
-                if (Locale(language).language != currentLocale.language) {
+                if (language != null && Locale(language).language != currentLocale.language) {
                     recreate()
                 }
             }
@@ -66,7 +89,8 @@ class MainActivity : ComponentActivity() {
         context ?: return null
         datastoreHelper = DatastoreHelper(context)
         val languageCode = runBlocking {
-            datastoreHelper.languageFlow.firstOrNull() ?: "en"
+            datastoreHelper.languageFlow.firstOrNull()
+                ?: resources.configuration.locales[0].language.getLanguage()
         }
         val newLocale = Locale(languageCode)
         Locale.setDefault(newLocale)

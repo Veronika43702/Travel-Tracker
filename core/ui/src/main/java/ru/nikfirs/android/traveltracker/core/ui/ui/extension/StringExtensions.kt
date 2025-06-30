@@ -15,3 +15,10 @@ fun CustomString?.asString(): String? {
         is CustomString.Resource -> context.getString(resId, *args)
     }
 }
+
+fun String?.getLanguage(): String {
+    return when (this) {
+        "ru" -> "ru"
+        else -> "en"
+    }
+}

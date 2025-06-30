@@ -34,16 +34,19 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import ru.nikfirs.android.traveltracker.core.domain.model.AppThemeModel
 import ru.nikfirs.android.traveltracker.core.ui.navigation.BottomNavBarRoute
 import ru.nikfirs.android.traveltracker.core.ui.ui.component.DarkENScreenPreview
 import ru.nikfirs.android.traveltracker.core.ui.ui.component.ErrorDialog
 import ru.nikfirs.android.traveltracker.core.ui.ui.component.LightRUScreenPreview
 import ru.nikfirs.android.traveltracker.core.ui.ui.component.Screen
 import ru.nikfirs.android.traveltracker.core.ui.ui.extension.clickableOnce
+import ru.nikfirs.android.traveltracker.core.ui.ui.extension.getLanguage
 import ru.nikfirs.android.traveltracker.core.ui.ui.model.IconType
 import ru.nikfirs.android.traveltracker.core.ui.ui.theme.AppTheme
 import ru.nikfirs.android.traveltracker.feature.settings.R
 import ru.nikfirs.android.traveltracker.feature.settings.ui.components.LanguageSelectionDialog
+import ru.nikfirs.android.traveltracker.feature.settings.ui.components.ThemeSelectionDialog
 import ru.nikfirs.android.traveltracker.feature.settings.ui.settings.SettingsContract.Action
 import ru.nikfirs.android.traveltracker.feature.settings.ui.settings.SettingsContract.State
 
@@ -97,7 +100,6 @@ fun SettingsContent(
                     SettingsItem(
                         icon = IconType.DrawableRes(R.drawable.ic_language),
                         title = stringResource(R.string.settings_language_title),
-                        description = stringResource(R.string.settings_language_description),
                         currentValue = getCurrentLanguageText(
                             state.language,
                             languageFromSystem
@@ -121,11 +123,8 @@ fun SettingsContent(
                     SettingsItem(
                         icon = IconType.DrawableRes(R.drawable.ic_pallete),
                         title = stringResource(R.string.settings_theme_title),
-                        description = stringResource(R.string.settings_theme_description),
-                        currentValue = getCurrentThemeText(),
-                        onClick = {
-                            // TODO: Открыть диалог выбора темы
-                        }
+                        currentValue = getCurrentThemeText(state.selectedThemeInDialog),
+                        onClick = { onAction(Action.ShowThemeDialog()) }
                     )
 
                     HorizontalDivider(
@@ -137,7 +136,6 @@ fun SettingsContent(
                     SettingsItem(
                         icon = IconType.DrawableRes(R.drawable.ic_schedule),
                         title = stringResource(R.string.settings_date_format_title),
-                        description = stringResource(R.string.settings_date_format_description),
                         currentValue = getCurrentDateFormatText(),
                         onClick = {
                             // TODO: Открыть диалог выбора формата даты
@@ -155,7 +153,6 @@ fun SettingsContent(
                     SettingsItem(
                         icon = IconType.VectorIcon(Icons.Default.Info),
                         title = stringResource(R.string.settings_app_version),
-                        description = null,
                         currentValue = stringResource(R.string.settings_app_version_value),
                         onClick = null,
                         showChevron = false
@@ -167,10 +164,19 @@ fun SettingsContent(
 
     if (state.showLanguageDialog) {
         LanguageSelectionDialog(
-            selectedLanguage = state.selectedLanguageInDialog,
+            selectedLanguage = state.selectedLanguageInDialog ?: languageFromSystem.getLanguage(),
             onLanguageSelected = { language -> onAction(Action.SelectLanguageInDialog(language)) },
             onApply = { onAction(Action.ApplySelectedLanguage) },
             onDismiss = { onAction(Action.ShowLanguageDialog(false)) }
+        )
+    }
+
+    if (state.showThemeDialog) {
+        ThemeSelectionDialog(
+            selectedTheme = state.selectedThemeInDialog,
+            onThemeSelected = { theme -> onAction(Action.SelectThemeInDialog(theme)) },
+            onApply = { onAction(Action.ShowThemeDialog(false)) },
+            onDismiss = { onAction(Action.ShowThemeDialog(false)) }
         )
     }
 }
@@ -208,7 +214,6 @@ private fun SettingsSection(
 private fun SettingsItem(
     icon: IconType,
     title: String,
-    description: String?,
     currentValue: String,
     onClick: (() -> Unit)?,
     modifier: Modifier = Modifier,
@@ -253,32 +258,22 @@ private fun SettingsItem(
         ) {
             Text(
                 text = title,
-                style = MaterialTheme.typography.bodyLarge,
+                style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurface
             )
 
-            description?.let { desc ->
-                Text(
-                    text = desc,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(top = 2.dp)
-                )
-            }
+            Text(
+                text = currentValue,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
         }
-
-        Text(
-            text = currentValue,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(end = if (showChevron) 8.dp else 0.dp)
-        )
 
         if (showChevron && onClick != null) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                 contentDescription = null,
-                modifier = Modifier.size(20.dp),
+                modifier = Modifier.padding(start = 16.dp).size(20.dp),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
@@ -305,9 +300,12 @@ private fun getCurrentLanguageText(
 
 
 @Composable
-private fun getCurrentThemeText(): String {
-    // TODO: Получить реальную тему из настроек
-    return stringResource(R.string.settings_theme_system) // Заглушка
+private fun getCurrentThemeText(theme: AppThemeModel): String {
+    return when (theme) {
+        AppThemeModel.SYSTEM -> stringResource(R.string.settings_theme_system)
+        AppThemeModel.LIGHT -> stringResource(R.string.settings_theme_light)
+        AppThemeModel.DARK -> stringResource(R.string.settings_theme_dark)
+    }
 }
 
 @Composable
