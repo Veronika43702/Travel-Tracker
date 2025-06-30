@@ -271,7 +271,6 @@ private fun DatePickerField(
     var showDatePicker by remember { mutableStateOf(false) }
 
     Box {
-
         CustomTextFieldButton(
             text = date.format(dateFormatter),
             onClick = {
@@ -292,7 +291,7 @@ private fun DatePickerField(
                     showDatePicker = false
                 },
                 onDismiss = { showDatePicker = false },
-                initialDate = date
+                initialDate = date,
             )
         }
 
@@ -310,7 +309,7 @@ private fun DatePickerField(
 private fun DatePickerDialog(
     onDateSelected: (LocalDate) -> Unit,
     onDismiss: () -> Unit,
-    initialDate: LocalDate
+    initialDate: LocalDate,
 ) {
     val datePickerState = rememberDatePickerState(
         initialSelectedDateMillis = initialDate.toEpochDay() * 24 * 60 * 60 * 1000

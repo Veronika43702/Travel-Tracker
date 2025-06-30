@@ -59,9 +59,7 @@ class AddOrEditVisaViewModel @Inject constructor(
 
     private fun loadVisa(visaId: Long?) {
         setState { it.copy(countryListToShow = SchengenCountries.countries) }
-        visaId ?: return
 
-        setState { it.copy(isLoading = true) }
         launchIO {
             try {
                 getDateFormatUseCase.invoke().collectLatest { dateFormat ->
@@ -73,6 +71,8 @@ class AddOrEditVisaViewModel @Inject constructor(
         }
 
         launchIO {
+            visaId ?: return@launchIO
+            setState { it.copy(isLoading = true) }
             try {
                 val visa = getVisaByIdUseCase.invoke(visaId)
                 visa?.let {
