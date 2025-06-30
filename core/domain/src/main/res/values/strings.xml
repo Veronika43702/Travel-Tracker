@@ -2,5 +2,5 @@
 <resources>
 
     <!-- Error Messages -->
-    <string name="error_unknown">Произошла неизвестная ошибка</string>
+    <string name="error_unknown">An unknown error occurred</string>
 </resources>

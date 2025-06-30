@@ -11,6 +11,7 @@ import ru.nikfirs.android.traveltracker.core.ui.navigation.DeepRoute
 import ru.nikfirs.android.traveltracker.feature.calendar.calendarNavigationGraph
 import ru.nikfirs.android.traveltracker.feature.home.HomeRoute
 import ru.nikfirs.android.traveltracker.feature.home.homeNavigationGraph
+import ru.nikfirs.android.traveltracker.feature.settings.settingsNavigationGraph
 
 @Composable
 fun NavigationHost(
@@ -28,6 +29,10 @@ fun NavigationHost(
             navigateDeepRoute = { deepRoute -> deepRoute.resolve(navController) }
         )
         calendarNavigationGraph(
+            navController = navController,
+            navigateDeepRoute = { deepRoute -> deepRoute.resolve(navController) }
+        )
+        settingsNavigationGraph(
             navController = navController,
             navigateDeepRoute = { deepRoute -> deepRoute.resolve(navController) }
         )

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Settings Screen -->
+    <string name="settings_title">Настройки</string>
+    <string name="settings_language_title">Язык приложения</string>
+    <string name="settings_language_description">Выберите язык интерфейса</string>
+    <string name="settings_language_system">Системный</string>
+
+    <string name="settings_theme_title">Тема приложения</string>
+    <string name="settings_theme_description">Выберите оформление</string>
+    <string name="settings_theme_light">Светлая</string>
+    <string name="settings_theme_dark">Темная</string>
+    <string name="settings_theme_system">Системная</string>
+
+    <string name="settings_date_format_title">Формат даты</string>
+    <string name="settings_date_format_description">Выберите формат отображения дат</string>
+    <string name="settings_date_format_dd_mm_yyyy">дд.мм.гггг</string>
+    <string name="settings_date_format_mm_dd_yyyy">мм/дд/гггг</string>
+    <string name="settings_date_format_yyyy_mm_dd">гггг-мм-дд</string>
+    <string name="settings_date_format_dd_mmm_yyyy">дд ммм гггг</string>
+
+    <string name="settings_about_title">О приложении</string>
+    <string name="settings_app_version">Версия приложения</string>
+    <string name="settings_app_version_value">1.0.0</string>
+
+    <!-- Settings Actions -->
+    <string name="action_open_system_language_settings">Открыть настройки языка</string>
+
+    <!-- Settings Categories -->
+    <string name="settings_category_general">Общие</string>
+    <string name="settings_category_appearance">Внешний вид</string>
+    <string name="settings_category_about">Информация</string>
+</resources>

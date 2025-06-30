@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Settings Screen -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_language_title">App Language</string>
+    <string name="settings_language_description">Choose interface language</string>
+    <string name="settings_language_system">System</string>
+    <string name="settings_language_russian" translatable="false">Русский</string>
+    <string name="settings_language_english" translatable="false">English</string>
+
+    <string name="settings_theme_title">App Theme</string>
+    <string name="settings_theme_description">Choose appearance</string>
+    <string name="settings_theme_light">Light</string>
+    <string name="settings_theme_dark">Dark</string>
+    <string name="settings_theme_system">System</string>
+
+    <string name="settings_date_format_title">Date Format</string>
+    <string name="settings_date_format_description">Choose date display format</string>
+    <string name="settings_date_format_dd_mm_yyyy">dd.mm.yyyy</string>
+    <string name="settings_date_format_mm_dd_yyyy">mm/dd/yyyy</string>
+    <string name="settings_date_format_yyyy_mm_dd">yyyy-mm-dd</string>
+    <string name="settings_date_format_dd_mmm_yyyy">dd mmm yyyy</string>
+
+    <string name="settings_about_title">About App</string>
+    <string name="settings_app_version">App Version</string>
+    <string name="settings_app_version_value">1.0.0</string>
+
+    <!-- Settings Actions -->
+    <string name="action_open_system_language_settings">Open Language Settings</string>
+
+    <!-- Settings Categories -->
+    <string name="settings_category_general">General</string>
+    <string name="settings_category_appearance">Appearance</string>
+    <string name="settings_category_about">About</string>
+</resources>

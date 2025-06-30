@@ -19,6 +19,8 @@ dependencies {
     implementation(libs.bundles.di)
     implementation(libs.datastore)
     implementation(libs.bundles.database)
+    implementation(libs.datastore)
+
 
     ksp(libs.room.compiler)
     ksp(libs.hilt.compiler)

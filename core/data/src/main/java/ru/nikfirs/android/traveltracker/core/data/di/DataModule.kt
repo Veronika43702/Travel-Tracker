@@ -10,11 +10,12 @@ import ru.nikfirs.android.traveltracker.core.data.database.TravelDatabase
 import ru.nikfirs.android.traveltracker.core.data.database.dao.TripDao
 import ru.nikfirs.android.traveltracker.core.data.database.dao.TripSegmentDao
 import ru.nikfirs.android.traveltracker.core.data.database.dao.VisaDao
+import ru.nikfirs.android.traveltracker.core.data.datastore.DatastoreHelper
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object DatabaseModule {
+object DataModule {
 
     @Provides
     @Singleton
@@ -46,5 +47,13 @@ object DatabaseModule {
         database: TravelDatabase
     ): TripSegmentDao {
         return database.tripSegmentDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideDataStoreHelper(
+        @ApplicationContext context: Context,
+    ): DatastoreHelper {
+        return DatastoreHelper(context)
     }
 }

@@ -32,4 +32,5 @@ dependencies {
     implementation(project(":core:ui"))
     implementation(project(":feature:home"))
     implementation(project(":feature:calendar"))
+    implementation(project(":feature:settings"))
 }

@@ -103,7 +103,7 @@ class AddTripSegmentViewModel @Inject constructor(
      * Text value for country is formed according to language.
      * @param resetCountry true if country (value for addTripHolder) is need to be reset.
      * If true country value is set to be Blank,
-     * if false - get values from [currentState.country][currentState]
+     * if false - get values-ru-ru-ru from [currentState.country][currentState]
      */
     private fun updateCountryText(value: String, language: String, resetCountry: Boolean) {
         val list = currentState.countryListFull.filter {
