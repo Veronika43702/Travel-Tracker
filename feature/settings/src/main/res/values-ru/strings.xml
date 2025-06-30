@@ -22,7 +22,6 @@
 
     <string name="settings_about_title">О приложении</string>
     <string name="settings_app_version">Версия приложения</string>
-    <string name="settings_app_version_value">1.0.0</string>
 
     <!-- Settings Actions -->
     <string name="action_open_system_language_settings">Открыть настройки языка</string>

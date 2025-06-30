@@ -19,6 +19,8 @@ sealed class SettingsContract {
         val showDateFormatDialog: Boolean = false,
         val selectedDateFormatInDialog: AppDateFormatModel = AppDateFormatModel.getDefault(),
 
+        val appVersion: String = "",
+
         val error: CustomString? = null,
     ) : MviState
 

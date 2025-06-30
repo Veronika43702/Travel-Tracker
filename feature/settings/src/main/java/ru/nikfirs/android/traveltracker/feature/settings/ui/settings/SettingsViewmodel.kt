@@ -12,6 +12,7 @@ import ru.nikfirs.android.traveltracker.core.ui.R as uiR
 import ru.nikfirs.android.traveltracker.core.ui.mvi.ViewModel
 import ru.nikfirs.android.traveltracker.core.ui.mvi.launchIO
 import ru.nikfirs.android.traveltracker.core.ui.domain.usecase.dataStore.GetDateFormatUseCase
+import ru.nikfirs.android.traveltracker.feature.settings.BuildConfig
 import ru.nikfirs.android.traveltracker.feature.settings.domain.usecase.GetLanguageUseCase
 import ru.nikfirs.android.traveltracker.feature.settings.domain.usecase.GetThemeUseCase
 import ru.nikfirs.android.traveltracker.feature.settings.domain.usecase.SaveDateFormatUseCase
@@ -31,7 +32,9 @@ class SettingsViewmodel @Inject constructor(
     private val getDateFormatUseCase: GetDateFormatUseCase,
     private val saveDateFormatUseCase: SaveDateFormatUseCase,
 ) : ViewModel<Action, Effect, State>() {
-    override fun createInitialState(): State = State()
+    override fun createInitialState(): State = State(
+        appVersion = BuildConfig.VERSION_NAME
+    )
 
     override fun handleAction(action: Action) {
         when (action) {

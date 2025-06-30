@@ -14,6 +14,18 @@ apply {
 
 android {
     namespace = "ru.nikfirs.android.traveltracker.feature.settings"
+    buildFeatures {
+        buildConfig = true
+    }
+    buildTypes {
+        configureEach {
+            buildConfigField(
+                "String",
+                "VERSION_NAME",
+                "\"${project.ext.get("version_name")}\""
+            )
+        }
+    }
 }
 
 dependencies {

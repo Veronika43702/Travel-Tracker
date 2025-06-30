@@ -159,7 +159,7 @@ internal fun MonthCalendar(
     dateList: List<DayCalculation> = emptyList(),
     showDots: Boolean = false,
     showRemainingDays: Boolean = false,
-    blockedDays: Set<LocalDate> = emptySet(), // TODO
+    blockedDays: Set<LocalDate> = emptySet(),
     blockedPeriod: Set<BlockDateModel> = emptySet(),
 ) {
     Column {

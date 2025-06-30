@@ -24,7 +24,6 @@
 
     <string name="settings_about_title">About App</string>
     <string name="settings_app_version">App Version</string>
-    <string name="settings_app_version_value">1.0.0</string>
 
     <!-- Settings Actions -->
     <string name="action_open_system_language_settings">Open Language Settings</string>

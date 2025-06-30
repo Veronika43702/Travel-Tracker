@@ -15,7 +15,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -152,9 +152,9 @@ fun SettingsContent(
                 title = stringResource(R.string.settings_category_about),
                 items = {
                     SettingsItem(
-                        icon = IconType.VectorIcon(Icons.Default.Info),
+                        icon = IconType.VectorIcon(Icons.Outlined.Info),
                         title = stringResource(R.string.settings_app_version),
-                        currentValue = stringResource(R.string.settings_app_version_value),
+                        currentValue = state.appVersion,
                         onClick = null,
                         showChevron = false
                     )
