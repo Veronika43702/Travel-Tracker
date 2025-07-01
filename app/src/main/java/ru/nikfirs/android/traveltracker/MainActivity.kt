@@ -88,15 +88,15 @@ class MainActivity : ComponentActivity() {
     private fun updateResources(context: Context?): Context? {
         context ?: return null
         datastoreHelper = DatastoreHelper(context)
+        val resConfiguration = context.resources.configuration
         val languageCode = runBlocking {
             datastoreHelper.languageFlow.firstOrNull()
-                ?: resources.configuration.locales[0].language.getLanguage()
+                 ?: resConfiguration.locales[0].language.getLanguage()
         }
         val newLocale = Locale(languageCode)
         Locale.setDefault(newLocale)
 
-        val res = context.resources
-        val config = Configuration(res.configuration)
+        val config = Configuration(resConfiguration)
         config.setLocale(newLocale)
 
         return context.createConfigurationContext(config)
