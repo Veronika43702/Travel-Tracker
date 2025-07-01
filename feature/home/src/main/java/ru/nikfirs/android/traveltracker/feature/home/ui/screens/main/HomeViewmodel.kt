@@ -4,6 +4,7 @@ import android.util.Log
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.retry
 import ru.nikfirs.android.traveltracker.core.domain.PERIOD_DAYS
 import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
 import ru.nikfirs.android.traveltracker.core.domain.model.Trip
@@ -79,8 +80,9 @@ class HomeViewModel @Inject constructor(
         launchIO {
             try {
                 getHomeDataUseCase(LocalDate.now().minusDays(PERIOD_DAYS.toLong()))
-                    .catch { exception ->
-                        setError(CustomString.text(exception.message))
+                    .catch { e ->
+                        setError(CustomString.Resource(uiR.string.error_loading_data))
+                        Log.e(null, "loadData, flow", e)
                     }
                     .collectLatest { homeData ->
                         val tripsWithLimitInfo = addLimitOverInfoToTrips(homeData.allTrips)

@@ -25,9 +25,10 @@
     </plurals>
 
     <!-- Empty states -->
-    <string name="home_empty_all">Нет данных для отображения.\nДобавьте первую визу!</string>
-    <string name="home_empty_visas">У вас пока нет активных виз.\nДобавьте первую визу!</string>
-    <string name="home_empty_trips">У вас пока нет поездок.\nДобавьте первую поездку!</string>
+    <string name="home_empty_all">Нет данных для отображения за последние 180 дней.\nДобавьте первую визу!</string>
+    <string name="home_empty_visas">У вас пока нет активных виз за последние 180 дней.\nДобавьте первую визу!</string>
+    <string name="home_empty_trips">У вас пока нет поездок за последние 180 дней.\nДобавьте первую поездку!</string>
+    <string name="home_empty_trips_past">У вас нет поездок за последние 180 дней.</string>
 
     <!-- Common Trip and Visa -->
     <string name="home_notes_optional">Заметки (необязательно)</string>

@@ -23,9 +23,10 @@
     </plurals>
 
     <!-- Empty states -->
-    <string name="home_empty_all">No data to display.\nAdd your first visa!</string>
-    <string name="home_empty_visas">You don\'t have any active visas yet.\nAdd your first visa!</string>
-    <string name="home_empty_trips">You don\'t have any trips yet.\nAdd your first trip!</string>
+    <string name="home_empty_all">No data for the last 180 days to display.\nAdd your active visa!</string>
+    <string name="home_empty_visas">You don\'t have any active visas for the last 180 days.\nAdd your active visa!</string>
+    <string name="home_empty_trips">You don\'t have any trips for the last 180 days.\nAdd your first trip!</string>
+    <string name="home_empty_trips_past">You don\'t have any trips for the last 180 days.</string>
 
     <!-- Common Trip and Visa -->
     <string name="home_notes_optional">Notes (optional)</string>
