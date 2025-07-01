@@ -84,7 +84,8 @@ fun CalendarScreen(
             dateInfo = dateInfo,
             onClose = { viewModel.setAction(Action.ClearDateInfo) },
             onTripClick = { viewModel.setAction(Action.NavigateToTripDetails) },
-            onVisaClick = { viewModel.setAction(Action.NavigateToVisaDetails) }
+            onVisaClick = { viewModel.setAction(Action.NavigateToVisaDetails) },
+            dateFormatter = state.dateFormatter,
         )
     }
 

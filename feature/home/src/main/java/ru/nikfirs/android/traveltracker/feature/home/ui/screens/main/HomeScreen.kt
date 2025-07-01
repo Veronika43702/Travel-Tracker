@@ -281,6 +281,7 @@ private fun VisasTabContent(
         ) { visa ->
             SwipeableVisaCard(
                 visa = visa,
+                dateFormatter = state.dateFormatter,
                 onAction = onAction,
             )
         }
@@ -329,6 +330,7 @@ private fun TripsTabContent(
                     isExempt = trip.hasExemptSegment,
                     countableDuration = trip.countableDays,
                     onAction = onAction,
+                    dateFormatter = state.dateFormatter,
                 )
             }
         }
@@ -354,12 +356,13 @@ private fun TripsTabContent(
                     isExempt = trip.hasExemptSegment,
                     countableDuration = trip.countableDays,
                     onAction = onAction,
+                    dateFormatter = state.dateFormatter,
                 )
             }
         }
 
         // Past trips (within past 180 days)
-        if (state.pastTrips.isNotEmpty()) {
+        if (state.trips.isNotEmpty()) {
             item {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
@@ -370,16 +373,31 @@ private fun TripsTabContent(
                 )
             }
 
-            items(
-                items = state.pastTrips,
-                key = { "trip_${it.id}" }
-            ) { trip ->
-                SwipeableTripCard(
-                    trip = trip,
-                    isExempt = trip.hasExemptSegment,
-                    countableDuration = trip.countableDays,
-                    onAction = onAction,
-                )
+            if (state.pastTrips.isNotEmpty()) {
+                items(
+                    items = state.pastTrips,
+                    key = { "trip_${it.id}" }
+                ) { trip ->
+                    SwipeableTripCard(
+                        trip = trip,
+                        isExempt = trip.hasExemptSegment,
+                        countableDuration = trip.countableDays,
+                        onAction = onAction,
+                        dateFormatter = state.dateFormatter,
+                    )
+                }
+            } else {
+                item {
+                    Text(
+                        text = stringResource(R.string.home_empty_trips_past),
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 32.dp)
+                    )
+                }
             }
         }
 
@@ -503,7 +521,7 @@ private fun HomeScreenEmptyPreview() {
 }
 
 @Preview(showBackground = true)
-@Preview(showBackground = true, locale = "EN")
+@Preview(showBackground = true, locale = "RU")
 @Composable
 private fun HomeScreenWithDataPreview() {
     AppTheme {
@@ -533,26 +551,26 @@ private fun HomeScreenWithDataPreview() {
                     )
                 ),
                 trips = listOf(
-                    Trip(
-                        id = 1,
-                        startDate = LocalDate.now().minusDays(10),
-                        endDate = LocalDate.now().minusDays(5),
-                        segments = listOf(
-                            TripSegment(
-                                country = "Germany",
-                                startDate = LocalDate.now().minusDays(5),
-                                endDate = LocalDate.now(),
-                                isExempt = false
-                            ),
-                            TripSegment(
-                                country = "Poland",
-                                startDate = LocalDate.now(),
-                                endDate = LocalDate.now().plusDays(5),
-                                isExempt = false
-                            )
-                        ),
-                        purpose = TripPurpose.MEDICAL,
-                    ),
+//                    Trip(
+//                        id = 1,
+//                        startDate = LocalDate.now().minusDays(10),
+//                        endDate = LocalDate.now().minusDays(5),
+//                        segments = listOf(
+//                            TripSegment(
+//                                country = "Germany",
+//                                startDate = LocalDate.now().minusDays(5),
+//                                endDate = LocalDate.now(),
+//                                isExempt = false
+//                            ),
+//                            TripSegment(
+//                                country = "Poland",
+//                                startDate = LocalDate.now(),
+//                                endDate = LocalDate.now().plusDays(5),
+//                                isExempt = false
+//                            )
+//                        ),
+//                        purpose = TripPurpose.MEDICAL,
+//                    ),
                     Trip(
                         id = 3,
                         startDate = LocalDate.now().minusDays(5),

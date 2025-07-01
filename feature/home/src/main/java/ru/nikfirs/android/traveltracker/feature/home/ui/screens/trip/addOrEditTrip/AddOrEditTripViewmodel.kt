@@ -2,6 +2,7 @@ package ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addOrEditT
 
 import android.util.Log
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.collectLatest
 import ru.nikfirs.android.traveltracker.core.data.model.TRANSIT
 import ru.nikfirs.android.traveltracker.core.domain.MAX_STAY_DAYS
 import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
@@ -11,6 +12,7 @@ import ru.nikfirs.android.traveltracker.core.domain.model.TripSegment
 import ru.nikfirs.android.traveltracker.core.domain.model.Visa
 import ru.nikfirs.android.traveltracker.core.domain.model.VisaCategory
 import ru.nikfirs.android.traveltracker.core.ui.domain.usecase.CalculateDaysInPeriodUseCase
+import ru.nikfirs.android.traveltracker.core.ui.domain.usecase.dataStore.GetDateFormatUseCase
 import ru.nikfirs.android.traveltracker.core.ui.ui.model.BlockDateModel
 import ru.nikfirs.android.traveltracker.core.ui.ui.model.DateType
 import ru.nikfirs.android.traveltracker.core.ui.mvi.ViewModel
@@ -48,6 +50,7 @@ class AddOrEditTripViewModel @Inject constructor(
     private val getTripByIdUseCase: GetTripByIdUseCase,
     private val getVisaByIdUseCase: GetVisaByIdUseCase,
     private val getVisaDurationUsedUseCase: GetVisaDurationUsedUseCase,
+    private val getDateFormatUseCase: GetDateFormatUseCase,
     val addTripHolder: AddTripHolder,
 ) : ViewModel<Action, Effect, State>() {
 
@@ -85,8 +88,20 @@ class AddOrEditTripViewModel @Inject constructor(
     }
 
     private fun loadData(tripId: Long?) {
+        setState { it.copy(isLoading = true) }
+
         launchIO {
-            setState { it.copy(isLoading = true) }
+            try {
+                getDateFormatUseCase.invoke().collectLatest { dateFormat ->
+                    setState { it.copy(dateFormatter = dateFormat.getFormatter()) }
+                }
+            } catch (exception: Exception) {
+                Log.e("AddOrEditTripViewModel", "loadData, date format", exception)
+            }
+        }
+
+        launchIO {
+
 
             try {
                 val visas = getAvailableVisasByDateUseCase.invoke(

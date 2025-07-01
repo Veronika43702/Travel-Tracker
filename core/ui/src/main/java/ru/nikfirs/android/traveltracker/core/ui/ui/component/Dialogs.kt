@@ -112,7 +112,7 @@ fun ErrorDialog(
                         )
                     } else {
                         CustomButton(
-                            text = stringResource(id = R.string.action_cancel),
+                            text = stringResource(id = R.string.action_ok),
                             onClick = onDismiss,
                             modifier = Modifier.fillMaxWidth(),
                             smallButton = true,
@@ -302,7 +302,7 @@ private fun ErrorDialogPreview() {
 
 @Preview
 @Composable
-private fun DialogTwoColumnreview() {
+private fun DialogTwoColumnPreview() {
     AppTheme {
         Box(
             modifier = Modifier
@@ -331,6 +331,23 @@ private fun DialogTwoRowPreview() {
                 title = "Are you sure?",
                 message = CustomString.text("Are you sure you want to delete visa?"),
                 onRightBtn = {}
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun DialogOneButtonPreview() {
+    AppTheme {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+        ) {
+            ErrorDialog(
+                message = CustomString.resource(R.string.error_loading_data),
+                onDismiss = {},
             )
         }
     }

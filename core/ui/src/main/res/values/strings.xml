@@ -3,36 +3,37 @@
     <string name="app_name">Travel Tracker</string>
 
     <!-- Bottom Navigation -->
-    <string name="nav_home">Главная</string>
-    <string name="nav_calendar">Календарь</string>
-    <string name="nav_statistics">Статистика</string>
-    <string name="nav_settings">Настройки</string>
+    <string name="nav_home">Home</string>
+    <string name="nav_calendar">Calendar</string>
+    <string name="nav_statistics">Statistics</string>
+    <string name="nav_settings">Settings</string>
 
     <!-- Actions -->
-    <string name="action_add_visa">Добавить визу</string>
-    <string name="action_add_trip">Добавить поездку</string>
-    <string name="action_edit">Редактировать</string>
-    <string name="action_delete">Удалить</string>
-    <string name="action_annul">Аннулировать</string>
-    <string name="action_cancel">Отмена</string>
-    <string name="action_save">Сохранить</string>
-    <string name="action_continue">Продолжить</string>
-    <string name="action_confirm">Подтвердить</string>
-    <string name="action_retry">Повторить</string>
+    <string name="action_add_visa">Add visa</string>
+    <string name="action_add_trip">Add trip</string>
+    <string name="action_edit">Edit</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_annul">Annul</string>
+    <string name="action_ok">OK</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_save">Save</string>
+    <string name="action_continue">Continue</string>
+    <string name="action_confirm">Confirm</string>
 
     <!-- Error Messages -->
-    <string name="error_loading_data">Ошибка загрузки данных</string>
-    <string name="error_updating_data">Ошибка обновления данных</string>
-    <string name="error_title">Ошибка</string>
+    <string name="error_loading_data">Error loading data</string>
+    <string name="error_updating_data">Error updating data</string>
+    <string name="error_title">Error</string>
+    <string name="action_retry">Retry</string>
 
     <!-- Visa types -->
-    <string name="visa_type_c">Виза C</string>
-    <string name="visa_type_d">Виза D</string>
-    <string name="visa_type_residence_permit">ВНЖ</string>
+    <string name="visa_type_c">Visa C</string>
+    <string name="visa_type_d">Visa D</string>
+    <string name="visa_type_residence_permit">RP</string>
 
     <!-- Custom Calendar -->
-    <string name="calendar_previous_month">Предыдущий месяц</string>
-    <string name="calendar_next_month">Следующий месяц</string>
-    <string name="calendar_select_dates">Выберите даты</string>
-    <string name="calendar_clear_selection">Очистить выбор</string>
+    <string name="calendar_previous_month">Previous month</string>
+    <string name="calendar_next_month">Next month</string>
+    <string name="calendar_select_dates">Select dates</string>
+    <string name="calendar_clear_selection">Clear selection</string>
 </resources>

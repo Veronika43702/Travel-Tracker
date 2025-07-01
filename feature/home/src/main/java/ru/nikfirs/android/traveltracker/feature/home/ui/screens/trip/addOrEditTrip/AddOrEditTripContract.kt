@@ -2,9 +2,9 @@ package ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addOrEditT
 
 import ru.nikfirs.android.traveltracker.core.domain.MAX_STAY_DAYS
 import ru.nikfirs.android.traveltracker.core.domain.WARNING_THRESHOLD
+import ru.nikfirs.android.traveltracker.core.domain.model.AppDateFormatModel
 import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
 import ru.nikfirs.android.traveltracker.core.domain.model.TripPurpose
-import ru.nikfirs.android.traveltracker.core.domain.model.Visa
 import ru.nikfirs.android.traveltracker.core.domain.model.VisaCategory
 import ru.nikfirs.android.traveltracker.core.ui.ui.model.BlockDateModel
 import ru.nikfirs.android.traveltracker.core.ui.mvi.MviAction
@@ -29,7 +29,7 @@ sealed class AddOrEditTripContract {
         val showDatePicker: Boolean = false,
         val blockedPeriods: Set<BlockDateModel> = emptySet(),
 
-        val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy"),
+        val dateFormatter: DateTimeFormatter = AppDateFormatModel.getDefault().getFormatter(),
         val daysAvailableAtStart: DaysAvailableInfo? = null,
         val daysAvailableAtEnd: DaysAvailableInfo? = null,
         val countableDuration: Int = 1,

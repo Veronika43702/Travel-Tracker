@@ -1,5 +1,6 @@
 package ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.addOrEditVisa
 
+import ru.nikfirs.android.traveltracker.core.domain.model.AppDateFormatModel
 import ru.nikfirs.android.traveltracker.core.domain.model.Country
 import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
 import ru.nikfirs.android.traveltracker.core.domain.model.VisaCategory
@@ -28,7 +29,7 @@ sealed class AddOrEditVisaContract {
         val isCountryDropdownExpanded: Boolean = false,
         val error: CustomString? = null,
         val validationErrors: ValidationErrors = ValidationErrors(),
-        val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy"),
+        val dateFormatter: DateTimeFormatter = AppDateFormatModel.getDefault().getFormatter(),
     ) : MviState
 
     data class ValidationErrors(

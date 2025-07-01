@@ -2,16 +2,18 @@ package ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.visaDetail
 
 import android.util.Log
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.collectLatest
 import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
+import ru.nikfirs.android.traveltracker.core.ui.domain.usecase.dataStore.GetDateFormatUseCase
 import ru.nikfirs.android.traveltracker.core.ui.R as uiR
 import ru.nikfirs.android.traveltracker.core.ui.mvi.ViewModel
 import ru.nikfirs.android.traveltracker.core.ui.mvi.launch
 import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.visa.DeactivateVisaByIdUseCase
 import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.visa.DeleteVisaUseCase
 import ru.nikfirs.android.traveltracker.core.ui.domain.usecase.visa.GetVisaByIdUseCase
+import ru.nikfirs.android.traveltracker.core.ui.mvi.launchIO
 import ru.nikfirs.android.traveltracker.feature.home.R
 import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.visa.GetVisaDurationUsedUseCase
-import ru.nikfirs.android.traveltracker.feature.home.ui.model.VisaUi
 import ru.nikfirs.android.traveltracker.feature.home.ui.utils.VisaAction
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.visaDetails.VisaDetailsContract.Action
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.visa.visaDetails.VisaDetailsContract.Effect
@@ -24,6 +26,7 @@ class VisaDetailsViewModel @Inject constructor(
     private val deactivateVisaByIdUseCase: DeactivateVisaByIdUseCase,
     private val deleteVisaUseCase: DeleteVisaUseCase,
     private val getVisaDurationUsedUseCase: GetVisaDurationUsedUseCase,
+    private val getDateFormatUseCase: GetDateFormatUseCase,
 ) : ViewModel<Action, Effect, State>() {
 
     override fun createInitialState(): State = State()
@@ -41,8 +44,18 @@ class VisaDetailsViewModel @Inject constructor(
     }
 
     private fun loadVisa(visaId: Long) {
-        launch {
-            setState { it.copy(isLoading = true) }
+        setState { it.copy(isLoading = true) }
+        launchIO {
+            try {
+                getDateFormatUseCase.invoke().collectLatest { dateFormat ->
+                    setState { it.copy(dateFormatter = dateFormat.getFormatter()) }
+                }
+            } catch (e: Exception) {
+                Log.e("VisaDetailsViewModel", "loadVisa, date format", e)
+            }
+        }
+
+        launchIO {
             try {
                 val visa = getVisaByIdUseCase.invoke(visaId)
                 visa?.let {

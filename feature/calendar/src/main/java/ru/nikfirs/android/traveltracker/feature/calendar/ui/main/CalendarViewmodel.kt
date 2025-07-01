@@ -22,6 +22,7 @@ import ru.nikfirs.android.traveltracker.core.ui.ui.theme.SuccessGreen
 import ru.nikfirs.android.traveltracker.core.ui.ui.theme.VisaCalendar
 import ru.nikfirs.android.traveltracker.feature.calendar.ui.model.DateDataModel
 import ru.nikfirs.android.traveltracker.core.ui.domain.usecase.CalculateDaysInPeriodUseCase
+import ru.nikfirs.android.traveltracker.core.ui.domain.usecase.dataStore.GetDateFormatUseCase
 import ru.nikfirs.android.traveltracker.core.ui.domain.usecase.trip.GetTripByIdUseCase
 import ru.nikfirs.android.traveltracker.core.ui.domain.usecase.trip.GetTripsFlowByDatesUseCase
 import ru.nikfirs.android.traveltracker.core.ui.domain.usecase.visa.GetVisaByIdUseCase
@@ -40,6 +41,7 @@ class CalendarViewmodel @Inject constructor(
     private val calculateDaysInPeriodUseCase: CalculateDaysInPeriodUseCase,
     private val getTripByIdUseCase: GetTripByIdUseCase,
     private val getVisaByIdUseCase: GetVisaByIdUseCase,
+    private val getDateFormatUseCase: GetDateFormatUseCase,
 ) : ViewModel<Action, Effect, State>() {
 
     init {
@@ -64,13 +66,25 @@ class CalendarViewmodel @Inject constructor(
     private fun loadData() {
         setState { it.copy(isLoading = true, error = null) }
 
+        launchIO {
+            launchIO {
+                try {
+                    getDateFormatUseCase.invoke().collectLatest { dateFormat ->
+                        setState { it.copy(dateFormatter = dateFormat.getFormatter()) }
+                    }
+                } catch (e: Exception) {
+                    Log.e("CalendarViewmodel", "loadData, date format", e)
+                }
+            }
+        }
+
         launch {
             try {
                 val startDate = LocalDate.now().minusDays(PERIOD_DAYS.toLong())
 
                 combine(
-                    getTripsFlowByDatesUseCase(startDate),
-                    getVisaFlowByDateUseCase(startDate, true)
+                    getTripsFlowByDatesUseCase(startDate.minusDays(PERIOD_DAYS.toLong())),
+                    getVisaFlowByDateUseCase(startDate, true),
                 ) { trips, visas ->
                     Pair(trips, visas)
                 }.collectLatest { (trips, visas) ->
@@ -78,7 +92,7 @@ class CalendarViewmodel @Inject constructor(
                         trips = trips,
                         visaExpiryDate = visas.maxOfOrNull { it.expiryDate }
                     )
-                    val tripRanges = createTripRanges(trips)
+                    val tripRanges = createTripRanges(trips, startDate)
                     val visaRanges = createVisaRanges(visas)
                     val dateList = createDateList(trips, dateRange)
 
@@ -138,25 +152,30 @@ class CalendarViewmodel @Inject constructor(
      * - Ongoing trip: SuccessGreen
      * - Future trips: Primary
      */
-    private fun createTripRanges(trips: List<Trip>): List<ExistingRange> {
-        return trips.mapNotNull { trip ->
-            val startDate = trip.startDate ?: return@mapNotNull null
-            val endDate = trip.endDate ?: return@mapNotNull null
+    private fun createTripRanges(
+        trips: List<Trip>,
+        startCalendarDate: LocalDate
+    ): List<ExistingRange> {
+        return trips
+            .filter { it.endDate?.isBefore(startCalendarDate) == false }
+            .mapNotNull { trip ->
+                val startDate = trip.startDate ?: return@mapNotNull null
+                val endDate = trip.endDate ?: return@mapNotNull null
 
-            val color = when {
-                trip.isPast -> CalendarGray
-                trip.isOngoing -> SuccessGreen
-                trip.isFuture -> Primary
-                else -> CalendarGray
+                val color = when {
+                    trip.isPast -> CalendarGray
+                    trip.isOngoing -> SuccessGreen
+                    trip.isFuture -> Primary
+                    else -> CalendarGray
+                }
+
+                ExistingRange(
+                    startDate = startDate,
+                    endDate = endDate,
+                    color = color,
+                    type = DateType.Trip(trip.id)
+                )
             }
-
-            ExistingRange(
-                startDate = startDate,
-                endDate = endDate,
-                color = color,
-                type = DateType.Trip(trip.id)
-            )
-        }
     }
 
     /**
@@ -179,7 +198,6 @@ class CalendarViewmodel @Inject constructor(
      * - isUsed = true, when during this day there's a segment with isExempt = false of any trip
      * - isIncreased = true, when 180 days ago there was a segment with isExempt = false of any trip
      * - remaining = days remaining from 90
-     * Add days only if isUsed or isIncreased = true (changes in remaining days)
      */
     private suspend fun createDateList(
         trips: List<Trip>,
@@ -219,16 +237,15 @@ class CalendarViewmodel @Inject constructor(
             )
             val remaining = daysCalculation.remainingDays
 
-            if (isUsed || isIncreased) {
-                dateList.add(
-                    DayCalculation(
-                        date = currentDate,
-                        remaining = remaining,
-                        isUsed = isUsed,
-                        isIncreased = isIncreased
-                    )
+            dateList.add(
+                DayCalculation(
+                    date = currentDate,
+                    remaining = remaining,
+                    isUsed = isUsed,
+                    isIncreased = isIncreased
                 )
-            }
+            )
+
 
             currentDate = currentDate.plusDays(1)
         }

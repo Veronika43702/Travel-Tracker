@@ -148,6 +148,7 @@ private fun AddVisaScreenContent(
             updateEntries = { onAction(Action.UpdateEntries(it)) },
             updateNotes = { onAction(Action.UpdateNotes(it)) },
             focusManager = focusManager,
+            dateFormatter = state.dateFormatter,
         )
 
         Spacer(Modifier.weight(1f))

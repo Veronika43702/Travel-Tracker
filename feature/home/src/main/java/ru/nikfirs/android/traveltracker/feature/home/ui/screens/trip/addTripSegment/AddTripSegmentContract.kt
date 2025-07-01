@@ -1,5 +1,6 @@
 package ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTripSegment
 
+import ru.nikfirs.android.traveltracker.core.domain.model.AppDateFormatModel
 import ru.nikfirs.android.traveltracker.core.domain.model.Country
 import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
 import ru.nikfirs.android.traveltracker.core.ui.ui.model.DateRangeSelection
@@ -29,7 +30,7 @@ sealed class AddTripSegmentContract {
         val isEditMode: Boolean = false,
         val error: CustomString? = null,
         val validationErrors: ValidationErrors = ValidationErrors(),
-        val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy"),
+        val dateFormatter: DateTimeFormatter = AppDateFormatModel.getDefault().getFormatter(),
     ) : MviState {
 
         val duration: Long

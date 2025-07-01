@@ -1,5 +1,6 @@
 package ru.nikfirs.android.traveltracker.feature.calendar.ui.main
 
+import ru.nikfirs.android.traveltracker.core.domain.model.AppDateFormatModel
 import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
 import ru.nikfirs.android.traveltracker.core.ui.ui.model.DayCalculation
 import ru.nikfirs.android.traveltracker.core.ui.ui.model.ExistingRange
@@ -8,6 +9,7 @@ import ru.nikfirs.android.traveltracker.core.ui.mvi.MviEffect
 import ru.nikfirs.android.traveltracker.core.ui.mvi.MviState
 import ru.nikfirs.android.traveltracker.feature.calendar.ui.model.DateDataModel
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 sealed class CalendarContract {
     data class State(
@@ -20,6 +22,7 @@ sealed class CalendarContract {
         val showFilters: Boolean = false,
         val filters: Filters = Filters(),
         val dateInformation: DateDataModel? = null,
+        val dateFormatter: DateTimeFormatter = AppDateFormatModel.getDefault().getFormatter(),
     ) : MviState
 
     sealed class Action : MviAction {
