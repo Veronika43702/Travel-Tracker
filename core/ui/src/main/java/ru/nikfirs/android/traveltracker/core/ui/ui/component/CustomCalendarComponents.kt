@@ -59,12 +59,12 @@ import ru.nikfirs.android.traveltracker.core.ui.ui.theme.calendarCircle
 import ru.nikfirs.android.traveltracker.core.ui.ui.theme.calendarDay
 import ru.nikfirs.android.traveltracker.core.ui.ui.theme.calendarEnd
 import ru.nikfirs.android.traveltracker.core.ui.ui.theme.calendarStart
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.time.temporal.TemporalAdjusters
-import java.time.temporal.WeekFields
 import java.util.Locale
 
 /**
@@ -202,8 +202,7 @@ internal fun MonthCalendar(
 internal fun DaysOfWeekHeader(
     modifier: Modifier = Modifier
 ) {
-    val weekFields = WeekFields.of(Locale.getDefault())
-    val firstDayOfWeek = weekFields.firstDayOfWeek
+    val firstDayOfWeek = DayOfWeek.MONDAY
 
     Row(
         modifier = modifier,
@@ -257,9 +256,7 @@ internal fun CalendarMonthGrid(
     blockedDays: Set<LocalDate> = emptySet(),
     blockedPeriods: Set<BlockDateModel> = emptySet(),
 ) {
-    val currentLocale = Locale.getDefault()
-    val weekFields = WeekFields.of(currentLocale)
-    val firstDayOfWeek = weekFields.firstDayOfWeek
+    val firstDayOfWeek = DayOfWeek.MONDAY
     val firstDateOfMonth = month.atDay(1)
     val lastDateOfMonth = month.atEndOfMonth()
 
@@ -272,9 +269,7 @@ internal fun CalendarMonthGrid(
         .takeWhile { !it.isAfter(endDate) }
         .toList()
 
-    val rows = remember(month, currentLocale) {
-        calculateWeekRowsForMonth(month, currentLocale)
-    }
+    val rows = remember(month) { calculateWeekRowsForMonth(month) }
 
     LazyVerticalGrid(
         columns = GridCells.Fixed(7),
@@ -658,26 +653,18 @@ private fun getVerticalPadding(isPicker: Boolean): Dp {
 }
 
 /**
- * Calculates number of week rows needed to display a month in calendar grid
- * based on the locale-specific first day of week.
- *
- * For US English locale (first day = Sunday): weeks start on Sunday
- * For other locales like Russian/British English (first day = Monday): weeks start on Monday
+ * Calculates number of week rows needed to display a month in calendar grid.
+ * Always uses Monday as the first day of week regardless of locale.
  *
  * @param month the month to calculate rows for
- * @param locale the locale to determine first day of week (default: system locale)
  * @return number of week rows (typically 4-6 weeks)
  */
 internal fun calculateWeekRowsForMonth(
     month: YearMonth,
-    locale: Locale = Locale.getDefault()
 ): Int {
-    val weekFields = WeekFields.of(locale)
-    val firstDayOfWeek = weekFields.firstDayOfWeek
+    val firstDayOfWeek = DayOfWeek.MONDAY
     val firstDayOfMonth = month.atDay(1)
-    // Calculate how many days from the start of the week to the first day of month
     val daysFromWeekStart = (firstDayOfMonth.dayOfWeek.value - firstDayOfWeek.value + 7) % 7
-
     val totalDays = month.lengthOfMonth()
     val totalCells = daysFromWeekStart + totalDays
 

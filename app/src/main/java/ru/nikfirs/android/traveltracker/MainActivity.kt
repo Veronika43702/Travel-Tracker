@@ -20,8 +20,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import ru.nikfirs.android.traveltracker.core.data.datastore.DatastoreHelper
 import ru.nikfirs.android.traveltracker.core.domain.model.AppThemeModel
-import ru.nikfirs.android.traveltracker.core.ui.ui.extension.getLanguage
 import ru.nikfirs.android.traveltracker.core.ui.ui.theme.AppTheme
+import java.util.Calendar
 import java.util.Locale
 import javax.inject.Inject
 
@@ -78,27 +78,54 @@ class MainActivity : ComponentActivity() {
     }
 
     override fun attachBaseContext(newBase: Context?) {
-        val localizedContext = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-            updateResources(newBase)
-        } else newBase
-
+        val localizedContext = updateResources(newBase)
         super.attachBaseContext(localizedContext)
     }
 
     private fun updateResources(context: Context?): Context? {
         context ?: return null
-        datastoreHelper = DatastoreHelper(context)
-        val resConfiguration = context.resources.configuration
-        val languageCode = runBlocking {
-            datastoreHelper.languageFlow.firstOrNull()
-                 ?: resConfiguration.locales[0].language.getLanguage()
+        val languageCode = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            updateResourcesForAndroidUntil12(context)
+        } else {
+            context.resources.configuration.locales[0].language
         }
-        val newLocale = Locale(languageCode)
-        Locale.setDefault(newLocale)
 
-        val config = Configuration(resConfiguration)
-        config.setLocale(newLocale)
+        val mondayFirstLocale = createMondayFirstLocale(languageCode)
+        Locale.setDefault(mondayFirstLocale)
+
+        val res = context.resources
+        val config = Configuration(res.configuration)
+        config.setLocale(mondayFirstLocale)
 
         return context.createConfigurationContext(config)
+    }
+
+
+    private fun updateResourcesForAndroidUntil12(context: Context): String {
+        datastoreHelper = DatastoreHelper(context)
+        return runBlocking {
+            datastoreHelper.languageFlow.firstOrNull()
+                ?: context.resources.configuration.locales[0].language
+        }
+    }
+
+    private fun createMondayFirstLocale(languageCode: String): Locale {
+        return when (languageCode) {
+            "en" -> Locale("en", "GB")
+            "ru" -> Locale("ru", "RU")
+            else -> {
+                val systemLocale = Locale(languageCode)
+                if (isFirstDaySunday(systemLocale)) {
+                    Locale("en", "GB")
+                } else {
+                    systemLocale
+                }
+            }
+        }
+    }
+
+    private fun isFirstDaySunday(locale: Locale): Boolean {
+        val calendar = Calendar.getInstance(locale)
+        return calendar.firstDayOfWeek == Calendar.SUNDAY
     }
 }
