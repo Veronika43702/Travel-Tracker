@@ -2,37 +2,41 @@ package ru.nikfirs.android.traveltracker.feature.calendar.ui.main
 
 import android.util.Log
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.retry
+import kotlinx.coroutines.withContext
 import ru.nikfirs.android.traveltracker.core.domain.PERIOD_DAYS
 import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
 import ru.nikfirs.android.traveltracker.core.domain.model.Trip
 import ru.nikfirs.android.traveltracker.core.domain.model.Visa
-import ru.nikfirs.android.traveltracker.core.ui.R as uiR
-import ru.nikfirs.android.traveltracker.core.ui.ui.model.DateType
-import ru.nikfirs.android.traveltracker.core.ui.ui.model.DayCalculation
-import ru.nikfirs.android.traveltracker.core.ui.ui.model.ExistingRange
-import ru.nikfirs.android.traveltracker.core.ui.mvi.ViewModel
-import ru.nikfirs.android.traveltracker.core.ui.mvi.launch
-import ru.nikfirs.android.traveltracker.core.ui.mvi.launchIO
-import ru.nikfirs.android.traveltracker.core.ui.ui.theme.CalendarGray
-import ru.nikfirs.android.traveltracker.core.ui.ui.theme.Primary
-import ru.nikfirs.android.traveltracker.core.ui.ui.theme.SuccessGreen
-import ru.nikfirs.android.traveltracker.core.ui.ui.theme.VisaCalendar
-import ru.nikfirs.android.traveltracker.feature.calendar.ui.model.DateDataModel
 import ru.nikfirs.android.traveltracker.core.ui.domain.usecase.CalculateDaysInPeriodUseCase
 import ru.nikfirs.android.traveltracker.core.ui.domain.usecase.dataStore.GetDateFormatUseCase
 import ru.nikfirs.android.traveltracker.core.ui.domain.usecase.trip.GetTripByIdUseCase
 import ru.nikfirs.android.traveltracker.core.ui.domain.usecase.trip.GetTripsFlowByDatesUseCase
 import ru.nikfirs.android.traveltracker.core.ui.domain.usecase.visa.GetVisaByIdUseCase
 import ru.nikfirs.android.traveltracker.core.ui.domain.usecase.visa.GetVisaFlowByDateUseCase
+import ru.nikfirs.android.traveltracker.core.ui.mvi.ViewModel
+import ru.nikfirs.android.traveltracker.core.ui.mvi.launchIO
+import ru.nikfirs.android.traveltracker.core.ui.ui.model.DateType
+import ru.nikfirs.android.traveltracker.core.ui.ui.model.DayCalculation
+import ru.nikfirs.android.traveltracker.core.ui.ui.model.ExistingRange
+import ru.nikfirs.android.traveltracker.core.ui.ui.theme.CalendarGray
+import ru.nikfirs.android.traveltracker.core.ui.ui.theme.Primary
+import ru.nikfirs.android.traveltracker.core.ui.ui.theme.SuccessGreen
+import ru.nikfirs.android.traveltracker.core.ui.ui.theme.VisaCalendar
 import ru.nikfirs.android.traveltracker.feature.calendar.ui.main.CalendarContract.Action
 import ru.nikfirs.android.traveltracker.feature.calendar.ui.main.CalendarContract.Effect
 import ru.nikfirs.android.traveltracker.feature.calendar.ui.main.CalendarContract.Filters
 import ru.nikfirs.android.traveltracker.feature.calendar.ui.main.CalendarContract.State
+import ru.nikfirs.android.traveltracker.feature.calendar.ui.model.DateDataModel
+import java.io.IOException
 import java.time.LocalDate
 import javax.inject.Inject
+import ru.nikfirs.android.traveltracker.core.ui.R as uiR
 
 @HiltViewModel
 class CalendarViewmodel @Inject constructor(
@@ -43,10 +47,6 @@ class CalendarViewmodel @Inject constructor(
     private val getVisaByIdUseCase: GetVisaByIdUseCase,
     private val getDateFormatUseCase: GetDateFormatUseCase,
 ) : ViewModel<Action, Effect, State>() {
-
-    init {
-        loadData()
-    }
 
     override fun createInitialState(): State = State()
 
@@ -60,25 +60,25 @@ class CalendarViewmodel @Inject constructor(
             Action.ClearDateInfo -> clearDateData()
             Action.NavigateToTripDetails -> navigateToTripDetails()
             Action.NavigateToVisaDetails -> navigateToVisaDetails()
+            is Action.SetLoader -> setLoader(action.value)
         }
     }
 
     private fun loadData() {
         setState { it.copy(isLoading = true, error = null) }
-
         launchIO {
-            launchIO {
-                try {
-                    getDateFormatUseCase.invoke().collectLatest { dateFormat ->
+            try {
+                getDateFormatUseCase.invoke()
+                    .retry(3) { it is IOException }
+                    .collectLatest { dateFormat ->
                         setState { it.copy(dateFormatter = dateFormat.getFormatter()) }
                     }
-                } catch (e: Exception) {
-                    Log.e("CalendarViewmodel", "loadData, date format", e)
-                }
+            } catch (e: Exception) {
+                Log.e("CalendarViewmodel", "loadData, date format", e)
             }
         }
 
-        launch {
+        launchIO {
             try {
                 val startDate = LocalDate.now().minusDays(PERIOD_DAYS.toLong())
 
@@ -87,28 +87,46 @@ class CalendarViewmodel @Inject constructor(
                     getVisaFlowByDateUseCase(startDate, true),
                 ) { trips, visas ->
                     Pair(trips, visas)
-                }.collectLatest { (trips, visas) ->
-                    val dateRange = calculateAvailableDateRange(
-                        trips = trips,
-                        visaExpiryDate = visas.maxOfOrNull { it.expiryDate }
-                    )
-                    val tripRanges = createTripRanges(trips, startDate)
-                    val visaRanges = createVisaRanges(visas)
-                    val dateList = createDateList(trips, dateRange)
-
-                    setState {
-                        it.copy(
-                            isLoading = false,
-                            tripRanges = tripRanges,
-                            visaRanges = visaRanges,
-                            dateList = dateList,
-                            availableDateRange = dateRange,
-                        )
-                    }
                 }
+                    .retry(3) { it is IOException }
+                    .collectLatest { (trips, visas) ->
+                        val dateRangeDeferred = async(Dispatchers.Default) {
+                            calculateAvailableDateRange(
+                                trips = trips,
+                                visaExpiryDate = visas.maxOfOrNull { it.expiryDate }
+                            )
+                        }
+                        val tripRangesDeferred = async(Dispatchers.Default) {
+                            createTripRanges(trips, startDate)
+                        }
+                        val visaRangesDeferred = async(Dispatchers.Default) {
+                            createVisaRanges(visas)
+                        }
+
+                        val dateRange = dateRangeDeferred.await()
+                        val dateListDeferred = async(Dispatchers.Default) {
+                            createDateList(trips, dateRange)
+                        }
+
+                        val tripRanges = tripRangesDeferred.await()
+                        val visaRanges = visaRangesDeferred.await()
+                        val dateList = dateListDeferred.await()
+                        withContext(Dispatchers.Main) {
+                            setState {
+                                it.copy(
+                                    dataInitialized = true,
+                                    tripRanges = tripRanges,
+                                    visaRanges = visaRanges,
+                                    dateList = dateList,
+                                    availableDateRange = dateRange,
+                                )
+                            }
+                        }
+                    }
             } catch (e: Exception) {
+                setState { it.copy(dataInitialized = false) }
                 setError(CustomString.Resource(uiR.string.error_loading_data))
-                Log.e(null, "loadData", e)
+                Log.e(null, "loadData, combine data", e)
             }
         }
     }
@@ -129,12 +147,13 @@ class CalendarViewmodel @Inject constructor(
 
         val earliestTripInRange = trips
             .filter {
-                it.endDate != null
+                (it.endDate != null)
                         && (it.endDate ?: defaultStartDate.minusDays(1)) >= defaultStartDate
             }
             .minByOrNull { it.startDate ?: defaultStartDate }
 
-        val startDate = minOf(earliestTripInRange?.startDate ?: defaultStartDate, defaultStartDate)
+        val startDate =
+            minOf(earliestTripInRange?.startDate ?: defaultStartDate, defaultStartDate)
 
         val latestFutureTrip = trips
             .filter { it.isFuture && it.endDate != null }
@@ -232,9 +251,10 @@ class CalendarViewmodel @Inject constructor(
             }
 
             // calculate remaining days
-            val daysCalculation = calculateDaysInPeriodUseCase.invoke(
-                periodEnd = currentDate,
-            )
+
+            val daysCalculation = withContext(Dispatchers.IO) {
+                calculateDaysInPeriodUseCase.invoke(periodEnd = currentDate)
+            }
             val remaining = daysCalculation.remainingDays
 
             dateList.add(
@@ -315,6 +335,10 @@ class CalendarViewmodel @Inject constructor(
         currentState.dateInformation?.visa?.id?.let {
             setEffect { Effect.NavigateToVisaDetails(it) }
         }
+    }
+
+    private fun setLoader(value: Boolean) {
+        setState { it.copy(isLoading = value) }
     }
 
     private fun setError(error: CustomString?) {

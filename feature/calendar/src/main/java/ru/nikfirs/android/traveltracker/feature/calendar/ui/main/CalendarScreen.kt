@@ -16,7 +16,9 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -24,6 +26,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
 import ru.nikfirs.android.traveltracker.core.ui.ui.component.CustomCalendar
 import ru.nikfirs.android.traveltracker.core.ui.ui.component.CustomSwitch
 import ru.nikfirs.android.traveltracker.core.ui.ui.component.ErrorDialog
@@ -48,12 +51,17 @@ import ru.nikfirs.android.traveltracker.core.ui.R as uiR
 @Composable
 fun CalendarScreen(
     navigateRoute: (Any) -> Unit,
+    navigateBack: () -> Unit,
     navigateToTripDetails: (tripId: Long) -> Unit,
     navigateToVisaDetails: (visaId: Long) -> Unit,
     viewModel: CalendarViewmodel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-
+    LaunchedEffect(Unit) {
+        if (!state.dataInitialized) {
+            viewModel.setAction(Action.LoadData)
+        }
+    }
     LaunchedEffectResolver(flow = viewModel.effect) { effect ->
         when (effect) {
             is Effect.NavigateToTripDetails -> navigateToTripDetails(effect.tripId)
@@ -93,7 +101,16 @@ fun CalendarScreen(
 
     ErrorDialog(
         message = state.error,
-        onDismiss = { viewModel.setAction(Action.SetError()) },
+        onDismiss = {
+            if (state.dataInitialized) {
+                viewModel.setAction(Action.SetError())
+            } else {
+                navigateBack()
+            }
+        },
+        onRetry = if (state.dataInitialized) null else {
+            { viewModel.setAction(Action.LoadData) }
+        },
     )
 }
 
@@ -102,19 +119,13 @@ private fun CalendarContent(
     state: State,
     onAction: (Action) -> Unit
 ) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .then(
-                if (state.showFilters) {
-                    Modifier.clickableOnce {
-                        onAction(Action.ShowFilters(false))
-                    }
-                } else Modifier
-            )
-    ) {
-        CustomCalendar(
-            existingRangeList =
+    if (state.dataInitialized) {
+        val existingRangeList = remember(
+            state.filters.showVisaRange,
+            state.filters.showTripRange,
+            state.visaRanges,
+            state.tripRanges
+        ) {
             when {
                 state.filters.showVisaRange && state.filters.showTripRange -> {
                     state.visaRanges + state.tripRanges
@@ -123,27 +134,44 @@ private fun CalendarContent(
                 state.filters.showVisaRange -> state.visaRanges
                 state.filters.showTripRange -> state.tripRanges
                 else -> emptyList()
-            },
-            availableDateRange = state.availableDateRange,
-            dateList = state.dateList,
-            showDots = state.filters.showDayChangeDot,
-            showRemainingDays = state.filters.showRemainingDays,
-            onDateClick = { onAction(Action.GetDateInfo(it)) },
-        )
+            }
+        }
 
-        AnimatedVisibility(
-            visible = state.showFilters,
-            enter = expandVertically(),
-            exit = shrinkVertically(),
-            modifier = Modifier.align(Alignment.TopCenter)
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .then(
+                    if (state.showFilters) {
+                        Modifier.clickableOnce {
+                            onAction(Action.ShowFilters(false))
+                        }
+                    } else Modifier
+                )
         ) {
-            FilterMenu(
-                filters = state.filters,
-                onFiltersChange = { newFilters ->
-                    onAction(Action.UpdateFilters(newFilters))
-                },
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+            CustomCalendar(
+                existingRangeList = existingRangeList,
+                availableDateRange = state.availableDateRange,
+                dateList = state.dateList,
+                showDots = state.filters.showDayChangeDot,
+                showRemainingDays = state.filters.showRemainingDays,
+                onDateClick = { onAction(Action.GetDateInfo(it)) },
+                onScrollCompleted = { onAction(Action.SetLoader(it)) }
             )
+
+            AnimatedVisibility(
+                visible = state.showFilters,
+                enter = expandVertically(),
+                exit = shrinkVertically(),
+                modifier = Modifier.align(Alignment.TopCenter)
+            ) {
+                FilterMenu(
+                    filters = state.filters,
+                    onFiltersChange = { newFilters ->
+                        onAction(Action.UpdateFilters(newFilters))
+                    },
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                )
+            }
         }
     }
 }
