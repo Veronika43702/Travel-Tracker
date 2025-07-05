@@ -9,17 +9,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.delay
 import ru.nikfirs.android.traveltracker.core.ui.ui.model.DayCalculation
 import ru.nikfirs.android.traveltracker.core.ui.ui.model.ExistingRange
 import ru.nikfirs.android.traveltracker.core.ui.ui.theme.AppTheme
@@ -35,7 +29,7 @@ fun CustomCalendar(
     showDots: Boolean = false,
     showRemainingDays: Boolean = false,
     onDateClick: (LocalDate) -> Unit,
-    onScrollCompleted: ((Boolean) -> Unit)? = null,
+    onCalculationInProgress: ((Boolean) -> Unit)? = null,
 ) {
     val (startMonth, monthCount, initialIndex) = remember(
         availableDateRange,
@@ -52,10 +46,9 @@ fun CustomCalendar(
         val count = calculateMonthCount(start, end)
         val index = findCurrentMonthIndex(start, end, currentMonth)
 
-        onScrollCompleted?.invoke(false)
+        onCalculationInProgress?.invoke(false)
         CalendarData(start, count, index)
     }
-
 
     val listState = rememberLazyListState(
         initialFirstVisibleItemIndex = initialIndex

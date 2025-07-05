@@ -26,8 +26,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
-import ru.nikfirs.android.traveltracker.core.ui.ui.component.CustomCalendar
 import ru.nikfirs.android.traveltracker.core.ui.ui.component.CustomSwitch
 import ru.nikfirs.android.traveltracker.core.ui.ui.component.ErrorDialog
 import ru.nikfirs.android.traveltracker.core.ui.ui.component.FullScreenLoadingIndicator
@@ -41,6 +39,7 @@ import ru.nikfirs.android.traveltracker.core.ui.ui.model.IconType
 import ru.nikfirs.android.traveltracker.core.ui.ui.model.TopBarActionModel
 import ru.nikfirs.android.traveltracker.core.ui.mvi.LaunchedEffectResolver
 import ru.nikfirs.android.traveltracker.core.ui.navigation.BottomNavBarRoute
+import ru.nikfirs.android.traveltracker.core.ui.ui.component.CustomCalendar
 import ru.nikfirs.android.traveltracker.core.ui.ui.theme.AppTheme
 import ru.nikfirs.android.traveltracker.feature.calendar.R
 import ru.nikfirs.android.traveltracker.feature.calendar.ui.components.DayInformationCard
@@ -155,9 +154,8 @@ private fun CalendarContent(
                 showDots = state.filters.showDayChangeDot,
                 showRemainingDays = state.filters.showRemainingDays,
                 onDateClick = { onAction(Action.GetDateInfo(it)) },
-                onScrollCompleted = { onAction(Action.SetLoader(it)) }
+                onCalculationInProgress = { onAction(Action.SetLoader(it)) }
             )
-
             AnimatedVisibility(
                 visible = state.showFilters,
                 enter = expandVertically(),
