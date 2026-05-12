@@ -14,6 +14,7 @@ import java.time.format.DateTimeFormatter
 sealed class CalendarContract {
     data class State(
         val isLoading: Boolean = true,
+        val dataInitialized: Boolean = false,
         val error: CustomString? = null,
         val dateList: List<DayCalculation> = emptyList(),
         val tripRanges: List<ExistingRange> = emptyList(),
@@ -34,6 +35,7 @@ sealed class CalendarContract {
         data object ClearDateInfo : Action()
         data object NavigateToTripDetails : Action()
         data object NavigateToVisaDetails : Action()
+        data class SetLoader(val value: Boolean = false) : Action()
     }
 
     sealed class Effect : MviEffect {

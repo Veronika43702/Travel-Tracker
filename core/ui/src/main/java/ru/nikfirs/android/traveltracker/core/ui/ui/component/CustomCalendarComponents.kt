@@ -59,11 +59,12 @@ import ru.nikfirs.android.traveltracker.core.ui.ui.theme.calendarCircle
 import ru.nikfirs.android.traveltracker.core.ui.ui.theme.calendarDay
 import ru.nikfirs.android.traveltracker.core.ui.ui.theme.calendarEnd
 import ru.nikfirs.android.traveltracker.core.ui.ui.theme.calendarStart
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
-import java.time.temporal.WeekFields
+import java.time.temporal.TemporalAdjusters
 import java.util.Locale
 
 /**
@@ -201,8 +202,7 @@ internal fun MonthCalendar(
 internal fun DaysOfWeekHeader(
     modifier: Modifier = Modifier
 ) {
-    val weekFields = WeekFields.of(Locale.getDefault())
-    val firstDayOfWeek = weekFields.firstDayOfWeek
+    val firstDayOfWeek = DayOfWeek.MONDAY
 
     Row(
         modifier = modifier,
@@ -256,14 +256,14 @@ internal fun CalendarMonthGrid(
     blockedDays: Set<LocalDate> = emptySet(),
     blockedPeriods: Set<BlockDateModel> = emptySet(),
 ) {
-    val weekFields = WeekFields.of(Locale.getDefault())
-    val firstDayOfWeek = weekFields.firstDayOfWeek
+    val firstDayOfWeek = DayOfWeek.MONDAY
     val firstDateOfMonth = month.atDay(1)
     val lastDateOfMonth = month.atEndOfMonth()
 
     // Calculate start of the week for the first day of month
-    val startDate = firstDateOfMonth.with(firstDayOfWeek)
-    val endDate = lastDateOfMonth.with(weekFields.dayOfWeek(), 7)
+    val startDate = firstDateOfMonth.with(TemporalAdjusters.previousOrSame(firstDayOfWeek))
+    val lastDayOfWeek = firstDayOfWeek.plus(6)
+    val endDate = lastDateOfMonth.with(TemporalAdjusters.nextOrSame(lastDayOfWeek))
 
     val dates = generateSequence(startDate) { it.plusDays(1) }
         .takeWhile { !it.isAfter(endDate) }
@@ -652,12 +652,22 @@ private fun getVerticalPadding(isPicker: Boolean): Dp {
     return if (isPicker) pickerVerticalPadding else calendarVerticalPadding
 }
 
-private fun calculateWeekRowsForMonth(month: YearMonth): Int {
+/**
+ * Calculates number of week rows needed to display a month in calendar grid.
+ * Always uses Monday as the first day of week regardless of locale.
+ *
+ * @param month the month to calculate rows for
+ * @return number of week rows (typically 4-6 weeks)
+ */
+internal fun calculateWeekRowsForMonth(
+    month: YearMonth,
+): Int {
+    val firstDayOfWeek = DayOfWeek.MONDAY
     val firstDayOfMonth = month.atDay(1)
-    val firstDayOfWeek = (firstDayOfMonth.dayOfWeek.value + 6) % 7 // Mon=0, Sun=6
-
+    val daysFromWeekStart = (firstDayOfMonth.dayOfWeek.value - firstDayOfWeek.value + 7) % 7
     val totalDays = month.lengthOfMonth()
-    val totalCells = firstDayOfWeek + totalDays
+    val totalCells = daysFromWeekStart + totalDays
+
     return (totalCells + 6) / 7
 }
 
@@ -667,8 +677,8 @@ val pickerHorizontalPadding = 8.dp
 val pickerVerticalPadding = 8.dp
 
 // Calendar
-val calendarCellSize = 60.dp
-val calendarVerticalPadding = 2.dp
+private val calendarCellSize = 60.dp
+private val calendarVerticalPadding = 2.dp
 val calendarPaddingInForLabels = 2.dp
 val calendarPaddingOutForLabels = 4.dp
 val calendarLabelSmallSize = 12.dp

@@ -6,11 +6,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,27 +29,30 @@ fun CustomCalendar(
     showDots: Boolean = false,
     showRemainingDays: Boolean = false,
     onDateClick: (LocalDate) -> Unit,
+    onCalculationInProgress: ((Boolean) -> Unit)? = null,
 ) {
-    // Calculate months to display
-    val startMonth = availableDateRange?.start?.let {
-        YearMonth.of(it.year, it.month)
-    } ?: currentMonth.minusMonths(6)
+    val (startMonth, monthCount, initialIndex) = remember(
+        availableDateRange,
+        currentMonth
+    ) {
+        val start = availableDateRange?.start?.let {
+            YearMonth.of(it.year, it.month)
+        } ?: currentMonth.minusMonths(6)
 
-    val endMonth = availableDateRange?.endInclusive?.let {
-        YearMonth.of(it.year, it.month)
-    } ?: currentMonth.plusMonths(12)
+        val end = availableDateRange?.endInclusive?.let {
+            YearMonth.of(it.year, it.month)
+        } ?: currentMonth.plusMonths(12)
 
-    val monthsToDisplay = generateSequence(startMonth) { it.plusMonths(1) }
-        .takeWhile { !it.isAfter(endMonth) }
-        .toList()
+        val count = calculateMonthCount(start, end)
+        val index = findCurrentMonthIndex(start, end, currentMonth)
 
-    val listState = rememberLazyListState()
-    LaunchedEffect(Unit) {
-        val index = monthsToDisplay.indexOf(currentMonth)
-        if (index >= 0) {
-            listState.scrollToItem(index)
-        }
+        onCalculationInProgress?.invoke(false)
+        CalendarData(start, count, index)
     }
+
+    val listState = rememberLazyListState(
+        initialFirstVisibleItemIndex = initialIndex
+    )
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -73,7 +75,12 @@ fun CustomCalendar(
                 .fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            items(monthsToDisplay) { month ->
+            items(
+                count = monthCount,
+                key = { index -> getMonthByIndex(startMonth, index).toString() }
+            ) { index ->
+                val month = getMonthByIndex(startMonth, index)
+
                 MonthCalendar(
                     month = month,
                     existingSegments = existingRangeList,
@@ -88,6 +95,38 @@ fun CustomCalendar(
             }
         }
     }
+
+}
+
+private data class CalendarData(
+    val startMonth: YearMonth,
+    val monthCount: Int,
+    val currentMonthIndex: Int
+)
+
+private fun calculateMonthCount(start: YearMonth, end: YearMonth): Int {
+    var count = 0
+    var current = start
+    while (!current.isAfter(end)) {
+        count++
+        current = current.plusMonths(1)
+    }
+    return count
+}
+
+private fun findCurrentMonthIndex(start: YearMonth, end: YearMonth, currentMonth: YearMonth): Int {
+    var current = start
+    var index = 0
+    while (!current.isAfter(end)) {
+        if (current == currentMonth) return index
+        current = current.plusMonths(1)
+        index++
+    }
+    return 0
+}
+
+private fun getMonthByIndex(startMonth: YearMonth, index: Int): YearMonth {
+    return startMonth.plusMonths(index.toLong())
 }
 
 // Preview

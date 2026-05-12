@@ -53,11 +53,12 @@ import ru.nikfirs.android.traveltracker.core.ui.ui.theme.AppTheme
 import ru.nikfirs.android.traveltracker.core.ui.ui.theme.calendarCircle
 import ru.nikfirs.android.traveltracker.core.ui.ui.theme.calendarEnd
 import ru.nikfirs.android.traveltracker.core.ui.ui.theme.calendarStart
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
-import java.time.temporal.WeekFields
+import java.time.temporal.TemporalAdjusters
 import java.util.Locale
 
 @Composable
@@ -268,8 +269,7 @@ private fun CalendarHeader(
 
 @Composable
 private fun DaysOfWeekHeader() {
-    val weekFields = WeekFields.of(Locale.getDefault())
-    val firstDayOfWeek = weekFields.firstDayOfWeek
+    val firstDayOfWeek = DayOfWeek.MONDAY
 
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -302,14 +302,12 @@ private fun CalendarGrid(
     availableDateRange: ClosedRange<LocalDate>?,
     onDateClick: (LocalDate) -> Unit
 ) {
-    val weekFields = WeekFields.of(Locale.getDefault())
-    val firstDayOfWeek = weekFields.firstDayOfWeek
+    val firstDayOfWeek = DayOfWeek.MONDAY
     val firstDateOfMonth = month.atDay(1)
     val lastDateOfMonth = month.atEndOfMonth()
 
-    // Calculate start of the week for the first day of month
-    val startDate = firstDateOfMonth.with(firstDayOfWeek)
-    val endDate = lastDateOfMonth.with(weekFields.dayOfWeek(), 7)
+    val startDate = firstDateOfMonth.with(TemporalAdjusters.previousOrSame(firstDayOfWeek))
+    val endDate = lastDateOfMonth.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY))
 
     val dates = generateSequence(startDate) { it.plusDays(1) }
         .takeWhile { !it.isAfter(endDate) }

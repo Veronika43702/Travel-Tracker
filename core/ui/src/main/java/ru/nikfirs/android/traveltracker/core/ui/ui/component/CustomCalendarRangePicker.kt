@@ -120,7 +120,6 @@ fun CustomCalendarRangePicker(
             DaysOfWeekHeader(
                 modifier = Modifier
                     .width(pickerCellSize * 7 + pickerHorizontalPadding * 6)
-                    .padding(horizontal = 12.dp)
                     .align(Alignment.CenterHorizontally)
             )
 
