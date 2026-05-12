@@ -1,0 +1,82 @@
+package ru.nikfirs.android.traveltracker.feature.home.ui.screens.main
+
+import ru.nikfirs.android.traveltracker.core.domain.model.AppDateFormatModel
+import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
+import ru.nikfirs.android.traveltracker.core.domain.model.DaysCalculation
+import ru.nikfirs.android.traveltracker.core.domain.model.Trip
+import ru.nikfirs.android.traveltracker.core.domain.model.Visa
+import ru.nikfirs.android.traveltracker.core.ui.mvi.MviAction
+import ru.nikfirs.android.traveltracker.core.ui.mvi.MviEffect
+import ru.nikfirs.android.traveltracker.core.ui.mvi.MviState
+import ru.nikfirs.android.traveltracker.feature.home.ui.model.HomeItem
+import ru.nikfirs.android.traveltracker.feature.home.ui.model.HomeTab
+import ru.nikfirs.android.traveltracker.feature.home.ui.utils.HomeActionModel
+import java.time.format.DateTimeFormatter
+
+sealed class HomeContract {
+    data class State(
+        val isLoading: Boolean = true,
+        val selectedTab: HomeTab = HomeTab.TRIPS,
+        val visas: List<Visa> = emptyList(),
+        val trips: List<Trip> = emptyList(),
+        val daysCalculation: DaysCalculation? = null,
+        val error: CustomString? = null,
+        val dialogText: CustomString? = null,
+        val action: HomeActionModel? = null,
+        val dateFormatter: DateTimeFormatter = AppDateFormatModel.getDefault().getFormatter(),
+    ) : MviState {
+
+        val activeVisas: List<Visa>
+            get() = visas.filter { it.isActive }
+
+        val currentSchengenVisa: Visa?
+            get() = activeVisas
+                .filter { it.validVisa }
+                .minByOrNull { it.expiryDate }
+
+
+        val filteredItems: List<HomeItem>
+            get() = when (selectedTab) {
+                HomeTab.VISAS -> visas.map { HomeItem.VisaItem(it) }
+                HomeTab.TRIPS -> trips.map { HomeItem.TripItem(it) }
+            }
+
+        val ongoingTrips: List<Trip>
+            get() = trips.filter { it.isOngoing }
+
+        val plannedTrips: List<Trip>
+            get() = trips.filter { it.isFuture }
+
+        val pastTrips: List<Trip>
+            get() = trips.filter { it.isPast }
+    }
+
+    sealed class Action : MviAction {
+        data object LoadData : Action()
+        data object UpdateDaysCalculation: Action()
+        data class SelectTab(val tab: HomeTab) : Action()
+        data object NavigateToAddVisa : Action()
+        data object NavigateToAddTrip : Action()
+        data class NavigateToVisaDetails(val visaId: Long) : Action()
+        data class NavigateToTripDetails(val tripId: Long) : Action()
+        data class NavigateToEditVisa(val visaId: Long) : Action()
+        data class NavigateToEditTrip(val tripId: Long) : Action()
+        data class DeleteTrip(val trip: Trip) : Action()
+        data class DeleteVisa(val visa: Visa) : Action()
+        data class SetError(val error: CustomString? = null) : Action()
+        data object RetryLoadData : Action()
+        data class ShowDeleteVisaDialog(val visa: Visa) : Action()
+        data class ShowDeleteTripDialog(val trip: Trip) : Action()
+        data object HideDialog : Action()
+    }
+
+    sealed class Effect : MviEffect {
+        data object NavigateToAddVisa : Effect()
+        data object NavigateToAddTrip : Effect()
+        data class NavigateToVisaDetails(val visaId: Long) : Effect()
+        data class NavigateToTripDetails(val tripId: Long) : Effect()
+        data class NavigateToEditVisa(val visaId: Long) : Effect()
+        data class NavigateToEditTrip(val tripId: Long) : Effect()
+        data class ShowMessage(val message: CustomString) : Effect()
+    }
+}

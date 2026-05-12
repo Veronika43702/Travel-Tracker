@@ -29,5 +29,8 @@ dependencies {
     androidTestImplementation(libs.bundles.androidTest)
     androidTestImplementation(platform(libs.androidx.compose.bom))
 
+    implementation(project(":core:ui"))
     implementation(project(":feature:home"))
+    implementation(project(":feature:calendar"))
+    implementation(project(":feature:settings"))
 }

@@ -23,4 +23,9 @@ rootProject.name = "travel-tracker"
 include(":app")
 include(":core:common")
 include(":core:ui")
+include(":core:data")
+include(":core:domain")
+
 include(":feature:home")
+include(":feature:calendar")
+include(":feature:settings")

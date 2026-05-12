@@ -6,9 +6,12 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import ru.nikfirs.android.traveltracker.core.ui.model.BottomNavBarRoute
-import ru.nikfirs.android.traveltracker.core.ui.model.DeepRoute
+import ru.nikfirs.android.traveltracker.core.ui.navigation.BottomNavBarRoute
+import ru.nikfirs.android.traveltracker.core.ui.navigation.DeepRoute
+import ru.nikfirs.android.traveltracker.feature.calendar.calendarNavigationGraph
+import ru.nikfirs.android.traveltracker.feature.home.HomeRoute
 import ru.nikfirs.android.traveltracker.feature.home.homeNavigationGraph
+import ru.nikfirs.android.traveltracker.feature.settings.settingsNavigationGraph
 
 @Composable
 fun NavigationHost(
@@ -25,6 +28,14 @@ fun NavigationHost(
             navController = navController,
             navigateDeepRoute = { deepRoute -> deepRoute.resolve(navController) }
         )
+        calendarNavigationGraph(
+            navController = navController,
+            navigateDeepRoute = { deepRoute -> deepRoute.resolve(navController) }
+        )
+        settingsNavigationGraph(
+            navController = navController,
+            navigateDeepRoute = { deepRoute -> deepRoute.resolve(navController) }
+        )
     }
 }
 
@@ -32,6 +43,17 @@ internal fun DeepRoute.resolve(
     navController: NavHostController,
 ) {
     when (this) {
-        DeepRoute.Home -> navController.navigate(BottomNavBarRoute.Home) // example
+        DeepRoute.Home -> navController.navigate(BottomNavBarRoute.Home) {
+            popUpTo(BottomNavBarRoute.Home) { inclusive = true }
+            launchSingleTop = true
+        }
+
+        is DeepRoute.TripDetails -> {
+            navController.navigate(HomeRoute.TripDetails(tripId))
+        }
+
+        is DeepRoute.VisaDetails -> {
+            navController.navigate(HomeRoute.VisaDetails(visaId))
+        }
     }
 }
