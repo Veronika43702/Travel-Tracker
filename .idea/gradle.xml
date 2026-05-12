@@ -22,7 +22,6 @@
             <option value="$PROJECT_DIR$/feature/settings" />
           </set>
         </option>
-        <option name="resolveExternalAnnotations" value="false" />
       </GradleProjectSettings>
     </option>
   </component>
