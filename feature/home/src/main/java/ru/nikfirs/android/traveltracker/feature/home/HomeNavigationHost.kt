@@ -12,6 +12,8 @@ import androidx.navigation.toRoute
 import ru.nikfirs.android.traveltracker.core.ui.navigation.BottomNavBarRoute
 import ru.nikfirs.android.traveltracker.core.ui.navigation.DeepRoute
 import ru.nikfirs.android.traveltracker.core.ui.navigation.navigateBottomNavBarRoute
+import ru.nikfirs.android.traveltracker.core.ui.navigation.navigateOnce
+import ru.nikfirs.android.traveltracker.core.ui.navigation.popBackStackOnce
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addOrEditTrip.AddOrEditTripScreen
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTripSegment.AddTripSegmentScreen
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.common.AddTripCommonViewModel
@@ -26,12 +28,12 @@ fun NavGraphBuilder.homeNavigationGraph(
 ) {
     composable<BottomNavBarRoute.Home> {
         HomeScreen(
-            navigateToAddVisa = { navController.navigate(HomeRoute.SaveOrEditVisa()) },
-            navigateToAddTrip = { navController.navigate(HomeRoute.AddTripGraph()) },
-            navigateToEditVisa = { navController.navigate(HomeRoute.SaveOrEditVisa(it)) },
-            navigateToEditTrip = { navController.navigate(HomeRoute.AddTripGraph(it)) },
-            navigateToVisaDetails = { navController.navigate(HomeRoute.VisaDetails(it, true)) },
-            navigateToTripDetails = { navController.navigate(HomeRoute.TripDetails(it, true)) },
+            navigateToAddVisa = { navController.navigateOnce(HomeRoute.SaveOrEditVisa()) },
+            navigateToAddTrip = { navController.navigateOnce(HomeRoute.AddTripGraph()) },
+            navigateToEditVisa = { navController.navigateOnce(HomeRoute.SaveOrEditVisa(it)) },
+            navigateToEditTrip = { navController.navigateOnce(HomeRoute.AddTripGraph(it)) },
+            navigateToVisaDetails = { navController.navigateOnce(HomeRoute.VisaDetails(it, true)) },
+            navigateToTripDetails = { navController.navigateOnce(HomeRoute.TripDetails(it, true)) },
             navigateRoute = { navController.navigateBottomNavBarRoute(it) },
         )
     }
@@ -40,7 +42,7 @@ fun NavGraphBuilder.homeNavigationGraph(
         val route = backStack.toRoute<HomeRoute.SaveOrEditVisa>()
         AddOrEditVisaScreen(
             visaId = route.visaId,
-            navigateBack = { navController.popBackStack() },
+            navigateBack = { navController.popBackStackOnce(backStack) },
         )
     }
     composable<HomeRoute.VisaDetails> { backStack ->
@@ -48,8 +50,8 @@ fun NavGraphBuilder.homeNavigationGraph(
         VisaDetailsScreen(
             visaId = route.visaId,
             isEditable = route.isEditable,
-            navigateBack = { navController.popBackStack() },
-            navigateToEdit = { navController.navigate(HomeRoute.SaveOrEditVisa(route.visaId)) }
+            navigateBack = { navController.popBackStackOnce(backStack) },
+            navigateToEdit = { navController.navigateOnce(HomeRoute.SaveOrEditVisa(route.visaId)) }
         )
     }
     // Trip
@@ -62,14 +64,14 @@ fun NavGraphBuilder.homeNavigationGraph(
             AddOrEditTripScreen(
                 commonViewModel = backStack.addTripCommonViewModel(navController),
                 tripId = graphRoute.tripId,
-                navigateToTripSegment = { navController.navigate(HomeRoute.AddTripSegment) },
-                navigateBack = { navController.popBackStack() },
+                navigateToTripSegment = { navController.navigateOnce(HomeRoute.AddTripSegment) },
+                navigateBack = { navController.popBackStackOnce(backStack) },
             )
         }
         composable<HomeRoute.AddTripSegment> { backStack ->
             AddTripSegmentScreen(
                 commonViewModel = backStack.addTripCommonViewModel(navController),
-                navigateBack = { navController.popBackStack() },
+                navigateBack = { navController.popBackStackOnce(backStack) },
             )
         }
     }
@@ -78,9 +80,9 @@ fun NavGraphBuilder.homeNavigationGraph(
         TripDetailsScreen(
             tripId = route.tripId,
             isEditable = route.isEditable,
-            navigateBack = { navController.popBackStack() },
-            navigateToVisaDetails = { navController.navigate(HomeRoute.VisaDetails(it)) },
-            navigateToEdit = { navController.navigate(HomeRoute.AddTripGraph(route.tripId)) },
+            navigateBack = { navController.popBackStackOnce(backStack) },
+            navigateToVisaDetails = { navController.navigateOnce(HomeRoute.VisaDetails(it)) },
+            navigateToEdit = { navController.navigateOnce(HomeRoute.AddTripGraph(route.tripId)) },
         )
     }
 }
