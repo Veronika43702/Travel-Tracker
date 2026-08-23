@@ -55,6 +55,10 @@ class AddOrEditTripViewModel @Inject constructor(
 
     private var daysOutOfSegments: Set<LocalDate> = emptySet()
 
+    init {
+        subscribeToDateFormat()
+    }
+
     override fun createInitialState(): State = State()
 
     override fun handleAction(action: Action) {
@@ -86,31 +90,31 @@ class AddOrEditTripViewModel @Inject constructor(
         }
     }
 
-    private fun loadData(tripId: Long?) {
-        setState { it.copy(isLoading = true) }
-
+    private fun subscribeToDateFormat() {
         launchIO {
             try {
                 getDateFormatUseCase.invoke().collectLatest { dateFormat ->
                     setState { it.copy(dateFormatter = dateFormat.getFormatter()) }
                 }
             } catch (exception: Exception) {
-                Log.e("AddOrEditTripViewModel", "loadData, date format", exception)
+                Log.e("AddOrEditTripViewModel", "subscribeToDateFormat", exception)
             }
         }
+    }
 
+    private fun loadData(tripId: Long?) {
+        // already loaded data must not be reloaded
+        if (currentState.isDataLoaded) return
+
+        setState { it.copy(isLoading = true, error = null, tripId = tripId) }
         launchIO {
-
-
             try {
                 val visas = getAvailableVisasByDateUseCase.invoke(
                     LocalDate.now().minusMonths(6)
                 )
 
-                if (!currentState.hasSelectedVisa) {
-                    tripId?.let {
-                        loadTripData(tripId)
-                    }
+                tripId?.let {
+                    loadTripData(tripId)
                 }
 
                 val visaWithDurationLeft = visas.map { visa ->
@@ -123,21 +127,17 @@ class AddOrEditTripViewModel @Inject constructor(
                     )
                 }
 
-                if (!currentState.hasSelectedVisa) {
-                    tripId?.let {
-                        recalculateAvailableDays()
-                        currentState.selectedVisa?.visa?.let { visa ->
-                            val blockedTripPeriods = calculateBlockedTripDates(visa, tripId)
-                            setState { it.copy(blockedPeriods = blockedTripPeriods) }
-                        }
+                if (tripId != null && currentState.hasSelectedVisa) {
+                    recalculateAvailableDays()
+                    currentState.selectedVisa?.visa?.let { visa ->
+                        val blockedTripPeriods = calculateBlockedTripDates(visa, tripId)
+                        setState { it.copy(blockedPeriods = blockedTripPeriods) }
                     }
                 }
 
-
-
                 setState { it.copy(availableVisas = visaWithDurationLeft) }
 
-                setState { it.copy(isLoading = false, tripId = tripId) }
+                setState { it.copy(isLoading = false, isDataLoaded = true) }
             } catch (e: Exception) {
                 setError(CustomString.resource(uiR.string.error_loading_data))
                 Log.e(null, "loadData", e)
@@ -188,7 +188,7 @@ class AddOrEditTripViewModel @Inject constructor(
             }
         } catch (e: Exception) {
             setError(CustomString.resource(uiR.string.error_loading_data))
-            Log.e(null, "recalculateAvailableDays", e)
+            Log.e(null, "loadTripData", e)
         }
     }
 
@@ -488,7 +488,7 @@ class AddOrEditTripViewModel @Inject constructor(
             setState {
                 it.copy(
                     warningTextDaysOutSegments =
-                    CustomString.resource(R.string.home_error_trip_segment_gap)
+                        CustomString.resource(R.string.home_error_trip_segment_gap)
                 )
             }
         }

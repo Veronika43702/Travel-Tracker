@@ -18,6 +18,7 @@ import java.time.format.DateTimeFormatter
 sealed class AddOrEditTripContract {
     data class State(
         val isLoading: Boolean = false,
+        val isDataLoaded: Boolean = false,
         val tripId: Long? = null,
 
         val selectedVisa: VisaUi? = null,
