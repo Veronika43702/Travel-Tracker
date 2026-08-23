@@ -1,6 +1,5 @@
 package ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addOrEditTrip
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -63,39 +62,49 @@ import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addOrEditTr
 import ru.nikfirs.android.traveltracker.feature.home.R
 import ru.nikfirs.android.traveltracker.feature.home.ui.model.TripSegmentUi
 import ru.nikfirs.android.traveltracker.feature.home.ui.model.VisaUi
+import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.common.AddTripCommonContract
+import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.common.AddTripCommonViewModel
 import java.time.LocalDate
 import java.time.YearMonth
 
 @Composable
 fun AddOrEditTripScreen(
+    commonViewModel: AddTripCommonViewModel,
     tripId: Long?,
     navigateBack: () -> Unit,
     navigateToTripSegment: () -> Unit,
     viewModel: AddOrEditTripViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val commonState by commonViewModel.state.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
     val verticalScroll = rememberScrollState()
     LaunchedEffect(tripId) {
         viewModel.setAction(Action.LoadData(tripId))
     }
-    LaunchedEffect(viewModel.addTripHolder.segmentList) {
-        viewModel.setAction(Action.UpdateSegmentList)
+    LaunchedEffect(commonState.segments) {
+        if (commonState.hasTripData) {
+            viewModel.setAction(Action.UpdateSegmentList(commonState.segments))
+        }
     }
     LaunchedEffectResolver(flow = viewModel.effect) { effect ->
         when (effect) {
-            is Effect.NavigateBack -> {
-                viewModel.addTripHolder.clear()
-                navigateBack()
-            }
+            is Effect.NavigateBack -> navigateBack()
 
             is Effect.ScrollUp -> scope.launch { verticalScroll.scrollTo(0) }
-            is Effect.OpenSegmentEditor -> navigateToTripSegment()
+            is Effect.OpenSegmentEditor -> {
+                commonViewModel.setAction(
+                    AddTripCommonContract.Action.PrepareSegmentEditor(
+                        tripStartDate = effect.tripStartDate,
+                        tripEndDate = effect.tripEndDate,
+                        segments = effect.segments,
+                        visaExemptCountry = effect.visaExemptCountry,
+                        editedSegment = effect.editedSegment,
+                    )
+                )
+                navigateToTripSegment()
+            }
         }
-    }
-    BackHandler {
-        viewModel.addTripHolder.clear()
-        navigateBack()
     }
     Screen(
         topTitle = if (tripId == null) {
@@ -103,10 +112,7 @@ fun AddOrEditTripScreen(
         } else {
             stringResource(R.string.home_trip_edit_title)
         },
-        navigateBack = {
-            viewModel.addTripHolder.clear()
-            navigateBack()
-        },
+        navigateBack = navigateBack,
     ) {
         AddTripScreenContent(
             state = state,

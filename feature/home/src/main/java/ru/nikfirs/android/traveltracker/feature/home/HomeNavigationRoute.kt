@@ -15,7 +15,10 @@ sealed class HomeRoute {
 
     // Trip
     @Serializable
-    data class AddTrip(val tripId: Long? = null)
+    data class AddTripGraph(val tripId: Long? = null)
+
+    @Serializable
+    data object AddTrip
 
     @Serializable
     data object AddTripSegment

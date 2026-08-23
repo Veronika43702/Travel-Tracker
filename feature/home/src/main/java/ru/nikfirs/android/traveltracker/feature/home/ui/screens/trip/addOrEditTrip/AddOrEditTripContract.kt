@@ -88,7 +88,7 @@ sealed class AddOrEditTripContract {
 
     sealed class Action : MviAction {
         data class LoadData(val tripId: Long?) : Action()
-        data object UpdateSegmentList : Action()
+        data class UpdateSegmentList(val segments: List<TripSegmentUi>) : Action()
 
         data class SetVisaDropdownExpanded(val expanded: Boolean) : Action()
         data class UpdateSelectedVisa(val visa: VisaUi?) : Action()
@@ -114,6 +114,12 @@ sealed class AddOrEditTripContract {
     sealed class Effect : MviEffect {
         data object NavigateBack : Effect()
         data object ScrollUp : Effect()
-        data object OpenSegmentEditor : Effect()
+        data class OpenSegmentEditor(
+            val tripStartDate: LocalDate,
+            val tripEndDate: LocalDate,
+            val segments: List<TripSegmentUi>,
+            val visaExemptCountry: String?,
+            val editedSegment: TripSegmentUi? = null,
+        ) : Effect()
     }
 }

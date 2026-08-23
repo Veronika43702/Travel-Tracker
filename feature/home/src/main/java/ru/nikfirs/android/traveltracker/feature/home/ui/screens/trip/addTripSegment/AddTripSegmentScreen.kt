@@ -52,21 +52,25 @@ import ru.nikfirs.android.traveltracker.feature.home.ui.model.TripSegmentUi
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTripSegment.AddTripSegmentContract.Action
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTripSegment.AddTripSegmentContract.Effect
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTripSegment.AddTripSegmentContract.State
+import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.common.AddTripCommonContract
+import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.common.AddTripCommonViewModel
 import java.time.LocalDate
 import java.time.YearMonth
 import java.util.Locale
 
 @Composable
 fun AddTripSegmentScreen(
+    commonViewModel: AddTripCommonViewModel,
     navigateBack: () -> Unit,
     viewModel: AddTripSegmentViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val commonState by commonViewModel.state.collectAsStateWithLifecycle()
     val verticalScroll = rememberScrollState()
     val locale = Locale.getDefault().language
     val countryText = when {
-        viewModel.addTripHolder.currentSegment?.country == TRANSIT -> stringResource(R.string.home_trip_segment_transit_option)
-        viewModel.addTripHolder.currentSegment?.country?.isNotBlank() == true -> {
+        commonState.editedSegment?.country == TRANSIT -> stringResource(R.string.home_trip_segment_transit_option)
+        commonState.editedSegment?.country?.isNotBlank() == true -> {
             SchengenCountries.getCountryByCode(state.country)
                 ?.getDisplayNameWithCode(locale)
                 ?: state.country
@@ -74,8 +78,11 @@ fun AddTripSegmentScreen(
 
         else -> ""
     }
-    LaunchedEffect(viewModel.addTripHolder.currentSegment) {
-        if (viewModel.addTripHolder.currentSegment != null) {
+    LaunchedEffect(commonState.hasTripData) {
+        viewModel.setAction(Action.LoadData(commonState))
+    }
+    LaunchedEffect(commonState.editedSegment) {
+        if (commonState.editedSegment != null) {
             viewModel.setAction(
                 Action.UpdateCountryText(
                     countryText, locale, false
@@ -85,7 +92,15 @@ fun AddTripSegmentScreen(
     }
     LaunchedEffectResolver(flow = viewModel.effect) { effect ->
         when (effect) {
-            is Effect.NavigateBack -> navigateBack()
+            is Effect.SegmentSaved -> {
+                commonViewModel.setAction(AddTripCommonContract.Action.SaveSegment(effect.segment))
+                navigateBack()
+            }
+
+            is Effect.SegmentDeleted -> {
+                commonViewModel.setAction(AddTripCommonContract.Action.DeleteEditedSegment)
+                navigateBack()
+            }
         }
     }
 
