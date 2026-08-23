@@ -249,7 +249,8 @@ class AddOrEditTripViewModel @Inject constructor(
 
             // calculate block dates when other trips exist
             visa?.let {
-                val blockedTripPeriods = calculateBlockedTripDates(visa.visa)
+                val blockedTripPeriods =
+                    calculateBlockedTripDates(visa.visa, currentState.tripId)
                 setState { it.copy(blockedPeriods = blockedTripPeriods) }
             }
         }
