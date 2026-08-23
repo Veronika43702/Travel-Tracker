@@ -115,6 +115,9 @@ class AddOrEditTripViewModel @Inject constructor(
 
                 tripId?.let {
                     loadTripData(tripId)
+                    if (currentState.hasSelectedVisa) {
+                        recalculateAvailableDaysNow()
+                    }
                 }
 
                 val visaWithDurationLeft = visas.map { visa ->
@@ -128,7 +131,6 @@ class AddOrEditTripViewModel @Inject constructor(
                 }
 
                 if (tripId != null && currentState.hasSelectedVisa) {
-                    recalculateAvailableDays()
                     currentState.selectedVisa?.visa?.let { visa ->
                         val blockedTripPeriods = calculateBlockedTripDates(visa, tripId)
                         setState { it.copy(blockedPeriods = blockedTripPeriods) }
@@ -340,62 +342,66 @@ class AddOrEditTripViewModel @Inject constructor(
     }
 
     private fun recalculateAvailableDays() {
+        launchIO {
+            recalculateAvailableDaysNow()
+        }
+    }
+
+    private suspend fun recalculateAvailableDaysNow() {
         if (currentState.startDate == null || currentState.endDate == null) {
             return
         }
-        launchIO {
-            try {
-                val countableDays =
-                    if (currentState.segments.isNotEmpty() && checkDaysOutOfSegments(false)) {
-                        val countedDays: Set<LocalDate> = buildSet {
-                            currentState.segments
-                                .filter { !it.isExempt }
-                                .forEach { segment ->
-                                    var date = segment.startDate
-                                    while (!date.isAfter(segment.endDate)) {
-                                        add(date)
-                                        date = date.plusDays(1)
-                                    }
+        try {
+            val countableDays =
+                if (currentState.segments.isNotEmpty() && checkDaysOutOfSegments(false)) {
+                    val countedDays: Set<LocalDate> = buildSet {
+                        currentState.segments
+                            .filter { !it.isExempt }
+                            .forEach { segment ->
+                                var date = segment.startDate
+                                while (!date.isAfter(segment.endDate)) {
+                                    add(date)
+                                    date = date.plusDays(1)
                                 }
-                        }
-                        countedDays.size
-                    } else {
-                        currentState.totalDuration.toInt()
+                            }
                     }
-
-                // start date data
-                val startCalculation = calculateDaysInPeriodUseCase(
-                    periodEnd = currentState.startDate ?: LocalDate.now(),
-                    tripExceptionId = currentState.tripId,
-                )
-                val startDaysInfo = DaysAvailableInfo(
-                    used = startCalculation.totalDaysUsed,
-                    remaining = startCalculation.remainingDays,
-                )
-
-                // end date data
-                val endCalculation = calculateDaysInPeriodUseCase(
-                    periodEnd = currentState.endDate ?: LocalDate.now(),
-                    tripExceptionId = currentState.tripId,
-                )
-                val endDaysInfo = DaysAvailableInfo(
-                    used = endCalculation.totalDaysUsed + countableDays,
-                    remaining = endCalculation.remainingDays - countableDays,
-                )
-
-                setState {
-                    it.copy(
-                        daysAvailableAtStart = startDaysInfo,
-                        daysAvailableAtEnd = endDaysInfo,
-                        countableDuration = countableDays,
-                    )
+                    countedDays.size
+                } else {
+                    currentState.totalDuration.toInt()
                 }
 
-            } catch (e: Exception) {
-                calculateInitialDays()
-                setError(CustomString.internal())
-                Log.e(null, "recalculateAvailableDays", e)
+            // start date data
+            val startCalculation = calculateDaysInPeriodUseCase(
+                periodEnd = currentState.startDate ?: LocalDate.now(),
+                tripExceptionId = currentState.tripId,
+            )
+            val startDaysInfo = DaysAvailableInfo(
+                used = startCalculation.totalDaysUsed,
+                remaining = startCalculation.remainingDays,
+            )
+
+            // end date data
+            val endCalculation = calculateDaysInPeriodUseCase(
+                periodEnd = currentState.endDate ?: LocalDate.now(),
+                tripExceptionId = currentState.tripId,
+            )
+            val endDaysInfo = DaysAvailableInfo(
+                used = endCalculation.totalDaysUsed + countableDays,
+                remaining = endCalculation.remainingDays - countableDays,
+            )
+
+            setState {
+                it.copy(
+                    daysAvailableAtStart = startDaysInfo,
+                    daysAvailableAtEnd = endDaysInfo,
+                    countableDuration = countableDays,
+                )
             }
+
+        } catch (e: Exception) {
+            calculateInitialDays()
+            setError(CustomString.internal())
+            Log.e(null, "recalculateAvailableDays", e)
         }
     }
 
