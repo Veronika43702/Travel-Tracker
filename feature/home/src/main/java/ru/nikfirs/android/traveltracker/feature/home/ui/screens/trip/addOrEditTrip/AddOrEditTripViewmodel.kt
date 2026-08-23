@@ -214,7 +214,7 @@ class AddOrEditTripViewModel @Inject constructor(
                         daysAvailableAtEnd = daysInfo
                     )
                 }
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 val defaultDaysInfo = DaysAvailableInfo(
                     used = 0,
                     remaining = MAX_STAY_DAYS

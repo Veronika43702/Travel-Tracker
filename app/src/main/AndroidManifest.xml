@@ -18,7 +18,9 @@
             android:name=".MainActivity"
             android:exported="true"
             android:windowIsTranslucent="false"
-            android:theme="@style/Theme.Traveltracker">
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.Traveltracker"
+            tools:ignore="LockedOrientationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

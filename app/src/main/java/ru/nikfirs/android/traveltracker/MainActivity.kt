@@ -38,7 +38,14 @@ class MainActivity : ComponentActivity() {
     lateinit var datastoreHelper: DatastoreHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+        // Dropping saved bundle starts navigation from Home instead of
+        // restoring screens whose in-memory state (forms, flow ViewModels) died
+        // with the process.
+        // Configuration recreations (rotation, language change) keep the bundle:
+        // the process is alive, so the flag is already set.
+        val restoredAfterProcessDeath = savedInstanceState != null && !isProcessAlive
+        isProcessAlive = true
+        super.onCreate(if (restoredAfterProcessDeath) null else savedInstanceState)
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
             observeLanguageChanges()
@@ -159,5 +166,7 @@ class MainActivity : ComponentActivity() {
         // Default edge-to-edge scrims for the three-button navigation bar.
         val LIGHT_NAVIGATION_BAR_SCRIM = android.graphics.Color.argb(0xe6, 0xFF, 0xFF, 0xFF)
         val DARK_NAVIGATION_BAR_SCRIM = android.graphics.Color.argb(0x80, 0x1B, 0x1B, 0x1B)
+
+        var isProcessAlive = false
     }
 }
