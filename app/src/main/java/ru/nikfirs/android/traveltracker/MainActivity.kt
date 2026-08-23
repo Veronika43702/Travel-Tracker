@@ -5,6 +5,7 @@ import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -65,6 +67,21 @@ class MainActivity : ComponentActivity() {
             AppThemeModel.SYSTEM -> systemInDarkTheme
             AppThemeModel.LIGHT -> false
             AppThemeModel.DARK -> true
+        }
+
+        // System bar icon appearance must follow the app's runtime theme, not the system uiMode
+        DisposableEffect(darkTheme) {
+            enableEdgeToEdge(
+                statusBarStyle = SystemBarStyle.auto(
+                    lightScrim = android.graphics.Color.TRANSPARENT,
+                    darkScrim = android.graphics.Color.TRANSPARENT,
+                ) { darkTheme },
+                navigationBarStyle = SystemBarStyle.auto(
+                    lightScrim = LIGHT_NAVIGATION_BAR_SCRIM,
+                    darkScrim = DARK_NAVIGATION_BAR_SCRIM,
+                ) { darkTheme },
+            )
+            onDispose {}
         }
 
         AppTheme(
@@ -136,5 +153,11 @@ class MainActivity : ComponentActivity() {
     private fun isFirstDaySunday(locale: Locale): Boolean {
         val calendar = Calendar.getInstance(locale)
         return calendar.firstDayOfWeek == Calendar.SUNDAY
+    }
+
+    private companion object {
+        // Default edge-to-edge scrims for the three-button navigation bar.
+        val LIGHT_NAVIGATION_BAR_SCRIM = android.graphics.Color.argb(0xe6, 0xFF, 0xFF, 0xFF)
+        val DARK_NAVIGATION_BAR_SCRIM = android.graphics.Color.argb(0x80, 0x1B, 0x1B, 0x1B)
     }
 }
