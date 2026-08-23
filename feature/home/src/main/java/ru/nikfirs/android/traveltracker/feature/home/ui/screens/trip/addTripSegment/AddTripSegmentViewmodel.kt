@@ -90,7 +90,7 @@ class AddTripSegmentViewModel @Inject constructor(
                 tripStartDate = tripStartDate,
                 tripEndDate = tripEndDate,
                 segmentList = commonState.segments.filter { segment ->
-                    segment != editedSegment
+                    segment.uid != editedSegment?.uid
                 },
                 isEditMode = isEditMode,
                 country = editedSegment?.country ?: "",

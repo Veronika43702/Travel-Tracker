@@ -43,7 +43,7 @@ class AddTripCommonViewModel @Inject constructor() : ViewModel<Action, Effect, S
     private fun saveSegment(segment: TripSegmentUi) {
         setState { state ->
             state.copy(
-                segments = (state.segments.filter { it != state.editedSegment } + segment)
+                segments = (state.segments.filter { it.uid != state.editedSegment?.uid } + segment)
                     .sortedAndRecolored(),
                 editedSegment = null,
             )
@@ -53,7 +53,7 @@ class AddTripCommonViewModel @Inject constructor() : ViewModel<Action, Effect, S
     private fun deleteEditedSegment() {
         setState { state ->
             state.copy(
-                segments = state.segments.filter { it != state.editedSegment }
+                segments = state.segments.filter { it.uid != state.editedSegment?.uid }
                     .sortedAndRecolored(),
                 editedSegment = null,
             )

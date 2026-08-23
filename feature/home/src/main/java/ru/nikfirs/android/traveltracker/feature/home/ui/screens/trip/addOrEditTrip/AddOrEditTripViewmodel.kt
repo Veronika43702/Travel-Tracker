@@ -330,7 +330,7 @@ class AddOrEditTripViewModel @Inject constructor(
 
     private fun removeSegment(segment: TripSegmentUi) {
         setState {
-            it.copy(segments = it.segments.filter { s -> s != segment }.sortedAndRecolored())
+            it.copy(segments = it.segments.filter { s -> s.uid != segment.uid }.sortedAndRecolored())
         }
 
         // update available days
