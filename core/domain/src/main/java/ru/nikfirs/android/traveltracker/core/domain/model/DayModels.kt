@@ -13,20 +13,3 @@ data class DaysCalculation(
     val isNearLimit = totalDaysUsed > WARNING_THRESHOLD
     val isOverLimit = totalDaysUsed > MAX_STAY_DAYS
 }
-
-data class CalendarDay(
-    val date: LocalDate,
-    val isAvailable: Boolean,
-    val isInTrip: Boolean = false,
-    val tripId: Long? = null,
-    val country: String? = null,
-    val isExempt: Boolean = false,
-    val remainingDaysOnDate: Int? = null,
-)
-
-data class DayCountInfo(
-    val date: LocalDate,
-    val country: String,
-    val tripId: Long,
-    val isExempt: Boolean,
-)
