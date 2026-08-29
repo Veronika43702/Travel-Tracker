@@ -1,5 +1,9 @@
 package ru.nikfirs.android.traveltracker.core.ui.ui.handler
 
+/**
+ * Throttles repeated events: the first event fires immediately, subsequent ones
+ * within [MultipleEventHandlerImpl.duration] are dropped without extending the window.
+ */
 internal interface MultipleEventHandler {
     fun processEvent(event: () -> Unit)
 
@@ -18,7 +22,7 @@ private class MultipleEventHandlerImpl(val duration: Long) : MultipleEventHandle
     override fun processEvent(event: () -> Unit) {
         if (currentEventTime - previousEventTime >= duration) {
             event.invoke()
+            previousEventTime = currentEventTime
         }
-        previousEventTime = currentEventTime
     }
 }

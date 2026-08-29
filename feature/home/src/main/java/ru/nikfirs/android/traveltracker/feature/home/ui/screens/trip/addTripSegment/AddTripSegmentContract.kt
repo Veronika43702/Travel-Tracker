@@ -8,6 +8,7 @@ import ru.nikfirs.android.traveltracker.core.ui.mvi.MviAction
 import ru.nikfirs.android.traveltracker.core.ui.mvi.MviEffect
 import ru.nikfirs.android.traveltracker.core.ui.mvi.MviState
 import ru.nikfirs.android.traveltracker.feature.home.ui.model.TripSegmentUi
+import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.common.AddTripCommonContract
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -28,6 +29,7 @@ sealed class AddTripSegmentContract {
         val tripEndDate: LocalDate = LocalDate.now(),
         val segmentList: List<TripSegmentUi> = emptyList(),
         val isEditMode: Boolean = false,
+        val visaExemptCountry: String? = null,
         val error: CustomString? = null,
         val validationErrors: ValidationErrors = ValidationErrors(),
         val dateFormatter: DateTimeFormatter = AppDateFormatModel.getDefault().getFormatter(),
@@ -56,7 +58,7 @@ sealed class AddTripSegmentContract {
     }
 
     sealed class Action : MviAction {
-        data object LoadData : Action()
+        data class LoadData(val commonState: AddTripCommonContract.State) : Action()
 
         data class UpdateCountryText(
             val value: String,
@@ -78,6 +80,7 @@ sealed class AddTripSegmentContract {
     }
 
     sealed class Effect : MviEffect {
-        data object NavigateBack : Effect()
+        data class SegmentSaved(val segment: TripSegmentUi) : Effect()
+        data object SegmentDeleted : Effect()
     }
 }

@@ -15,26 +15,21 @@ import ru.nikfirs.android.traveltracker.feature.home.ui.model.TripSegmentUi
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTripSegment.AddTripSegmentContract.Action
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTripSegment.AddTripSegmentContract.Effect
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.addTripSegment.AddTripSegmentContract.State
-import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.utils.AddTripHolder
+import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.common.AddTripCommonContract
 import java.time.LocalDate
 import javax.inject.Inject
 import ru.nikfirs.android.traveltracker.core.ui.R as uiR
 
 @HiltViewModel
 class AddTripSegmentViewModel @Inject constructor(
-    val addTripHolder: AddTripHolder,
     private val getDateFormatUseCase: GetDateFormatUseCase,
 ) : ViewModel<Action, Effect, State>() {
-
-    init {
-        setAction(Action.LoadData)
-    }
 
     override fun createInitialState(): State = State()
 
     override fun handleAction(action: Action) {
         when (action) {
-            is Action.LoadData -> loadData()
+            is Action.LoadData -> loadData(action.commonState)
             is Action.SetCountryDropdownExpanded -> setCountryDropdownExpanded(action.expanded)
             is Action.UpdateCountryText -> updateCountryText(
                 action.value,
@@ -56,7 +51,7 @@ class AddTripSegmentViewModel @Inject constructor(
     /**
      * Loads data concerning segment and trip and saves to State().
      */
-    private fun loadData() {
+    private fun loadData(commonState: AddTripCommonContract.State) {
         launchIO {
             try {
                 getDateFormatUseCase.invoke().collectLatest { dateFormat ->
@@ -67,23 +62,24 @@ class AddTripSegmentViewModel @Inject constructor(
             }
         }
 
-        if (!addTripHolder.hasTripData()) {
+        val tripStartDate = commonState.tripStartDate
+        val tripEndDate = commonState.tripEndDate
+        if (tripStartDate == null || tripEndDate == null) {
             setError(CustomString.resource(uiR.string.error_loading_data))
             return
         }
 
-        val tripStartDate = addTripHolder.tripStartDate ?: return
-        val tripEndDate = addTripHolder.tripEndDate ?: return
-        val isEditMode = addTripHolder.isEditMode()
+        val editedSegment = commonState.editedSegment
+        val isEditMode = commonState.isEditMode
 
         val startDate = when {
-            isEditMode -> addTripHolder.currentSegment?.startDate
-            addTripHolder.segmentList.isEmpty() -> tripStartDate
+            isEditMode -> editedSegment?.startDate
+            commonState.segments.isEmpty() -> tripStartDate
             else -> null
         }
         val endDate = when {
-            isEditMode -> addTripHolder.currentSegment?.endDate
-            addTripHolder.segmentList.isEmpty() -> tripEndDate
+            isEditMode -> editedSegment?.endDate
+            commonState.segments.isEmpty() -> tripEndDate
             else -> null
         }
 
@@ -93,15 +89,16 @@ class AddTripSegmentViewModel @Inject constructor(
                 countryListToShow = SchengenCountries.countries,
                 tripStartDate = tripStartDate,
                 tripEndDate = tripEndDate,
-                segmentList = addTripHolder.segmentList.filter { segment ->
-                    segment != addTripHolder.currentSegment
+                segmentList = commonState.segments.filter { segment ->
+                    segment.uid != editedSegment?.uid
                 },
                 isEditMode = isEditMode,
-                country = addTripHolder.currentSegment?.country ?: "",
+                country = editedSegment?.country ?: "",
                 startDate = startDate,
                 endDate = endDate,
                 selectedDateRange = DateRangeSelection(startDate, endDate),
-                cities = addTripHolder.getSegmentCities(),
+                cities = commonState.editedSegmentCities,
+                visaExemptCountry = commonState.visaExemptCountry,
             )
         }
     }
@@ -184,7 +181,7 @@ class AddTripSegmentViewModel @Inject constructor(
     }
 
     /**
-     * Saves segment into [addTripHolder] segment list
+     * Validates the form and, if valid, emits the built segment for the common ViewModel to save.
      */
     private fun saveSegment() {
         val validationErrors = validateForm()
@@ -205,12 +202,9 @@ class AddTripSegmentViewModel @Inject constructor(
                     startDate = startDate,
                     endDate = endDate,
                     cities = citiesList,
-                    isExempt = currentState.country == addTripHolder.visaExemptCountry,
-                    color = addTripHolder.getSegmentColor()
+                    isExempt = currentState.country == currentState.visaExemptCountry,
                 )
-                addTripHolder.addSegmentToList(segment)
-
-                setEffect { Effect.NavigateBack }
+                setEffect { Effect.SegmentSaved(segment) }
             }
         } else {
             setState { it.copy(validationErrors = validationErrors) }
@@ -238,11 +232,10 @@ class AddTripSegmentViewModel @Inject constructor(
     }
 
     /**
-     * Deletes segment from [addTripHolder] segment list
+     * Requests the common ViewModel to delete the currently edited segment.
      */
     private fun deleteSegment() {
-        addTripHolder.deleteSegmentFromList()
-        setEffect { Effect.NavigateBack }
+        setEffect { Effect.SegmentDeleted }
     }
 
     private fun setError(error: CustomString?) {

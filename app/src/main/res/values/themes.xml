@@ -2,7 +2,7 @@
 <resources>
 
     <style name="Theme.Traveltracker" parent="android:Theme.Material.Light.NoActionBar">
-        <item name="android:windowBackground">@color/background</item>/>
+        <item name="android:windowBackground">@color/background</item>
     </style>
 
 </resources>

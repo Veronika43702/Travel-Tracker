@@ -1,6 +1,7 @@
 package ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.utils
 
 import androidx.compose.ui.graphics.Color
+import ru.nikfirs.android.traveltracker.feature.home.ui.model.TripSegmentUi
 
 val segment_colors = listOf(
     Color(0xFFFF9800), // Orange
@@ -16,3 +17,12 @@ val segment_colors = listOf(
 fun getTripSegmentColorByIndex(index: Int): Color {
     return segment_colors[index % segment_colors.size]
 }
+
+/**
+ * Single source of truth for ordering trip segments and assigning their display color by
+ * position — keeps segment colors consistent everywhere the list is derived (editor, trip form,
+ * range picker preview).
+ */
+fun List<TripSegmentUi>.sortedAndRecolored(): List<TripSegmentUi> =
+    sortedWith(compareBy({ it.startDate }, { it.endDate }))
+        .mapIndexed { index, item -> item.copy(color = getTripSegmentColorByIndex(index)) }
