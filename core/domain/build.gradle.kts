@@ -21,4 +21,6 @@ dependencies {
 
     testImplementation(libs.bundles.tests)
     testRuntimeOnly(libs.bundles.testRuntimeOnly)
+    testFixturesApi(libs.kotlinx.coroutines.test)
+    testFixturesApi(libs.junit5.api)
 }
