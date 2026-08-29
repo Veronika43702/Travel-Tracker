@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.kotlin.ksp)
     alias(libs.plugins.hilt)
+    alias(libs.plugins.android.junit5)
 }
 
 apply {
@@ -26,6 +27,9 @@ android {
             )
         }
     }
+    testOptions {
+        unitTests.isReturnDefaultValues = true
+    }
 }
 
 dependencies {
@@ -34,6 +38,7 @@ dependencies {
 
     testImplementation(libs.bundles.tests)
     androidTestImplementation(libs.bundles.androidTest)
+    testRuntimeOnly(libs.bundles.testRuntimeOnly)
 
     implementation(project(":core:domain"))
     implementation(project(":core:ui"))

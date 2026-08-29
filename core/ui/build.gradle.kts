@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.kotlin.ksp)
     alias(libs.plugins.hilt)
+    alias(libs.plugins.android.junit5)
 }
 
 apply {
