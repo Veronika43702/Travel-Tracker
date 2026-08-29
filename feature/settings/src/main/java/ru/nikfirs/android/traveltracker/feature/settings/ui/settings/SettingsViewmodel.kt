@@ -5,6 +5,7 @@ import android.util.Log
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import ru.nikfirs.android.traveltracker.core.domain.coroutines.DispatcherProvider
 import ru.nikfirs.android.traveltracker.core.domain.model.AppDateFormatModel
 import ru.nikfirs.android.traveltracker.core.domain.model.AppThemeModel
 import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
@@ -30,7 +31,8 @@ class SettingsViewmodel @Inject constructor(
     private val saveThemeUseCase: SaveThemeUseCase,
     private val getDateFormatUseCase: GetDateFormatUseCase,
     private val saveDateFormatUseCase: SaveDateFormatUseCase,
-) : ViewModel<Action, Effect, State>() {
+    private val dispatcherProvider: DispatcherProvider,
+) : ViewModel<Action, Effect, State>(dispatcherProvider) {
     override fun createInitialState(): State = State(
         appVersion = BuildConfig.VERSION_NAME
     )

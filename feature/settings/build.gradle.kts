@@ -39,6 +39,7 @@ dependencies {
     testImplementation(libs.bundles.tests)
     androidTestImplementation(libs.bundles.androidTest)
     testRuntimeOnly(libs.bundles.testRuntimeOnly)
+    testImplementation(testFixtures(project(":core:domain")))
 
     implementation(project(":core:domain"))
     implementation(project(":core:ui"))
