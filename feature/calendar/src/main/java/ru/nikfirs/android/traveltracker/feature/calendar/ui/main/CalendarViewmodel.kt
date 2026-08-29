@@ -4,7 +4,6 @@ import android.util.Log
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.retry
@@ -20,7 +19,6 @@ import ru.nikfirs.android.traveltracker.core.ui.domain.usecase.trip.GetTripsFlow
 import ru.nikfirs.android.traveltracker.core.ui.domain.usecase.visa.GetVisaByIdUseCase
 import ru.nikfirs.android.traveltracker.core.ui.domain.usecase.visa.GetVisaFlowByDateUseCase
 import ru.nikfirs.android.traveltracker.core.ui.mvi.ViewModel
-import ru.nikfirs.android.traveltracker.core.ui.mvi.launchIO
 import ru.nikfirs.android.traveltracker.core.ui.ui.model.DateType
 import ru.nikfirs.android.traveltracker.core.ui.ui.model.DayCalculation
 import ru.nikfirs.android.traveltracker.core.ui.ui.model.ExistingRange

@@ -4,7 +4,6 @@ import android.util.Log
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.retry
 import ru.nikfirs.android.traveltracker.core.domain.PERIOD_DAYS
 import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
 import ru.nikfirs.android.traveltracker.core.domain.model.Trip
@@ -12,16 +11,14 @@ import ru.nikfirs.android.traveltracker.core.domain.model.Visa
 import ru.nikfirs.android.traveltracker.core.ui.domain.usecase.CalculateDaysInPeriodUseCase
 import ru.nikfirs.android.traveltracker.core.ui.domain.usecase.dataStore.GetDateFormatUseCase
 import ru.nikfirs.android.traveltracker.core.ui.mvi.ViewModel
-import ru.nikfirs.android.traveltracker.core.ui.mvi.launch
-import ru.nikfirs.android.traveltracker.core.ui.mvi.launchIO
 import ru.nikfirs.android.traveltracker.feature.home.R
-import ru.nikfirs.android.traveltracker.feature.home.ui.model.HomeTab
+import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.GetHomeDataUseCase
 import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.trip.DeleteTripUseCase
 import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.visa.DeleteVisaUseCase
-import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.GetHomeDataUseCase
+import ru.nikfirs.android.traveltracker.feature.home.ui.model.HomeTab
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.HomeContract.Action
-import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.HomeContract.State
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.HomeContract.Effect
+import ru.nikfirs.android.traveltracker.feature.home.ui.screens.main.HomeContract.State
 import ru.nikfirs.android.traveltracker.feature.home.ui.utils.HomeAction
 import ru.nikfirs.android.traveltracker.feature.home.ui.utils.HomeActionModel
 import java.time.LocalDate

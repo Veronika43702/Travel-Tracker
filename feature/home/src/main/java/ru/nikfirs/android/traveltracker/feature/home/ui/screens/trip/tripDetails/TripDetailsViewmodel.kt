@@ -5,20 +5,17 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
 import ru.nikfirs.android.traveltracker.core.ui.domain.usecase.dataStore.GetDateFormatUseCase
-import ru.nikfirs.android.traveltracker.core.ui.mvi.ViewModel
-import ru.nikfirs.android.traveltracker.core.ui.mvi.launch
-import ru.nikfirs.android.traveltracker.feature.home.R
-import ru.nikfirs.android.traveltracker.feature.home.ui.model.TripSegmentUi
-import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.trip.DeleteTripUseCase
 import ru.nikfirs.android.traveltracker.core.ui.domain.usecase.trip.GetTripByIdUseCase
 import ru.nikfirs.android.traveltracker.core.ui.domain.usecase.visa.GetVisaByIdUseCase
-import ru.nikfirs.android.traveltracker.core.ui.mvi.launchIO
+import ru.nikfirs.android.traveltracker.core.ui.mvi.ViewModel
+import ru.nikfirs.android.traveltracker.feature.home.R
+import ru.nikfirs.android.traveltracker.feature.home.domain.usecase.trip.DeleteTripUseCase
+import ru.nikfirs.android.traveltracker.feature.home.ui.model.TripSegmentUi
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.tripDetails.TripDetailsContract.Action
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.tripDetails.TripDetailsContract.Effect
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.tripDetails.TripDetailsContract.State
 import ru.nikfirs.android.traveltracker.feature.home.ui.screens.trip.utils.getTripSegmentColorByIndex
 import javax.inject.Inject
-import ru.nikfirs.android.traveltracker.core.ui.R as uiR
 
 @HiltViewModel
 class TripDetailsViewModel @Inject constructor(

@@ -8,10 +8,8 @@ import kotlinx.coroutines.flow.combine
 import ru.nikfirs.android.traveltracker.core.domain.model.AppDateFormatModel
 import ru.nikfirs.android.traveltracker.core.domain.model.AppThemeModel
 import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
-import ru.nikfirs.android.traveltracker.core.ui.R as uiR
-import ru.nikfirs.android.traveltracker.core.ui.mvi.ViewModel
-import ru.nikfirs.android.traveltracker.core.ui.mvi.launchIO
 import ru.nikfirs.android.traveltracker.core.ui.domain.usecase.dataStore.GetDateFormatUseCase
+import ru.nikfirs.android.traveltracker.core.ui.mvi.ViewModel
 import ru.nikfirs.android.traveltracker.feature.settings.BuildConfig
 import ru.nikfirs.android.traveltracker.feature.settings.domain.usecase.GetLanguageUseCase
 import ru.nikfirs.android.traveltracker.feature.settings.domain.usecase.GetThemeUseCase
@@ -22,6 +20,7 @@ import ru.nikfirs.android.traveltracker.feature.settings.ui.settings.SettingsCon
 import ru.nikfirs.android.traveltracker.feature.settings.ui.settings.SettingsContract.Effect
 import ru.nikfirs.android.traveltracker.feature.settings.ui.settings.SettingsContract.State
 import javax.inject.Inject
+import ru.nikfirs.android.traveltracker.core.ui.R as uiR
 
 @HiltViewModel
 class SettingsViewmodel @Inject constructor(

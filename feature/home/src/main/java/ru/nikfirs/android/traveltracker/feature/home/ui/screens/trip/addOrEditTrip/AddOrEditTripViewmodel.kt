@@ -16,8 +16,6 @@ import ru.nikfirs.android.traveltracker.core.ui.domain.usecase.dataStore.GetDate
 import ru.nikfirs.android.traveltracker.core.ui.ui.model.BlockDateModel
 import ru.nikfirs.android.traveltracker.core.ui.ui.model.DateType
 import ru.nikfirs.android.traveltracker.core.ui.mvi.ViewModel
-import ru.nikfirs.android.traveltracker.core.ui.mvi.launch
-import ru.nikfirs.android.traveltracker.core.ui.mvi.launchIO
 import ru.nikfirs.android.traveltracker.feature.home.R
 import ru.nikfirs.android.traveltracker.feature.home.ui.model.TripSegmentUi
 import ru.nikfirs.android.traveltracker.core.ui.domain.usecase.trip.GetTripByIdUseCase
