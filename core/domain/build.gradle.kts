@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.android.junit5)
 }
 
 apply {
@@ -9,6 +10,9 @@ apply {
 
 android {
     namespace = "ru.nikfirs.android.traveltracker.core.domain"
+    testFixtures {
+        enable = true
+    }
 }
 
 dependencies {
@@ -16,5 +20,5 @@ dependencies {
     implementation(libs.androidx.appcompat)
 
     testImplementation(libs.bundles.tests)
-    androidTestImplementation(libs.bundles.androidTest)
+    testRuntimeOnly(libs.bundles.testRuntimeOnly)
 }

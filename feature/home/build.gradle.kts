@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.kotlin.ksp)
     alias(libs.plugins.hilt)
+    alias(libs.plugins.android.junit5)
 }
 
 apply {
@@ -21,6 +22,8 @@ dependencies {
     ksp(libs.hilt.compiler)
 
     testImplementation(libs.bundles.tests)
+    testRuntimeOnly(libs.bundles.testRuntimeOnly)
+    testImplementation(testFixtures(project(":core:domain")))
     androidTestImplementation(libs.bundles.androidTest)
 
     implementation(project(":core:domain"))

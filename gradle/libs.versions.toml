@@ -27,8 +27,10 @@ hilt = "2.56.2"
 hiltNavigationCompose = "1.2.0"
 
 # test
-junit = "4.13.2"
-junitVersion = "1.2.1"
+junit5 = "5.11.4"
+androidJunit5Plugin = "1.11.3.0"
+turbine = "1.2.1"
+mockk = "1.14.11"
 espressoCore = "3.6.1"
 material = "1.12.0"
 
@@ -64,11 +66,16 @@ androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-toolin
 
 # compose test
 androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
-androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 
 # test
-junit = { group = "junit", name = "junit", version.ref = "junit" }
-androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
+kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+junit5-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit5" }
+junit5-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit5" }
+junit5-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "junit5" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
+turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 
 # di
@@ -89,6 +96,9 @@ kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", versi
 
 # compose
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+
+# test
+android-junit5 = { id = "de.mannodermaus.android-junit5", version.ref = "androidJunit5Plugin" }
 
 # di
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
@@ -132,13 +142,20 @@ debug = [
 ]
 
 tests = [
-    "junit",
+    "kotlin-test",
+    "junit5-api",
+    "junit5-params",
+    "kotlinx-coroutines-test",
+    "turbine",
+    "mockk",
+]
+
+testRuntimeOnly = [
+    "junit5-engine",
 ]
 
 androidTest = [
-    "androidx-junit",
     "androidx-espresso-core",
-#    "androidx-ui-test-junit4",
 ]
 
 databaseTests = [

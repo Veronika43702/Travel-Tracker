@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.ksp)
     alias(libs.plugins.hilt)
+    alias(libs.plugins.android.junit5)
 }
 
 apply {
@@ -26,7 +27,8 @@ dependencies {
     ksp(libs.hilt.compiler)
     testImplementation(libs.bundles.databaseTests)
     testImplementation(libs.bundles.tests)
-    androidTestImplementation(libs.bundles.androidTest)
+    testRuntimeOnly(libs.bundles.testRuntimeOnly)
+    testImplementation(testFixtures(project(":core:domain")))
 
     implementation(project(":core:domain"))
 }
