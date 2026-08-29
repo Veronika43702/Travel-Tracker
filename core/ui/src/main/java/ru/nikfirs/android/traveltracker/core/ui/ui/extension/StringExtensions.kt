@@ -12,7 +12,7 @@ fun CustomString?.asString(): String? {
     val internal = context.getString(domainR.string.error_unknown)
     return when (this) {
         is CustomString.Text -> value ?: internal
-        is CustomString.Resource -> context.getString(resId, *args)
+        is CustomString.Resource -> context.getString(resId, *args.toTypedArray())
     }
 }
 
