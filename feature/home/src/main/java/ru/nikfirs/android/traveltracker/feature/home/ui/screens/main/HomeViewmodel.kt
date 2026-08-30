@@ -5,6 +5,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import ru.nikfirs.android.traveltracker.core.domain.PERIOD_DAYS
+import ru.nikfirs.android.traveltracker.core.domain.coroutines.DispatcherProvider
 import ru.nikfirs.android.traveltracker.core.domain.model.CustomString
 import ru.nikfirs.android.traveltracker.core.domain.model.Trip
 import ru.nikfirs.android.traveltracker.core.domain.model.Visa
@@ -32,7 +33,8 @@ class HomeViewModel @Inject constructor(
     private val deleteTripUseCase: DeleteTripUseCase,
     private val deleteVisaUseCase: DeleteVisaUseCase,
     private val getDateFormatUseCase: GetDateFormatUseCase,
-) : ViewModel<Action, Effect, State>() {
+    private val dispatcherProvider: DispatcherProvider,
+) : ViewModel<Action, Effect, State>(dispatcherProvider) {
 
     init {
         setAction(Action.LoadData)
