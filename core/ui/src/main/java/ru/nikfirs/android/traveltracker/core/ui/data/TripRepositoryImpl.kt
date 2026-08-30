@@ -52,7 +52,7 @@ class TripRepositoryImpl @Inject constructor(
     override suspend fun updateTrip(trip: Trip) {
         tripDao.updateTrip(trip.toEntity())
 
-        // Удаляем старые сегменты и вставляем новые
+        // delete old segments and insert new
         tripSegmentDao.deleteSegmentsByTripId(trip.id)
         val segments = trip.segments.map { it.toEntity(trip.id) }
         tripSegmentDao.insertSegments(segments)
@@ -60,7 +60,7 @@ class TripRepositoryImpl @Inject constructor(
 
     override suspend fun deleteTrip(trip: Trip) {
         tripDao.deleteTrip(trip.toEntity())
-        // Сегменты удалятся автоматически благодаря CASCADE
+        // segments are deleted automatically due to CASCADE
     }
 
     override suspend fun calculateDaysInPeriod(
@@ -90,11 +90,11 @@ class TripRepositoryImpl @Inject constructor(
         exemptCountries: Set<String>,
         excludeTripId: Long?
     ): Boolean {
-        // Находим минимальную и максимальную даты из всех сегментов
+        // fins min and max dates from all segments
         val startDate = segments.minBy { it.startDate }.startDate
         val endDate = segments.maxBy { it.endDate }.endDate
 
-        // Проверяем, не превысим ли лимит 90 дней
+        // check whether limit (90 days) is not reached
         val conflictCount = tripDao.checkDatesAvailability(
             startDate = startDate,
             endDate = endDate,

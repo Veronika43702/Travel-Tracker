@@ -123,7 +123,7 @@ fun VisaCard(
                     }
                 )
 
-                // Тип въездов для визы C
+                // entry type for type C visa
                 if (visa.visaType == VisaCategory.TYPE_C) {
                     StatusChip(
                         text = when (visa.entries) {
@@ -136,7 +136,7 @@ fun VisaCard(
                     )
                 }
 
-                // Статус
+                // Status
                 when {
                     visa.validVisa && visa.daysUntilExpiry <= 30 -> StatusChip(
                         text = stringResource(R.string.home_visa_expiry_warning, visa.daysUntilExpiry),
@@ -148,7 +148,7 @@ fun VisaCard(
         }
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            // Номер визы и страна
+            // visa number and country
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -168,7 +168,7 @@ fun VisaCard(
                 }
             }
 
-            // Срок действия
+            // expiry date
             Text(
                 text = stringResource(
                     R.string.home_visa_validity_period,

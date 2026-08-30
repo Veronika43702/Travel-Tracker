@@ -135,7 +135,7 @@ fun SettingsContent(
                         color = MaterialTheme.colorScheme.outlineVariant
                     )
 
-                    // Формат даты
+                    // date format
                     SettingsItem(
                         icon = IconType.DrawableRes(R.drawable.ic_schedule),
                         title = stringResource(R.string.settings_date_format_title),

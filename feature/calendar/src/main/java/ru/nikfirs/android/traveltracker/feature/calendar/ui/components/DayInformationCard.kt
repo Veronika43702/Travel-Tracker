@@ -287,12 +287,11 @@ private fun InfoSection(
     }
 }
 
-// Preview для тестирования
+// Preview
 @LightRUScreenPreview
 @Composable
 private fun DayInformationCardPreview() {
     AppTheme {
-        // Примерный DateDataModel для превью
         val sampleDateInfo = DateDataModel(
             remainingDays = 45,
             isIncreased = true,
