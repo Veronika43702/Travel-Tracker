@@ -139,7 +139,7 @@
     <string name="home_error_visa_not_found">Visa not found</string>
     <string name="home_error_visa_saving">Error saving visa</string>
     <string name="home_error_visa_loading">Error loading trip</string>
-    <string name="home_error_visa_deleting">Error deleting trip</string>
+    <string name="home_error_visa_deleting">Error deleting visa</string>
 
     <!-- Validation Errors -->
     <string name="error_visa_number_required">Visa number is required</string>
