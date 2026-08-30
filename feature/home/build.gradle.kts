@@ -15,6 +15,9 @@ apply {
 
 android {
     namespace = "ru.nikfirs.android.traveltracker.feature.home"
+    testOptions {
+        unitTests.isReturnDefaultValues = true
+    }
 }
 
 dependencies {
