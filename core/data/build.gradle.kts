@@ -12,6 +12,9 @@ apply {
 
 android {
     namespace = "ru.nikfirs.android.traveltracker.core.data"
+    testFixtures {
+        enable = true
+    }
 }
 
 dependencies {

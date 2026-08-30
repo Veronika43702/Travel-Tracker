@@ -11,7 +11,7 @@ fun testTrip(
     purpose: TripPurpose = TripPurpose.EDUCATION,
     notes: String? = "some notes for tests",
     createdAt: LocalDate = LocalDate.of(2026, 8, 1),
-    countableDays: Int = 5,
+    countableDays: Int = 4,
     hasOverLimitDay: Boolean = false,
 ): Trip = Trip(
     id,

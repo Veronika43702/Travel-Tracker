@@ -24,9 +24,12 @@ dependencies {
     api(libs.bundles.debug)
 
     implementation(libs.bundles.di)
-
     ksp(libs.hilt.compiler)
+
     testImplementation(libs.bundles.tests)
+    testRuntimeOnly(libs.bundles.testRuntimeOnly)
+    testImplementation(testFixtures(project(":core:data")))
+    testImplementation(testFixtures(project(":core:domain")))
     androidTestImplementation(libs.bundles.androidTest)
 
     api(project(":core:data"))
